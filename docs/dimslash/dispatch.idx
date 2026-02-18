@@ -1,0 +1,7 @@
+nimTitle	dispatch	dimslash/dispatch.html	module src/dimslash/dispatch		0
+nim	handleInteraction	dimslash/dispatch.html#handleInteraction,InteractionHandler,Shard,Interaction	proc handleInteraction(handler: InteractionHandler; s: Shard; i: Interaction): Future[\n    bool]		72
+heading	Resolution per interaction kind	dimslash/dispatch.html#error-handling-resolution-per-interaction-kind	  Resolution per interaction kind		0
+heading	Raises	dimslash/dispatch.html#error-handling-raises	  Raises		0
+heading	Example	dimslash/dispatch.html#error-handling-example	  Example		0
+heading	Dispatch flow	dimslash/dispatch.html#dispatch-flow	 Dispatch flow		0
+heading	Error handling	dimslash/dispatch.html#error-handling	 Error handling		0

@@ -1,0 +1,8 @@
+nimTitle	registry	dimslash/registry.html	module src/dimslash/registry		0
+nim	newRegistry	dimslash/registry.html#newRegistry	proc newRegistry(): CommandRegistry		38
+nim	register	dimslash/registry.html#register,CommandRegistry,RegisteredCommand	proc register(registry: CommandRegistry; command: RegisteredCommand)		69
+nim	find	dimslash/registry.html#find,CommandRegistry,CommandKind,string	proc find(registry: CommandRegistry; kind: CommandKind; name: string): RegisteredCommand		120
+nim	findAutocomplete	dimslash/registry.html#findAutocomplete,CommandRegistry,string,string	proc findAutocomplete(registry: CommandRegistry; name: string; optionName = ""): RegisteredCommand		167
+nim	pairs	dimslash/registry.html#pairs.i,CommandRegistry,CommandKind	iterator pairs(registry: CommandRegistry; kind: CommandKind): (string, RegisteredCommand)		197
+heading	Key concepts	dimslash/registry.html#key-concepts	 Key concepts		0
+heading	Example: manual registration and lookup	dimslash/registry.html#key-concepts-examplecolon-manual-registration-and-lookup	  Example: manual registration and lookup		0

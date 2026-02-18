@@ -1,0 +1,8 @@
+nimTitle	componentargs	dimslash/componentargs.html	module src/dimslash/componentargs		0
+nim	customId	dimslash/componentargs.html#customId,Interaction	proc customId(i: Interaction): Option[string]		36
+nim	selectValues	dimslash/componentargs.html#selectValues,Interaction	proc selectValues(i: Interaction): seq[string]		47
+nim	modalValues	dimslash/componentargs.html#modalValues,Interaction	proc modalValues(i: Interaction): Table[string, string]		79
+nim	modalValue	dimslash/componentargs.html#modalValue,Interaction,string	proc modalValue(i: Interaction; fieldCustomId: string): Option[string]		94
+heading	Quick reference	dimslash/componentargs.html#quick-reference	 Quick reference		0
+heading	Example: modal handler	dimslash/componentargs.html#examplecolon-modal-handler	 Example: modal handler		0
+heading	Example: select handler	dimslash/componentargs.html#examplecolon-select-handler	 Example: select handler		0

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-and-build:
+    name: Nim ${{ matrix.nim-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nim-version: ["2.0.6", "2.2.6", "stable"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ matrix.nim-version }}
+
+      - name: Show toolchain versions
+        run: |
+          nim --version
+          nimble --version
+
+      - name: Install dependencies
+        run: nimble install -y
+
+      - name: Run tests
+        run: nimble test -d:ssl
+
+      - name: Compile examples
+        run: |
+          nim c -d:ssl --path:src examples/basic_interactions.nim
+          nim c -d:ssl --path:src examples/typed_slash_args.nim
+          nim c -d:ssl --path:src examples/scaffold_interactions.nim
+          nim c -d:ssl --path:src examples/advanced_workflow.nim
+          nim c -d:ssl --path:src examples/ui_showcase.nim
+
+      - name: Build API docs
+        if: matrix.nim-version == 'stable'
+        run: nimble docs
+
+      - name: Upload docs artifact
+        if: matrix.nim-version == 'stable'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs/

@@ -1,0 +1,37 @@
+nimTitle	dsl	dimslash/dsl.html	module src/dimslash/dsl		0
+nim	registerSlashOptionNames	dimslash/dsl.html#registerSlashOptionNames,InteractionHandler,string,openArray[string]	proc registerSlashOptionNames(handler: InteractionHandler; commandName: string;\n                         optionNames: openArray[string])		97
+nim	slashOptionNames	dimslash/dsl.html#slashOptionNames,InteractionHandler,string	proc slashOptionNames(handler: InteractionHandler; commandName: string): seq[string]		116
+nim	hasSlashOption	dimslash/dsl.html#hasSlashOption,InteractionHandler,string,string	proc hasSlashOption(handler: InteractionHandler; commandName, optionName: string): bool		124
+nim	addSlashProc	dimslash/dsl.html#addSlashProc,InteractionHandler,string,string,CommandHandlerProc,string	proc addSlashProc(handler: InteractionHandler; name, description: string;\n             callback: CommandHandlerProc; guildId = "")		130
+nim	addUser	dimslash/dsl.html#addUser,InteractionHandler,string,CommandHandlerProc,string	proc addUser(handler: InteractionHandler; name: string; callback: CommandHandlerProc;\n        guildId = "")		147
+nim	addUser	dimslash/dsl.html#addUser.t,InteractionHandler,string,	template addUser(handler: InteractionHandler; name: string; body: untyped{nkStmtList})		157
+nim	addUser	dimslash/dsl.html#addUser.t,InteractionHandler,string,string,	template addUser(handler: InteractionHandler; name, guildId: string;\n        body: untyped{nkStmtList})		173
+nim	addMessage	dimslash/dsl.html#addMessage,InteractionHandler,string,CommandHandlerProc,string	proc addMessage(handler: InteractionHandler; name: string;\n           callback: CommandHandlerProc; guildId = "")		186
+nim	addMessage	dimslash/dsl.html#addMessage.t,InteractionHandler,string,	template addMessage(handler: InteractionHandler; name: string; body: untyped{nkStmtList})		194
+nim	addMessage	dimslash/dsl.html#addMessage.t,InteractionHandler,string,string,	template addMessage(handler: InteractionHandler; name, guildId: string;\n           body: untyped{nkStmtList})		206
+nim	addSlash	dimslash/dsl.html#addSlash.m,InteractionHandler,string,string,varargs[untyped]	macro addSlash(handler: InteractionHandler; name, description: string;\n         parameters: varargs[untyped]): untyped		225
+nim	addButton	dimslash/dsl.html#addButton,InteractionHandler,string,CommandHandlerProc	proc addButton(handler: InteractionHandler; customId: string;\n          callback: CommandHandlerProc)		365
+nim	addButton	dimslash/dsl.html#addButton.t,InteractionHandler,string,	template addButton(handler: InteractionHandler; customId: string;\n          body: untyped{nkStmtList})		377
+nim	addSelect	dimslash/dsl.html#addSelect,InteractionHandler,string,CommandHandlerProc	proc addSelect(handler: InteractionHandler; customId: string;\n          callback: CommandHandlerProc)		391
+nim	addSelect	dimslash/dsl.html#addSelect.t,InteractionHandler,string,	template addSelect(handler: InteractionHandler; customId: string;\n          body: untyped{nkStmtList})		404
+nim	addModal	dimslash/dsl.html#addModal,InteractionHandler,string,CommandHandlerProc	proc addModal(handler: InteractionHandler; customId: string;\n         callback: CommandHandlerProc)		412
+nim	addModal	dimslash/dsl.html#addModal.t,InteractionHandler,string,	template addModal(handler: InteractionHandler; customId: string;\n         body: untyped{nkStmtList})		427
+nim	addAutocomplete	dimslash/dsl.html#addAutocomplete,InteractionHandler,string,CommandHandlerProc,string,string	proc addAutocomplete(handler: InteractionHandler; name: string;\n                callback: CommandHandlerProc; guildId = ""; optionName = "")		435
+nim	addAutocompleteForOption	dimslash/dsl.html#addAutocompleteForOption,InteractionHandler,string,string,CommandHandlerProc,string	proc addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;\n                         callback: CommandHandlerProc; guildId = "")		451
+nim	addAutocomplete	dimslash/dsl.html#addAutocomplete.t,InteractionHandler,string,	template addAutocomplete(handler: InteractionHandler; name: string;\n                body: untyped{nkStmtList})		474
+nim	addAutocomplete	dimslash/dsl.html#addAutocomplete.t,InteractionHandler,string,string,	template addAutocomplete(handler: InteractionHandler; name, optionName: string;\n                body: untyped{nkStmtList})		490
+nim	addAutocompleteForOption	dimslash/dsl.html#addAutocompleteForOption.t,InteractionHandler,string,string,	template addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;\n                         body: untyped{nkStmtList})		503
+nim	addAutocomplete	dimslash/dsl.html#addAutocomplete.t,InteractionHandler,string,string,_2	template addAutocomplete(handler: InteractionHandler; name, guildId: string;\n                body: untyped{nkStmtList})		512
+nim	addAutocomplete	dimslash/dsl.html#addAutocomplete.t,InteractionHandler,string,string,string,	template addAutocomplete(handler: InteractionHandler; name, optionName, guildId: string;\n                body: untyped{nkStmtList})		521
+nim	addAutocompleteForOption	dimslash/dsl.html#addAutocompleteForOption.t,InteractionHandler,string,string,string,	template addAutocompleteForOption(handler: InteractionHandler;\n                         name, optionName, guildId: string;\n                         body: untyped{nkStmtList})		531
+nimgrp	addautocompleteforoption	dimslash/dsl.html#addAutocompleteForOption-templates-all	template		503
+nimgrp	addautocomplete	dimslash/dsl.html#addAutocomplete-templates-all	template		474
+nimgrp	addmessage	dimslash/dsl.html#addMessage-templates-all	template		194
+nimgrp	adduser	dimslash/dsl.html#addUser-templates-all	template		157
+heading	Simple command (no typed params)	dimslash/dsl.html#simple-command-no-typed-params	 Simple command (no typed params)		0
+heading	Typed parameters	dimslash/dsl.html#typed-parameters	 Typed parameters		0
+heading	Optional parameters	dimslash/dsl.html#optional-parameters	 Optional parameters		0
+heading	Guild-scoped command	dimslash/dsl.html#guildminusscoped-command	 Guild-scoped command		0
+heading	Quick reference	dimslash/dsl.html#quick-reference	 Quick reference		0
+heading	Lifecycle	dimslash/dsl.html#lifecycle	 Lifecycle		0
+heading	Minimal bot	dimslash/dsl.html#minimal-bot	 Minimal bot		0

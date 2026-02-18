@@ -1,0 +1,8 @@
+nimTitle	dimslash	dimslash.html	module src/dimslash		0
+nim	newInteractionHandler	dimslash.html#newInteractionHandler,DiscordClient,string	proc newInteractionHandler(discord: DiscordClient; defaultGuildId = ""): InteractionHandler		117
+heading	Parameters	dimslash.html#module-overview-parameters	  Parameters		0
+heading	Typical usage	dimslash.html#module-overview-typical-usage	  Typical usage		0
+heading	Getting started	dimslash.html#getting-started	 Getting started		0
+heading	Minimal example	dimslash.html#getting-started-minimal-example	  Minimal example		0
+heading	Architecture	dimslash.html#architecture	 Architecture		0
+heading	Module overview	dimslash.html#module-overview	 Module overview		0

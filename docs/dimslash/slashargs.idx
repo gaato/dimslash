@@ -1,0 +1,23 @@
+nimTitle	slashargs	dimslash/slashargs.html	module src/dimslash/slashargs		0
+nim	normalizeOptionName	dimslash/slashargs.html#normalizeOptionName,string	proc normalizeOptionName(name: string): string		61
+nim	slashOptions	dimslash/slashargs.html#slashOptions,Interaction	proc slashOptions(i: Interaction): Table[string,\n                                    ApplicationCommandInteractionDataOption]		92
+nim	focusedOption	dimslash/slashargs.html#focusedOption,Interaction	proc focusedOption(i: Interaction): Option[ApplicationCommandInteractionDataOption]		111
+nim	focusedOptionName	dimslash/slashargs.html#focusedOptionName,Interaction	proc focusedOptionName(i: Interaction): Option[string]		130
+nim	focusedOptionValue	dimslash/slashargs.html#focusedOptionValue,Interaction	proc focusedOptionValue(i: Interaction): Option[string]		147
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[string]	proc getSlashArg(i: Interaction; name: string; _: typedesc[string]): Option[string]		178
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[int]	proc getSlashArg(i: Interaction; name: string; _: typedesc[int]): Option[int]		190
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[bool]	proc getSlashArg(i: Interaction; name: string; _: typedesc[bool]): Option[bool]		202
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[float]	proc getSlashArg(i: Interaction; name: string; _: typedesc[float]): Option[float]		214
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[User]	proc getSlashArg(i: Interaction; name: string; _: typedesc[User]): Option[User]		226
+nim	getSlashArg	dimslash/slashargs.html#getSlashArg,Interaction,string,typedesc[Role]	proc getSlashArg(i: Interaction; name: string; _: typedesc[Role]): Option[Role]		245
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[string]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[string]): string		264
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[int]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[int]): int		272
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[bool]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[bool]): bool		280
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[float]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[float]): float		288
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[User]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[User]): User		296
+nim	requireSlashArg	dimslash/slashargs.html#requireSlashArg,Interaction,string,typedesc[Role]	proc requireSlashArg(i: Interaction; name: string; _: typedesc[Role]): Role		304
+nimgrp	requireslasharg	dimslash/slashargs.html#requireSlashArg-procs-all	proc		264
+nimgrp	getslasharg	dimslash/slashargs.html#getSlashArg-procs-all	proc		178
+heading	Supported Nim types	dimslash/slashargs.html#supported-nim-types	 Supported Nim types		0
+heading	nimgetSlashArg vs nimrequireSlashArg	dimslash/slashargs.html#nimgetslasharg-vs-nimrequireslasharg	 <tt class="docutils literal"><span class="pre"><span class="Identifier">getSlashArg</span></span></tt> vs <tt class="docutils literal"><span class="pre"><span class="Identifier">requireSlashArg</span></span></tt>		0
+heading	Autocomplete helpers	dimslash/slashargs.html#autocomplete-helpers	 Autocomplete helpers		0

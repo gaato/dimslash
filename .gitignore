@@ -1,0 +1,10 @@
+nimcache/
+nimblecache/
+htmldocs/
+.env
+examples/basic_interactions
+examples/typed_slash_args
+examples/scaffold_interactions
+examples/advanced_workflow
+examples/ui_showcase
+tests/test_dispatch

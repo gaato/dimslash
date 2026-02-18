@@ -1,0 +1,7 @@
+nimTitle	sync	dimslash/sync.html	module src/dimslash/sync		0
+nim	registerCommands	dimslash/sync.html#registerCommands,InteractionHandler,string	proc registerCommands(handler: InteractionHandler; guildId = ""): Future[void]		102
+heading	Parameters	dimslash/sync.html#propagation-timing-parameters	  Parameters		0
+heading	Raises	dimslash/sync.html#propagation-timing-raises	  Raises		0
+heading	Example	dimslash/sync.html#propagation-timing-example	  Example		0
+heading	Which commands are synced?	dimslash/sync.html#which-commands-are-syncedqmark	 Which commands are synced?		0
+heading	Propagation timing	dimslash/sync.html#propagation-timing	 Propagation timing		0

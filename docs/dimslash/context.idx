@@ -1,0 +1,9 @@
+nimTitle	context	dimslash/context.html	module src/dimslash/context		0
+nim	reply	dimslash/context.html#reply,InteractionHandler,Interaction,string	proc reply(handler: InteractionHandler; i: Interaction; content: string): Future[void]		37
+nim	deferResponse	dimslash/context.html#deferResponse,InteractionHandler,Interaction	proc deferResponse(handler: InteractionHandler; i: Interaction): Future[void]		54
+nim	followup	dimslash/context.html#followup,InteractionHandler,Interaction,string	proc followup(handler: InteractionHandler; i: Interaction; content: string): Future[\n    Message]		72
+nim	suggest	dimslash/context.html#suggest,InteractionHandler,Interaction,seq[ApplicationCommandOptionChoice]	proc suggest(handler: InteractionHandler; i: Interaction;\n        choices: seq[ApplicationCommandOptionChoice]): Future[void]		89
+nim	suggest	dimslash/context.html#suggest,InteractionHandler,Interaction,seq[string]	proc suggest(handler: InteractionHandler; i: Interaction; choices: seq[string]): Future[\n    void]		111
+nimgrp	suggest	dimslash/context.html#suggest-procs-all	proc		88
+heading	Response flow cheat-sheet	dimslash/context.html#response-flow-cheatminussheet	 Response flow cheat-sheet		0
+heading	Full example	dimslash/context.html#full-example	 Full example		0

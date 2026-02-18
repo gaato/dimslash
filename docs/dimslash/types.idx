@@ -1,0 +1,24 @@
+nimTitle	types	dimslash/types.html	module src/dimslash/types		0
+nim	ckSlash	dimslash/types.html#ckSlash	CommandKind.ckSlash		50
+nim	ckUser	dimslash/types.html#ckUser	CommandKind.ckUser		50
+nim	ckMessage	dimslash/types.html#ckMessage	CommandKind.ckMessage		50
+nim	ckButton	dimslash/types.html#ckButton	CommandKind.ckButton		50
+nim	ckSelect	dimslash/types.html#ckSelect	CommandKind.ckSelect		50
+nim	ckModal	dimslash/types.html#ckModal	CommandKind.ckModal		50
+nim	ckAutocomplete	dimslash/types.html#ckAutocomplete	CommandKind.ckAutocomplete		50
+nim	CommandKind	dimslash/types.html#CommandKind	enum CommandKind		50
+nim	hekNotImplemented	dimslash/types.html#hekNotImplemented	HandlerErrorKind.hekNotImplemented		74
+nim	hekNotFound	dimslash/types.html#hekNotFound	HandlerErrorKind.hekNotFound		74
+nim	hekInvalidInteraction	dimslash/types.html#hekInvalidInteraction	HandlerErrorKind.hekInvalidInteraction		74
+nim	HandlerErrorKind	dimslash/types.html#HandlerErrorKind	enum HandlerErrorKind		74
+nim	HandlerError	dimslash/types.html#HandlerError	object HandlerError		95
+nim	InteractionHandler	dimslash/types.html#InteractionHandler	type InteractionHandler		109
+nim	CommandHandlerProc	dimslash/types.html#CommandHandlerProc	type CommandHandlerProc		143
+nim	RegisteredCommand	dimslash/types.html#RegisteredCommand	object RegisteredCommand		148
+nim	CommandRegistry	dimslash/types.html#CommandRegistry	type CommandRegistry		160
+nim	newNotImplementedError	dimslash/types.html#newNotImplementedError,string	proc newNotImplementedError(message: string): ref HandlerError		179
+nim	newNotFoundError	dimslash/types.html#newNotFoundError,string	proc newNotFoundError(message: string): ref HandlerError		189
+nim	newInvalidInteractionError	dimslash/types.html#newInvalidInteractionError,string	proc newInvalidInteractionError(message: string): ref HandlerError		198
+nim	ensureImplemented	dimslash/types.html#ensureImplemented,CommandKind	proc ensureImplemented(kind: CommandKind)		207
+heading	Error handling	dimslash/types.html#error-handling	 Error handling		0
+heading	Architecture overview	dimslash/types.html#architecture-overview	 Architecture overview		0
