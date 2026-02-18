@@ -1,16 +1,11 @@
 # dimslash
 
-`dimscord`向けの Interaction 中心コマンドハンドラです。`dimscmd`に近い使い心地で、Slash/User/Message command を宣言的に扱えます。
+[![CI](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/ci.yml?branch=main&label=CI)](https://github.com/gaato/dimslash/actions/workflows/ci.yml)
+[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/pages-on-tag.yml?label=Docs%20Deploy)](https://github.com/gaato/dimslash/actions/workflows/pages-on-tag.yml)
+[![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
+[![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
 
-## 現在の対応範囲
-- ✅ Slash Command
-- ✅ User Command
-- ✅ Message Command
-- ✅ Button Component
-- ✅ Select Component
-- ✅ Modal Submit
-- ✅ Autocomplete
-- ✅ 起動時のコマンド同期（bulk overwrite）
+`dimscord`向けの Interaction 中心コマンドハンドラです。`dimscmd`に近い使い心地で、Slash/User/Message command を宣言的に扱えます。
 
 ## インストール
 ```bash

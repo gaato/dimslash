@@ -1,18 +1,13 @@
 # dimslash
 
+[![CI](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/ci.yml?branch=main&label=CI)](https://github.com/gaato/dimslash/actions/workflows/ci.yml)
+[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/pages-on-tag.yml?label=Docs%20Deploy)](https://github.com/gaato/dimslash/actions/workflows/pages-on-tag.yml)
+[![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
+[![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
+
 An interaction-first command handler for [dimscord](https://github.com/krisppurg/dimscord). Register Slash, User, and Message commands declaratively with a dimscmd-like feel.
 
 > **日本語版**: [README.ja.md](README.ja.md)
-
-## Current scope
-- ✅ Slash Command
-- ✅ User Command
-- ✅ Message Command
-- ✅ Button Component
-- ✅ Select Component
-- ✅ Modal Submit
-- ✅ Autocomplete
-- ✅ Command sync on startup (bulk overwrite)
 
 ## Installation
 ```bash
