@@ -124,8 +124,11 @@ proc slashOptionNames*(handler: InteractionHandler, commandName: string): seq[st
 proc hasSlashOption*(handler: InteractionHandler, commandName, optionName: string): bool =
   ## Returns ``true`` when `optionName` is a known parameter of
   ## `commandName`.  Both values are normalised before comparison.
+  let key = commandName.toLowerAscii()
+  if not handler.slashOptionNames.hasKey(key):
+    return false
   let normalized = normalizeOptionNameLocal(optionName)
-  normalized in handler.slashOptionNames(commandName)
+  normalized in handler.slashOptionNames[key]
 
 proc addSlashProc*(handler: InteractionHandler, name, description: string,
                    callback: CommandHandlerProc, guildId = "") =
