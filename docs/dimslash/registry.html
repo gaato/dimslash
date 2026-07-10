@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">src/dimslash/registry</h1>
       <div class="row">
@@ -51,41 +54,49 @@
       </select>
     </div>
     <ul class="simple simple-toc" id="toc-list">
-  <li><a class="reference" id="key-concepts_toc" href="#key-concepts">Key concepts</a></li>
-<ul class="simple"><li><a class="reference" id="key-concepts-examplecolon-manual-registration-and-lookup_toc" href="#key-concepts-examplecolon-manual-registration-and-lookup">Example: manual registration and lookup</a></li>
-</ul><li>
+  <li>
   <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
 </li>
 <li>
   <details open>
     <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">find
-  <li><a class="reference" href="#find%2CCommandRegistry%2CCommandKind%2Cstring" title="find(registry: CommandRegistry; kind: CommandKind; name: string): RegisteredCommand">find(registry: CommandRegistry; kind: CommandKind; name: string): RegisteredCommand</a></li>
+      <ul class="simple nested-toc-section">addButtonHandler
+  <li><a class="reference" href="#addButtonHandler%2CInteractionHandler%2Cstring%2CComponentRun" title="addButtonHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)">addButtonHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">findAutocomplete
-  <li><a class="reference" href="#findAutocomplete%2CCommandRegistry%2Cstring%2Cstring" title="findAutocomplete(registry: CommandRegistry; name: string; optionName = &quot;&quot;): RegisteredCommand">findAutocomplete(registry: CommandRegistry; name: string; optionName = &quot;&quot;): RegisteredCommand</a></li>
+<ul class="simple nested-toc-section">addMessageCommand
+  <li><a class="reference" href="#addMessageCommand%2CInteractionHandler%2CMessageCommand" title="addMessageCommand(handler: InteractionHandler; cmd: MessageCommand)">addMessageCommand(handler: InteractionHandler; cmd: MessageCommand)</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">newRegistry
-  <li><a class="reference" href="#newRegistry" title="newRegistry(): CommandRegistry">newRegistry(): CommandRegistry</a></li>
+<ul class="simple nested-toc-section">addModalHandler
+  <li><a class="reference" href="#addModalHandler%2CInteractionHandler%2Cstring%2CModalRun" title="addModalHandler(handler: InteractionHandler; customId: string; run: ModalRun)">addModalHandler(handler: InteractionHandler; customId: string; run: ModalRun)</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">register
-  <li><a class="reference" href="#register%2CCommandRegistry%2CRegisteredCommand" title="register(registry: CommandRegistry; command: RegisteredCommand)">register(registry: CommandRegistry; command: RegisteredCommand)</a></li>
+<ul class="simple nested-toc-section">addSelectHandler
+  <li><a class="reference" href="#addSelectHandler%2CInteractionHandler%2Cstring%2CComponentRun" title="addSelectHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)">addSelectHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">addSlashCommand
+  <li><a class="reference" href="#addSlashCommand%2CInteractionHandler%2CSlashCommand" title="addSlashCommand(handler: InteractionHandler; cmd: SlashCommand)">addSlashCommand(handler: InteractionHandler; cmd: SlashCommand)</a></li>
 
-    </ul>
-  </details>
-</li>
-<li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#15" id="65">Iterators</a></summary>
-    <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">pairs
-  <li><a class="reference" href="#pairs.i%2CCommandRegistry%2CCommandKind" title="pairs(registry: CommandRegistry; kind: CommandKind): (string, RegisteredCommand)">pairs(registry: CommandRegistry; kind: CommandKind): (string, RegisteredCommand)</a></li>
+</ul>
+<ul class="simple nested-toc-section">addUserCommand
+  <li><a class="reference" href="#addUserCommand%2CInteractionHandler%2CUserCommand" title="addUserCommand(handler: InteractionHandler; cmd: UserCommand)">addUserCommand(handler: InteractionHandler; cmd: UserCommand)</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">lookup
+  <li><a class="reference" href="#lookup%2CComponentTable%5BH%5D%2Cstring" title="lookup[H](table: ComponentTable[H]; customId: string): Option[
+    tuple[handler: H, captures: Table[string, string]]]">lookup[H](table: ComponentTable[H]; customId: string): Option[
+    tuple[handler: H, captures: Table[string, string]]]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">resolveLeaf
+  <li><a class="reference" href="#resolveLeaf%2CSlashCommand%2Cseq%5Bstring%5D" title="resolveLeaf(cmd: SlashCommand; path: seq[string]): Option[SlashNode]">resolveLeaf(cmd: SlashCommand; path: seq[string]): Option[SlashNode]</a></li>
 
 </ul>
 
@@ -100,151 +111,112 @@
     
     <div id="tocRoot"></div>
     
-    <p class="module-desc"><p>Command registry — the central store for all registered interaction handlers.</p>
-<p><tt class="docutils literal"><span class="pre"><span class="Identifier">CommandRegistry</span></span></tt> groups <tt class="docutils literal"><span class="pre"><span class="Identifier">RegisteredCommand</span></span></tt> objects by <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandKind</span></span></tt>. You normally don't interact with this module directly; the DSL helpers (<tt class="docutils literal"><span class="pre"><span class="Identifier">addSlash</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">addUser</span></span></tt>, …) and <tt class="docutils literal"><span class="pre"><span class="Identifier">handleInteraction</span></span></tt> call into it.</p>
-
-<h1><a class="toc-backref" id="key-concepts" href="#key-concepts">Key concepts</a></h1><ul class="simple"><li><strong>Names are normalised</strong> — all lookups are case-insensitive (lowercased).</li>
-<li><strong>Duplicates are rejected</strong> — re-registering the same name raises <tt class="docutils literal"><span class="pre"><span class="Identifier">ValueError</span></span></tt>, preventing silent overwrites.</li>
-<li><strong>Autocomplete uses composite keys</strong> — fallback handlers use <tt class="docutils literal"><span class="pre">&quot;commandname&quot;</span></tt>; option-specific handlers use <tt class="docutils literal"><span class="pre">&quot;commandname#optionname&quot;</span></tt>. <tt class="docutils literal"><span class="pre"><span class="Identifier">findAutocomplete</span></span></tt> tries the specific key first, then falls back.</li>
-</ul>
-
-<h2><a class="toc-backref" id="key-concepts-examplecolon-manual-registration-and-lookup" href="#key-concepts-examplecolon-manual-registration-and-lookup">Example: manual registration and lookup</a></h2><pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimslash</span>
-
-<span class="Keyword">var</span> <span class="Identifier">reg</span> <span class="Operator">=</span> <span class="Identifier">newRegistry</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">register</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">(</span>
-  <span class="Identifier">kind</span><span class="Punctuation">:</span> <span class="Identifier">ckSlash</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">,</span> <span class="Identifier">description</span><span class="Punctuation">:</span> <span class="StringLit">&quot;Pong!&quot;</span><span class="Punctuation">,</span>
-  <span class="Identifier">callback</span><span class="Punctuation">:</span> <span class="Keyword">proc</span> <span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">async</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="Keyword">discard</span>
-<span class="Punctuation">)</span>
-<span class="Keyword">let</span> <span class="Identifier">cmd</span> <span class="Operator">=</span> <span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">find</span><span class="Punctuation">(</span><span class="Identifier">ckSlash</span><span class="Punctuation">,</span> <span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">)</span>
-<span class="Identifier">assert</span> <span class="Identifier">cmd</span><span class="Operator">.</span><span class="Identifier">name</span> <span class="Operator">==</span> <span class="StringLit">&quot;ping&quot;</span>
-
-<span class="Comment"># Iteration:</span>
-<span class="Keyword">for</span> <span class="Identifier">name</span><span class="Punctuation">,</span> <span class="Identifier">cmd</span> <span class="Keyword">in</span> <span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">pairs</span><span class="Punctuation">(</span><span class="Identifier">ckSlash</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">echo</span> <span class="Identifier">name</span><span class="Punctuation">,</span> <span class="StringLit">&quot; -&gt; &quot;</span><span class="Punctuation">,</span> <span class="Identifier">cmd</span><span class="Operator">.</span><span class="Identifier">description</span></pre></p>
+    <p class="module-desc"><p>Command registration and lookup.</p>
+<p>The DSL macros in <tt class="docutils literal"><span class="pre"><span class="Identifier">dsl</span></span></tt> expand to calls into this module; the procs are public so commands can also be registered programmatically.</p>
+</p>
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="types.html">types</a>
+    <a class="reference external" href="types.html">types</a>, <a class="reference external" href="extract.html">extract</a>
   </dl>
 </div>
 <div class="section" id="12">
   <h1><a class="toc-backref" href="#12">Procs</a></h1>
   <dl class="item">
-    <div id="find-procs-all">
-  <div id="find,CommandRegistry,CommandKind,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#find%2CCommandRegistry%2CCommandKind%2Cstring"><span class="Identifier">find</span></a><span class="Other">(</span><span class="Identifier">registry</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a><span class="Other">;</span> <span class="Identifier">kind</span><span class="Other">:</span> <a href="types.html#CommandKind"><span class="Identifier">CommandKind</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">HandlerError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+    <div id="addButtonHandler-procs-all">
+  <div id="addButtonHandler,InteractionHandler,string,ComponentRun">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addButtonHandler%2CInteractionHandler%2Cstring%2CComponentRun"><span class="Identifier">addButtonHandler</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                      <span class="Identifier">run</span><span class="Other">:</span> <a href="types.html#ComponentRun"><span class="Identifier">ComponentRun</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Looks up the <tt class="docutils literal"><span class="pre"><span class="Identifier">RegisteredCommand</span></span></tt> for <tt class="docutils literal"><span class="pre"><span class="Identifier">kind</span></span></tt> + <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> (case-insensitive).</p>
-<p>Raises <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span><span class="Punctuation">(</span><span class="Identifier">hekNotFound</span><span class="Punctuation">)</span></span></tt> when no match exists.</p>
-
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimslash</span><span class="Operator">/</span><span class="Identifier">types</span><span class="Punctuation">,</span> <span class="Identifier">std</span><span class="Operator">/</span><span class="Identifier">asyncdispatch</span>
-<span class="Keyword">import</span> <span class="Identifier">dimscord</span>
-
-<span class="Keyword">var</span> <span class="Identifier">reg</span> <span class="Operator">=</span> <span class="Identifier">newRegistry</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">register</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">(</span>
-  <span class="Identifier">kind</span><span class="Punctuation">:</span> <span class="Identifier">ckUser</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;Info&quot;</span><span class="Punctuation">,</span> <span class="Identifier">description</span><span class="Punctuation">:</span> <span class="StringLit">&quot;&quot;</span><span class="Punctuation">,</span>
-  <span class="Identifier">callback</span><span class="Punctuation">:</span> <span class="Keyword">proc</span> <span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">async</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="Keyword">discard</span>
-<span class="Punctuation">)</span>
-<span class="Keyword">let</span> <span class="Identifier">found</span> <span class="Operator">=</span> <span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">find</span><span class="Punctuation">(</span><span class="Identifier">ckUser</span><span class="Punctuation">,</span> <span class="StringLit">&quot;info&quot;</span><span class="Punctuation">)</span>  <span class="Comment"># case-insensitive</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">found</span><span class="Operator">.</span><span class="Identifier">name</span> <span class="Operator">==</span> <span class="StringLit">&quot;Info&quot;</span>
-
-<span class="Identifier">doAssertRaises</span><span class="Punctuation">(</span><span class="Identifier">HandlerError</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Keyword">discard</span> <span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">find</span><span class="Punctuation">(</span><span class="Identifier">ckUser</span><span class="Punctuation">,</span> <span class="StringLit">&quot;nonexistent&quot;</span><span class="Punctuation">)</span></pre>
+    
     
   </dd>
 </div>
 
 </div>
-<div id="findAutocomplete-procs-all">
-  <div id="findAutocomplete,CommandRegistry,string,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#findAutocomplete%2CCommandRegistry%2Cstring%2Cstring"><span class="Identifier">findAutocomplete</span></a><span class="Other">(</span><span class="Identifier">registry</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">optionName</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">HandlerError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="addMessageCommand-procs-all">
+  <div id="addMessageCommand,InteractionHandler,MessageCommand">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addMessageCommand%2CInteractionHandler%2CMessageCommand"><span class="Identifier">addMessageCommand</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">cmd</span><span class="Other">:</span> <a href="types.html#MessageCommand"><span class="Identifier">MessageCommand</span></a><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Looks up an autocomplete handler for <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> and focused <tt class="docutils literal"><span class="pre"><span class="Identifier">optionName</span></span></tt>.</p>
-<p>Resolution order:</p>
-<ol class="simple"><li>If <tt class="docutils literal"><span class="pre"><span class="Identifier">optionName</span></span></tt> is non-empty, try the specific key <tt class="docutils literal"><span class="pre">&quot;name#optionname&quot;</span></tt>.</li>
-<li>Fall back to the generic key <tt class="docutils literal"><span class="pre">&quot;name&quot;</span></tt>.</li>
-<li>Raise <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span><span class="Punctuation">(</span><span class="Identifier">hekNotFound</span><span class="Punctuation">)</span></span></tt> if neither exists.</li>
-</ol>
-<p>This two-level lookup lets you register a general autocomplete handler and override it for individual options:</p>
-<pre class="listing"><span class="Comment"># Generic fallback</span>
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocomplete</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;fallback&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span>
-
-<span class="Comment"># Option-specific override (takes priority for &quot;query&quot;)</span>
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocompleteForOption</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;query&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;specific&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span></pre>
+    
     
   </dd>
 </div>
 
 </div>
-<div id="newRegistry-procs-all">
-  <div id="newRegistry">
-  <dt><pre><span class="Keyword">proc</span> <a href="#newRegistry"><span class="Identifier">newRegistry</span></a><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="addModalHandler-procs-all">
+  <div id="addModalHandler,InteractionHandler,string,ModalRun">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addModalHandler%2CInteractionHandler%2Cstring%2CModalRun"><span class="Identifier">addModalHandler</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                     <span class="Identifier">run</span><span class="Other">:</span> <a href="types.html#ModalRun"><span class="Identifier">ModalRun</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+                                      <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Creates an empty <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandRegistry</span></span></tt> with all kind-buckets initialised.
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimslash</span><span class="Operator">/</span><span class="Identifier">types</span><span class="Punctuation">,</span> <span class="Identifier">std</span><span class="Operator">/</span><span class="Identifier">tables</span>
-<span class="Keyword">let</span> <span class="Identifier">reg</span> <span class="Operator">=</span> <span class="Identifier">newRegistry</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">len</span><span class="Punctuation">(</span><span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">slash</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="DecNumber">0</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">len</span><span class="Punctuation">(</span><span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">user</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="DecNumber">0</span></pre>
+    
     
   </dd>
 </div>
 
 </div>
-<div id="register-procs-all">
-  <div id="register,CommandRegistry,RegisteredCommand">
-  <dt><pre><span class="Keyword">proc</span> <a href="#register%2CCommandRegistry%2CRegisteredCommand"><span class="Identifier">register</span></a><span class="Other">(</span><span class="Identifier">registry</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a><span class="Other">;</span> <span class="Identifier">command</span><span class="Other">:</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="addSelectHandler-procs-all">
+  <div id="addSelectHandler,InteractionHandler,string,ComponentRun">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addSelectHandler%2CInteractionHandler%2Cstring%2CComponentRun"><span class="Identifier">addSelectHandler</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                      <span class="Identifier">run</span><span class="Other">:</span> <a href="types.html#ComponentRun"><span class="Identifier">ComponentRun</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Inserts <tt class="docutils literal"><span class="pre"><span class="Identifier">command</span></span></tt> into the appropriate bucket of <tt class="docutils literal"><span class="pre"><span class="Identifier">registry</span></span></tt>.</p>
-<p>Raises <tt class="docutils literal"><span class="pre"><span class="Identifier">ValueError</span></span></tt> when a command with the same (normalised) name already exists in that bucket — this prevents silent overwrites.</p>
-
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimslash</span><span class="Operator">/</span><span class="Identifier">types</span><span class="Punctuation">,</span> <span class="Identifier">std</span><span class="Operator">/</span><span class="Punctuation">[</span><span class="Identifier">asyncdispatch</span><span class="Punctuation">,</span> <span class="Identifier">tables</span><span class="Punctuation">]</span>
-<span class="Keyword">import</span> <span class="Identifier">dimscord</span>
-
-<span class="Keyword">var</span> <span class="Identifier">reg</span> <span class="Operator">=</span> <span class="Identifier">newRegistry</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-<span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">register</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">(</span>
-  <span class="Identifier">kind</span><span class="Punctuation">:</span> <span class="Identifier">ckSlash</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;hello&quot;</span><span class="Punctuation">,</span> <span class="Identifier">description</span><span class="Punctuation">:</span> <span class="StringLit">&quot;Say hello&quot;</span><span class="Punctuation">,</span>
-  <span class="Identifier">callback</span><span class="Punctuation">:</span> <span class="Keyword">proc</span> <span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">async</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="Keyword">discard</span>
-<span class="Punctuation">)</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">len</span><span class="Punctuation">(</span><span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">slash</span><span class="Punctuation">)</span> <span class="Operator">==</span> <span class="DecNumber">1</span>
-
-<span class="Comment"># Duplicate registration raises:</span>
-<span class="Identifier">doAssertRaises</span><span class="Punctuation">(</span><span class="Identifier">ValueError</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">reg</span><span class="Operator">.</span><span class="Identifier">register</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">(</span>
-    <span class="Identifier">kind</span><span class="Punctuation">:</span> <span class="Identifier">ckSlash</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;hello&quot;</span><span class="Punctuation">,</span> <span class="Identifier">description</span><span class="Punctuation">:</span> <span class="StringLit">&quot;duplicate&quot;</span><span class="Punctuation">,</span>
-    <span class="Identifier">callback</span><span class="Punctuation">:</span> <span class="Keyword">proc</span> <span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">async</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span> <span class="Keyword">discard</span>
-  <span class="Punctuation">)</span></pre>
+    
     
   </dd>
 </div>
 
 </div>
-
-  </dl>
-</div>
-<div class="section" id="15">
-  <h1><a class="toc-backref" href="#15">Iterators</a></h1>
-  <dl class="item">
-    <div id="pairs-iterators-all">
-  <div id="pairs.i,CommandRegistry,CommandKind">
-  <dt><pre><span class="Keyword">iterator</span> <a href="#pairs.i%2CCommandRegistry%2CCommandKind"><span class="Identifier">pairs</span></a><span class="Other">(</span><span class="Identifier">registry</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a><span class="Other">;</span> <span class="Identifier">kind</span><span class="Other">:</span> <a href="types.html#CommandKind"><span class="Identifier">CommandKind</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span>
-    <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="addSlashCommand-procs-all">
+  <div id="addSlashCommand,InteractionHandler,SlashCommand">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addSlashCommand%2CInteractionHandler%2CSlashCommand"><span class="Identifier">addSlashCommand</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">cmd</span><span class="Other">:</span> <a href="types.html#SlashCommand"><span class="Identifier">SlashCommand</span></a><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Yields <tt class="docutils literal"><span class="pre"><span class="Punctuation">(</span><span class="Identifier">name</span><span class="Punctuation">,</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">)</span></span></tt> pairs for every command of <tt class="docutils literal"><span class="pre"><span class="Identifier">kind</span></span></tt>.</p>
-<p>Useful for serialising registered commands into the Discord bulk-overwrite payload (see <tt class="docutils literal"><span class="pre"><span class="Identifier">sync</span><span class="Operator">.</span><span class="Identifier">nim</span></span></tt>).</p>
+    
+    
+  </dd>
+</div>
 
+</div>
+<div id="addUserCommand-procs-all">
+  <div id="addUserCommand,InteractionHandler,UserCommand">
+  <dt><pre><span class="Keyword">proc</span> <a href="#addUserCommand%2CInteractionHandler%2CUserCommand"><span class="Identifier">addUserCommand</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">cmd</span><span class="Other">:</span> <a href="types.html#UserCommand"><span class="Identifier">UserCommand</span></a><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="lookup-procs-all">
+  <div id="lookup,ComponentTable[H],string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#lookup%2CComponentTable%5BH%5D%2Cstring"><span class="Identifier">lookup</span></a><span class="Other">[</span><span class="Identifier">H</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">table</span><span class="Other">:</span> <a href="types.html#ComponentTable"><span class="Identifier">ComponentTable</span></a><span class="Other">[</span><span class="Identifier">H</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span>
+    <span class="Keyword">tuple</span><span class="Other">[</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">H</span><span class="Other">,</span> <span class="Identifier">captures</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span><span class="Other">]</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Exact custom_id match first, then patterns in priority order.
+    
+  </dd>
+</div>
+
+</div>
+<div id="resolveLeaf-procs-all">
+  <div id="resolveLeaf,SlashCommand,seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#resolveLeaf%2CSlashCommand%2Cseq%5Bstring%5D"><span class="Identifier">resolveLeaf</span></a><span class="Other">(</span><span class="Identifier">cmd</span><span class="Other">:</span> <a href="types.html#SlashCommand"><span class="Identifier">SlashCommand</span></a><span class="Other">;</span> <span class="Identifier">path</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#SlashNode"><span class="Identifier">SlashNode</span></a><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Follows a group/subcommand path (as produced by <tt class="docutils literal"><span class="pre"><span class="Identifier">extract</span><span class="Operator">.</span><span class="Identifier">leafOptions</span></span></tt>) down the command tree to the leaf that should run.
     
   </dd>
 </div>
@@ -260,7 +232,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-18 16:20:45 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
       </div>
     </div>
   </div>

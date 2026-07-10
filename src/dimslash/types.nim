@@ -1,223 +1,219 @@
-## Core type definitions for **dimslash**.
+## Core data model for dimslash.
 ##
-## This module defines the enumerations, error hierarchy, handler object, and
-## registry that together form the backbone of the interaction handling pipeline.
-## You typically do **not** import this module directly — `import dimslash`
-## re-exports everything.
-##
-## Error handling
-## ==============
-##
-## dimslash signals dispatch problems through `HandlerError`, a
-## subtype of `CatchableError` that carries a `HandlerErrorKind` for
-## programmatic matching.
-##
-## .. code-block:: nim
-##   try:
-##     discard await handler.handleInteraction(s, i)
-##   except HandlerError as e:
-##     case e.kind
-##     of hekNotFound:
-##       echo "no handler registered for this command"
-##     of hekNotImplemented:
-##       echo "this interaction kind is not supported yet"
-##     of hekInvalidInteraction:
-##       echo "malformed interaction payload"
-##
-## Architecture overview
-## =====================
-##
-## .. code-block::
-##
-##   InteractionHandler
-##     ├── discord: DiscordClient     ─ REST / gateway
-##     ├── defaultGuildId: string     ─ default guild for sync
-##     ├── registry: CommandRegistry  ─ command lookup tables
-##     │     ├── slash   ─ OrderedTable[string, RegisteredCommand]
-##     │     ├── user
-##     │     ├── message
-##     │     ├── button
-##     │     ├── select
-##     │     ├── modal
-##     │     └── autocomplete
-##     └── slashOptionNames           ─ metadata for autocomplete linking
+## Everything here is plain data: command descriptors built by the DSL
+## macros in `dsl`, the registry that stores them, the context objects
+## passed to handlers, and the `RestBackend` seam that all REST traffic
+## goes through (so tests can swap in a recording backend).
 
-import std/[tables, asyncdispatch]
+import std/[asyncdispatch, json, options, tables]
 import dimscord
 
-
 type
-  CommandKind* = enum
-    ## Discriminates the interaction kind a command is registered for.
-    ##
-    ## Each variant maps to one Discord interaction type or sub-type:
-    ##
-    ## ================  ================================  ===================
-    ## Variant           Discord concept                   DSL helper
-    ## ================  ================================  ===================
-    ## `ckSlash`         ``/command`` slash command         `addSlash`
-    ## `ckUser`          Apps > User context menu           `addUser`
-    ## `ckMessage`       Apps > Message context menu        `addMessage`
-    ## `ckButton`        Button component press             `addButton`
-    ## `ckSelect`        Select-menu component              `addSelect`
-    ## `ckModal`         Modal submit                       `addModal`
-    ## `ckAutocomplete`  Autocomplete callback              `addAutocomplete`
-    ## ================  ================================  ===================
-    ckSlash
-    ckUser
-    ckMessage
-    ckButton
-    ckSelect
-    ckModal
-    ckAutocomplete
+  DimslashError* = object of CatchableError
+    ## Raised on misuse of dimslash itself: duplicate registrations,
+    ## responding twice to the same interaction, malformed custom_id
+    ## patterns, and the like. Discord/network errors are dimscord's.
 
-  HandlerErrorKind* = enum
-    ## Categorises errors raised during interaction dispatch.
-    ##
-    ## =========================  ==============================================
-    ## Variant                    Meaning
-    ## =========================  ==============================================
-    ## `hekNotImplemented`        The interaction kind is not yet supported.
-    ## `hekNotFound`              No handler was registered for the command.
-    ## `hekInvalidInteraction`    The payload is malformed or missing fields.
-    ## =========================  ==============================================
-    ##
-    ## Catch `HandlerError` and inspect its `kind` field to react differently:
-    ##
-    ## .. code-block:: nim
-    ##   except HandlerError as e:
-    ##     if e.kind == hekNotFound:
-    ##       await handler.reply(i, "Unknown command")
-    hekNotImplemented
-    hekNotFound
-    hekInvalidInteraction
+  MentionableKind* = enum
+    mkUser, mkRole
+  Mentionable* = object
+    ## Value of an `acotMentionable` slash option: either a user or a role.
+    case kind*: MentionableKind
+    of mkUser: user*: User
+    of mkRole: role*: Role
 
-  HandlerError* = object of CatchableError
-    ## Structured error type carrying a `HandlerErrorKind`.
-    ## Catch it to distinguish between "not found" vs "not implemented" etc.
-    ##
-    ## .. code-block:: nim
-    ##   try:
-    ##     discard await handler.handleInteraction(s, i)
-    ##   except HandlerError as e:
-    ##     case e.kind
-    ##     of hekNotFound: echo "unknown command"
-    ##     of hekNotImplemented: echo "not yet supported"
-    ##     of hekInvalidInteraction: echo "bad payload"
-    kind*: HandlerErrorKind
+  ChoiceValueKind* = enum
+    cvString, cvInt, cvFloat
+  ChoiceValue* = object
+    case kind*: ChoiceValueKind
+    of cvString: strVal*: string
+    of cvInt: intVal*: BiggestInt
+    of cvFloat: floatVal*: float
+  ChoiceSpec* = object
+    ## One entry of an option's `choices` list.
+    name*: string
+    value*: ChoiceValue
+
+  OptionSpec* = object
+    ## Compile-time description of one slash-command option, produced by
+    ## the `slash` macro and serialized by `sync.toCommandJson`.
+    name*, description*: string
+    kind*: ApplicationCommandOptionType
+    required*: bool
+    choices*: seq[ChoiceSpec]
+    minValue*, maxValue*: Option[float]   ## emitted as integers for acotInt
+    minLen*, maxLen*: Option[int]
+    channelTypes*: seq[ChannelType]
+    autocomplete*: bool
+    nameLoc*, descLoc*: Table[string, string]
+
+  CommandMeta* = object
+    ## Command-level registration settings shared by slash/user/message
+    ## commands.
+    guildId*: string                      ## "" = global (or handler default)
+    permissions*: Option[set[PermissionFlags]]
+    nsfw*: bool
+    contexts*: Option[set[InteractionContextType]]
+    integrations*: Option[set[ApplicationIntegrationType]]
+    nameLoc*, descLoc*: Table[string, string]
+
+  ResponseState* = enum
+    rsNone       ## nothing sent yet
+    rsDeferred   ## deferReply/deferUpdate sent; next reply edits/follows up
+    rsResponded  ## initial response sent; further replies become followups
+
+  InteractionContext* = ref object of RootObj
+    ## Base context passed to every handler. Concrete subtypes add
+    ## interaction-kind-specific accessors (see `context`).
+    handler*: InteractionHandler
+    shard*: Shard                         ## may be nil in tests
+    interaction*: Interaction
+    state*: ResponseState
+
+  SlashContext* = ref object of InteractionContext
+    path*: seq[string]                    ## group/subcommand names, if any
+    options*: Table[string, ApplicationCommandInteractionDataOption]
+
+  UserContext* = ref object of InteractionContext
+  MessageContext* = ref object of InteractionContext
+
+  ComponentContext* = ref object of InteractionContext
+    captures*: Table[string, string]      ## custom_id pattern captures
+
+  ModalContext* = ref object of InteractionContext
+    captures*: Table[string, string]
+
+  AutocompleteContext* = ref object of InteractionContext
+    path*: seq[string]
+    options*: Table[string, ApplicationCommandInteractionDataOption]
+    focusedName*: string
+
+  SlashRun* = proc (ctx: SlashContext): Future[void]
+  UserRun* = proc (ctx: UserContext): Future[void]
+  MessageRun* = proc (ctx: MessageContext): Future[void]
+  ComponentRun* = proc (ctx: ComponentContext): Future[void]
+  ModalRun* = proc (ctx: ModalContext): Future[void]
+  AutocompleteRun* = proc (ctx: AutocompleteContext): Future[void]
+
+  PatternSegmentKind* = enum
+    psLiteral, psCapture
+  CaptureKind* = enum
+    capString, capInt
+  PatternSegment* = object
+    case kind*: PatternSegmentKind
+    of psLiteral:
+      lit*: string
+    of psCapture:
+      name*: string
+      capture*: CaptureKind
+
+  CustomIdPattern* = object
+    ## Parsed form of a custom_id pattern like `"page:{n:int}"`.
+    ## A pattern without captures matches its literal text exactly.
+    raw*: string
+    segments*: seq[PatternSegment]
+
+  SlashNodeKind* = enum
+    snLeaf, snGroup
+  SlashNode* = ref object
+    ## A slash command is a tree: the root is either a leaf (plain
+    ## command with options) or a group of subcommands/groups.
+    name*, description*: string
+    nameLoc*, descLoc*: Table[string, string]
+    case kind*: SlashNodeKind
+    of snLeaf:
+      options*: seq[OptionSpec]
+      run*: SlashRun
+      autocompleters*: OrderedTable[string, AutocompleteRun]
+        ## keyed by option name; "" is the whole-command fallback
+    of snGroup:
+      children*: OrderedTable[string, SlashNode]
+
+  SlashCommand* = ref object
+    meta*: CommandMeta
+    root*: SlashNode                      ## root.name is the command name
+
+  UserCommand* = ref object
+    name*: string
+    meta*: CommandMeta
+    run*: UserRun
+
+  MessageCommand* = ref object
+    name*: string
+    meta*: CommandMeta
+    run*: MessageRun
+
+  ComponentEntry*[H] = object
+    pattern*: CustomIdPattern
+    handler*: H
+  ComponentTable*[H] = object
+    exact*: Table[string, H]
+    patterns*: seq[ComponentEntry[H]]     ## longest literal prefix first
+
+  Registry* = ref object
+    slash*: OrderedTable[string, SlashCommand]
+    user*: OrderedTable[string, UserCommand]
+    message*: OrderedTable[string, MessageCommand]
+    buttons*: ComponentTable[ComponentRun]
+    selects*: ComponentTable[ComponentRun]
+    modals*: ComponentTable[ModalRun]
+
+  MessagePayload* = object
+    ## Normalized message content for followups and edits.
+    content*: Option[string]
+    embeds*: seq[Embed]
+    components*: seq[MessageComponent]
+    attachments*: seq[Attachment]
+    files*: seq[DiscordFile]
+    allowedMentions*: Option[AllowedMentions]
+    flags*: set[MessageFlags]
+    tts*: bool
+
+  RestBackend* = ref object
+    ## Every REST call dimslash makes goes through one of these closures.
+    ## `rest.newDimscordBackend` wires them to dimscord; tests use a
+    ## recording backend instead.
+    createResponse*: proc (interactionId, token: string;
+        kind: InteractionResponseType;
+        data: InteractionCallbackDataMessage): Future[void]
+    createAutocomplete*: proc (interactionId, token: string;
+        choices: JsonNode): Future[void]
+    createModal*: proc (interactionId, token: string;
+        data: InteractionCallbackDataModal): Future[void]
+    createFollowup*: proc (applicationId, token: string;
+        payload: MessagePayload): Future[Message]
+    editResponse*: proc (applicationId, token, messageId: string;
+        payload: MessagePayload): Future[Message]
+    getResponse*: proc (applicationId, token, messageId: string): Future[Message]
+    deleteResponse*: proc (applicationId, token, messageId: string): Future[void]
+    getApplicationId*: proc (): Future[string]
+    getCommands*: proc (applicationId, guildId: string): Future[JsonNode]
+    putCommands*: proc (applicationId, guildId: string;
+        payload: JsonNode): Future[JsonNode]
+
+  ErrorHook* = proc (ctx: InteractionContext, e: ref Exception): Future[void]
+  UnknownHook* = proc (ctx: InteractionContext): Future[void]
 
   InteractionHandler* = ref object
-    ## Top-level object that wires a `DiscordClient` to a `CommandRegistry`.
-    ##
-    ## There should typically be **one** handler per bot process.  Create it
-    ## with `newInteractionHandler`, register commands via the DSL, sync
-    ## them with `registerCommands`, then pipe incoming interactions through
-    ## `handleInteraction`.
-    ##
-    ## .. code-block:: nim
-    ##   let discord = newDiscordClient("TOKEN")
-    ##   var handler = newInteractionHandler(discord, defaultGuildId = "123456")
-    ##
-    ##   handler.addSlash("ping", "Pong!") do:
-    ##     await handler.reply(i, "pong")
-    ##
-    ##   proc onReady(s: Shard, r: Ready) {.event(discord).} =
-    ##     await handler.registerCommands()
-    ##
-    ##   proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-    ##     discard await handler.handleInteraction(s, i)
-    discord*: DiscordClient
-      ## The dimscord client used to call the REST API.
-    defaultGuildId*: string
-      ## If non-empty, `registerCommands()` targets this guild by default
-      ## instead of the global scope.  Guild-scoped commands update instantly;
-      ## global commands can take up to 1 hour to propagate.
-    registry*: CommandRegistry
-      ## Internal command registry.  Prefer the DSL helpers (`addSlash`,
-      ## `addUser`, `addButton`, …) to populate it.
-    slashOptionNames*: OrderedTable[string, seq[string]]
-      ## Known slash option names per command (normalised).  Populated
-      ## automatically by `addSlash` and consumed by
-      ## `addAutocompleteForOption` for validation.
+    discord*: DiscordClient               ## may be nil in tests
+    rest*: RestBackend
+    registry*: Registry
+    defaultGuildId*: string               ## guild for commands without `guild =`
+    applicationId*: string                ## resolved lazily; settable up front
+    onError*: ErrorHook
+      ## called when a handler raises; default logs and sends an
+      ## ephemeral error reply if nothing was sent yet. nil = re-raise.
+    onUnknown*: UnknownHook
+      ## called for interactions with no registered handler. nil = ignore.
 
-  CommandHandlerProc* = proc (s: Shard, i: Interaction): Future[void] {.closure.}
-    ## Signature every command callback must match.
-    ## The `Shard` gives gateway context; the `Interaction` carries the
-    ## request payload.
+proc choice*(name: string, value: string): ChoiceSpec =
+  ChoiceSpec(name: name, value: ChoiceValue(kind: cvString, strVal: value))
 
-  RegisteredCommand* = object
-    ## Value object stored in the registry for each registered command.
-    ##
-    ## You rarely construct this yourself — the DSL macros build it
-    ## internally.  Fields are public for introspection.
-    kind*: CommandKind       ## What kind of interaction this command handles.
-    name*: string            ## Command or custom-id name (lowercased in registry).
-    optionName*: string      ## Focused option name (autocomplete only; empty for fallback).
-    description*: string     ## Description shown in the Discord UI (slash only).
-    guildId*: string         ## If non-empty, restrict sync to this guild.
-    callback*: CommandHandlerProc ## The handler to invoke at dispatch time.
+proc choice*(name: string, value: int): ChoiceSpec =
+  ChoiceSpec(name: name, value: ChoiceValue(kind: cvInt, intVal: value))
 
-  CommandRegistry* = ref object
-    ## Holds registered commands, bucketed by `CommandKind`.
-    ##
-    ## Prefer `registry.register` / `registry.find` over direct table
-    ## access.  The `pairs` iterator lets you enumerate all commands of a
-    ## given kind, which is used by `sync.nim` to build the bulk-overwrite
-    ## payload.
-    ##
-    ## Each table uses the **normalised** (lowercased) command name as key.
-    ## For autocomplete, the key format is ``"commandname"`` for fallback
-    ## handlers and ``"commandname#optionname"`` for option-specific ones.
-    slash*: OrderedTable[string, RegisteredCommand]
-    user*: OrderedTable[string, RegisteredCommand]
-    message*: OrderedTable[string, RegisteredCommand]
-    button*: OrderedTable[string, RegisteredCommand]
-    select*: OrderedTable[string, RegisteredCommand]
-    modal*: OrderedTable[string, RegisteredCommand]
-    autocomplete*: OrderedTable[string, RegisteredCommand]
+proc choice*(name: string, value: float): ChoiceSpec =
+  ChoiceSpec(name: name, value: ChoiceValue(kind: cvFloat, floatVal: value))
 
-proc newNotImplementedError*(message: string): ref HandlerError =
-  ## Creates a `HandlerError` with `hekNotImplemented`.
-  runnableExamples "-d:ssl":
-    let err = newNotImplementedError("buttons are not supported yet")
-    doAssert err.kind == hekNotImplemented
-    doAssert err.msg == "buttons are not supported yet"
-  #==#
-  result = newException(HandlerError, message)
-  result.kind = hekNotImplemented
-
-proc newNotFoundError*(message: string): ref HandlerError =
-  ## Creates a `HandlerError` with `hekNotFound`.
-  runnableExamples "-d:ssl":
-    let err = newNotFoundError("command not found: foo")
-    doAssert err.kind == hekNotFound
-  #==#
-  result = newException(HandlerError, message)
-  result.kind = hekNotFound
-
-proc newInvalidInteractionError*(message: string): ref HandlerError =
-  ## Creates a `HandlerError` with `hekInvalidInteraction`.
-  runnableExamples "-d:ssl":
-    let err = newInvalidInteractionError("missing option: name")
-    doAssert err.kind == hekInvalidInteraction
-  #==#
-  result = newException(HandlerError, message)
-  result.kind = hekInvalidInteraction
-
-proc ensureImplemented*(kind: CommandKind) =
-  ## Raises `HandlerError(hekNotImplemented)` when `kind` is not yet
-  ## supported.
-  ##
-  ## Current release supports all `CommandKind` values, so this proc is a
-  ## no-op and is kept for future compatibility.
-  runnableExamples "-d:ssl":
-    # Implemented kinds — no error:
-    ensureImplemented(ckSlash)
-    ensureImplemented(ckUser)
-    ensureImplemented(ckMessage)
-    ensureImplemented(ckButton)
-    ensureImplemented(ckSelect)
-    ensureImplemented(ckModal)
-    ensureImplemented(ckAutocomplete)
-  #==#
-  discard kind
+proc newRegistry*(): Registry =
+  Registry()

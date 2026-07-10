@@ -37,11 +37,9 @@ jobs:
 
       - name: Compile examples
         run: |
-          nim c -d:ssl --path:src examples/basic_interactions.nim
-          nim c -d:ssl --path:src examples/typed_slash_args.nim
-          nim c -d:ssl --path:src examples/scaffold_interactions.nim
-          nim c -d:ssl --path:src examples/advanced_workflow.nim
-          nim c -d:ssl --path:src examples/ui_showcase.nim
+          for example in examples/*.nim; do
+            nim c -d:ssl --path:src "$example"
+          done
 
       - name: Build API docs
         if: matrix.nim-version == 'stable'

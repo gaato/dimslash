@@ -1,105 +1,71 @@
-import asyncdispatch
-import os
-import options
+## Buttons, select menus, embeds, message updates, and modals in one bot.
+
+import std/[asyncdispatch, os, strformat, strutils]
 import dimscord
 import dimslash
 
 let token = getEnv("DISCORD_TOKEN")
 let discord = newDiscordClient(token)
-var handler = newInteractionHandler(discord)
+let handler = newInteractionHandler(discord)
 
-proc actorName(i: Interaction): string =
-  if i.member.isSome:
-    return i.member.get.user.username
-  if i.user.isSome:
-    return i.user.get.username
-  "unknown"
+const pages = [
+  "Page one: welcome!",
+  "Page two: the middle.",
+  "Page three: the end."
+]
 
-handler.addSlash("ui-demo", "Show button/select/modal UI demo") do (i: Interaction):
-  let controls = newActionRow(
-    newButton("Open feedback modal", "ui:open_modal", style = bsPrimary),
-    newButton("Acknowledge", "ui:ack", style = bsSecondary)
-  )
+proc pager(page: int): seq[MessageComponent] =
+  @[newActionRow(
+    newButton("◀", fmt"pager:{page - 1}", disabled = page <= 0),
+    newButton("▶", fmt"pager:{page + 1}", disabled = page >= pages.high))]
 
-  let menu = newActionRow(
-    newSelectMenu("ui:color", @[
-      newMenuOption("Red", "red"),
-      newMenuOption("Green", "green"),
-      newMenuOption("Blue", "blue")
-    ], placeholder = "Choose a color")
-  )
+handler.slash("pages", "A paginated message"):
+  execute:
+    await ctx.reply(pages[0], components = pager(0))
 
-  await handler.discord.api.interactionResponseMessage(
-    i.id,
-    i.token,
-    kind = irtChannelMessageWithSource,
-    response = InteractionCallbackDataMessage(
-      content: "UI demo: press a button or pick a color",
-      components: @[controls, menu]
-    )
-  )
+handler.button("pager:{page:int}"):
+  await ctx.update(pages[page], components = pager(page))
 
-handler.addButton("ui:ack", proc (s: Shard, i: Interaction) {.async.} =
-  await handler.reply(i, "acknowledged by " & actorName(i))
-)
+handler.slash("poll", "Start a quick poll"):
+  ## the question
+  question: string
+  execute:
+    await ctx.reply("**" & question & "**",
+      components = @[newActionRow(
+        newButton("Yes", "poll:yes", bsSuccess),
+        newButton("No", "poll:no", bsDanger))])
 
-handler.addButton("ui:open_modal", proc (s: Shard, i: Interaction) {.async.} =
-  let titleRow = newActionRow(
-    MessageComponent(
-      kind: mctTextInput,
-      custom_id: some("title"),
-      label: some("Title"),
-      input_style: some(tisShort),
-      placeholder: some("Short title"),
-      required: some(true),
-      min_length: some(1),
-      max_length: some(80)
-    )
-  )
+handler.button("poll:{answer}"):
+  await ctx.reply(ctx.user.username & " voted " & answer, ephemeral = true)
 
-  let feedbackRow = newActionRow(
-    MessageComponent(
-      kind: mctTextInput,
-      custom_id: some("feedback"),
-      label: some("Feedback"),
-      input_style: some(tisParagraph),
-      placeholder: some("Tell us what you think"),
-      required: some(true),
-      min_length: some(1),
-      max_length: some(400)
-    )
-  )
+handler.slash("pick", "Pick your favorites"):
+  execute:
+    await ctx.reply("Choose up to two:",
+      components = @[newActionRow(
+        newSelectMenu("fruit_picker", @[
+          newMenuOption("Apple", "apple"),
+          newMenuOption("Banana", "banana"),
+          newMenuOption("Cherry", "cherry")
+        ], placeholder = "Fruits...", minValues = 1, maxValues = 2))])
 
-  await handler.discord.api.interactionResponseModal(
-    i.id,
-    i.token,
-    response = InteractionCallbackDataModal(
-      custom_id: "ui:feedback",
-      title: "Feedback Form",
-      components: @[titleRow, feedbackRow]
-    )
-  )
-)
+handler.select("fruit_picker"):
+  await ctx.update("You picked: " & ctx.values.join(", "),
+                   components = @[])
 
-handler.addSelect("ui:color", proc (s: Shard, i: Interaction) {.async.} =
-  let values = selectValues(i)
-  let picked = if values.len > 0: values[0] else: "(none)"
-  await handler.reply(i, "selected color: " & picked)
-)
-
-handler.addModal("ui:feedback", proc (s: Shard, i: Interaction) {.async.} =
-  let title = modalValue(i, "title").get("(missing)")
-  let feedback = modalValue(i, "feedback").get("(missing)")
-  await handler.reply(i, "thanks " & actorName(i) & " / " & title & " / " & feedback)
-)
+handler.slash("embed", "Reply with an embed"):
+  ## the title
+  title: string
+  execute:
+    await ctx.reply(embeds = @[Embed(
+      title: some title,
+      description: some "Made with dimslash",
+      color: some 0x5865F2)])
 
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
-  await handler.registerCommands()
+  discard await handler.syncCommands()
 
 proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-  try:
-    discard await handler.handleInteraction(s, i)
-  except HandlerError as e:
-    echo "ui demo handler error: ", e.msg
+  discard await handler.handleInteraction(s, i)
 
-waitFor discord.startSession(gateway_intents = {giGuilds}, content_intent = false)
+waitFor discord.startSession(gateway_intents = {giGuilds},
+                             content_intent = false)

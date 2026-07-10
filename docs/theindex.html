@@ -16,182 +16,197 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">Index</h1>
-      Modules: <a href="dimslash.html">dimslash</a>, <a href="dimslash/componentargs.html">dimslash/componentargs</a>, <a href="dimslash/context.html">dimslash/context</a>, <a href="dimslash/dispatch.html">dimslash/dispatch</a>, <a href="dimslash/dsl.html">dimslash/dsl</a>, <a href="dimslash/registry.html">dimslash/registry</a>, <a href="dimslash/slashargs.html">dimslash/slashargs</a>, <a href="dimslash/sync.html">dimslash/sync</a>, <a href="dimslash/types.html">dimslash/types</a>.<br/><p /><h2>API symbols</h2>
-<dl><dt><a name="addAutocomplete" href="#addAutocomplete"><span>addAutocomplete:</span></a></dt><dd><ul class="simple">
+      Modules: <a href="dimslash.html">dimslash</a>, <a href="dimslash/componentargs.html">dimslash/componentargs</a>, <a href="dimslash/context.html">dimslash/context</a>, <a href="dimslash/dispatch.html">dimslash/dispatch</a>, <a href="dimslash/dsl.html">dimslash/dsl</a>, <a href="dimslash/extract.html">dimslash/extract</a>, <a href="dimslash/registry.html">dimslash/registry</a>, <a href="dimslash/rest.html">dimslash/rest</a>, <a href="dimslash/slashargs.html">dimslash/slashargs</a>, <a href="dimslash/sync.html">dimslash/sync</a>, <a href="dimslash/types.html">dimslash/types</a>.<br/><p /><h2>API symbols</h2>
+<dl><dt><a name="addButtonHandler" href="#addButtonHandler"><span>addButtonHandler:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addAutocomplete(handler: InteractionHandler; name: string;
-                callback: CommandHandlerProc; guildId = &quot;&quot;; optionName = &quot;&quot;)" href="dimslash/dsl.html#addAutocomplete%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring%2Cstring">dsl: proc addAutocomplete(handler: InteractionHandler; name: string;
-                callback: CommandHandlerProc; guildId = &quot;&quot;; optionName = &quot;&quot;)</a></li>
+          data-doc-search-tag="registry: proc addButtonHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)" href="dimslash/registry.html#addButtonHandler%2CInteractionHandler%2Cstring%2CComponentRun">registry: proc addButtonHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)</a></li>
+          </ul></dd>
+<dt><a name="addMessageCommand" href="#addMessageCommand"><span>addMessageCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc addMessageCommand(handler: InteractionHandler; cmd: MessageCommand)" href="dimslash/registry.html#addMessageCommand%2CInteractionHandler%2CMessageCommand">registry: proc addMessageCommand(handler: InteractionHandler; cmd: MessageCommand)</a></li>
+          </ul></dd>
+<dt><a name="addModalHandler" href="#addModalHandler"><span>addModalHandler:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc addModalHandler(handler: InteractionHandler; customId: string; run: ModalRun)" href="dimslash/registry.html#addModalHandler%2CInteractionHandler%2Cstring%2CModalRun">registry: proc addModalHandler(handler: InteractionHandler; customId: string; run: ModalRun)</a></li>
+          </ul></dd>
+<dt><a name="addSelectHandler" href="#addSelectHandler"><span>addSelectHandler:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc addSelectHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)" href="dimslash/registry.html#addSelectHandler%2CInteractionHandler%2Cstring%2CComponentRun">registry: proc addSelectHandler(handler: InteractionHandler; customId: string;
+                 run: ComponentRun)</a></li>
+          </ul></dd>
+<dt><a name="addSlashCommand" href="#addSlashCommand"><span>addSlashCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc addSlashCommand(handler: InteractionHandler; cmd: SlashCommand)" href="dimslash/registry.html#addSlashCommand%2CInteractionHandler%2CSlashCommand">registry: proc addSlashCommand(handler: InteractionHandler; cmd: SlashCommand)</a></li>
+          </ul></dd>
+<dt><a name="addUserCommand" href="#addUserCommand"><span>addUserCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc addUserCommand(handler: InteractionHandler; cmd: UserCommand)" href="dimslash/registry.html#addUserCommand%2CInteractionHandler%2CUserCommand">registry: proc addUserCommand(handler: InteractionHandler; cmd: UserCommand)</a></li>
+          </ul></dd>
+<dt><a name="appPermissions" href="#appPermissions"><span>appPermissions:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc appPermissions(ctx: InteractionContext): set[PermissionFlags]" href="dimslash/context.html#appPermissions%2CInteractionContext">context: proc appPermissions(ctx: InteractionContext): set[PermissionFlags]</a></li>
+          </ul></dd>
+<dt><a name="AutocompleteContext" href="#AutocompleteContext"><span>AutocompleteContext:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type AutocompleteContext" href="dimslash/types.html#AutocompleteContext">types: type AutocompleteContext</a></li>
+          </ul></dd>
+<dt><a name="AutocompleteRun" href="#AutocompleteRun"><span>AutocompleteRun:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type AutocompleteRun" href="dimslash/types.html#AutocompleteRun">types: type AutocompleteRun</a></li>
+          </ul></dd>
+<dt><a name="button" href="#button"><span>button:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="dsl: macro button(handler: untyped; customId: static string; body: untyped): untyped" href="dimslash/dsl.html#button.m%2Cuntyped%2Cstaticstring%2Cuntyped">dsl: macro button(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="canonicalize" href="#canonicalize"><span>canonicalize:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: proc canonicalize(commands: JsonNode): JsonNode" href="dimslash/sync.html#canonicalize%2CJsonNode">sync: proc canonicalize(commands: JsonNode): JsonNode</a></li>
+          </ul></dd>
+<dt><a name="capInt" href="#capInt"><span>capInt:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: CaptureKind.capInt" href="dimslash/types.html#capInt">types: CaptureKind.capInt</a></li>
+          </ul></dd>
+<dt><a name="capString" href="#capString"><span>capString:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: CaptureKind.capString" href="dimslash/types.html#capString">types: CaptureKind.capString</a></li>
+          </ul></dd>
+<dt><a name="CaptureKind" href="#CaptureKind"><span>CaptureKind:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum CaptureKind" href="dimslash/types.html#CaptureKind">types: enum CaptureKind</a></li>
+          </ul></dd>
+<dt><a name="channelId" href="#channelId"><span>channelId:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc channelId(ctx: InteractionContext): string" href="dimslash/context.html#channelId%2CInteractionContext">context: proc channelId(ctx: InteractionContext): string</a></li>
+          </ul></dd>
+<dt><a name="choice" href="#choice"><span>choice:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: proc choice(name: string; value: float): ChoiceSpec" href="dimslash/types.html#choice%2Cstring%2Cfloat">types: proc choice(name: string; value: float): ChoiceSpec</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocomplete(handler: InteractionHandler; name: string;
-                body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocomplete.t%2CInteractionHandler%2Cstring%2C">dsl: template addAutocomplete(handler: InteractionHandler; name: string;
-                body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: proc choice(name: string; value: int): ChoiceSpec" href="dimslash/types.html#choice%2Cstring%2Cint">types: proc choice(name: string; value: int): ChoiceSpec</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocomplete(handler: InteractionHandler; name, optionName: string;
-                body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C">dsl: template addAutocomplete(handler: InteractionHandler; name, optionName: string;
-                body: untyped{nkStmtList})</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocomplete(handler: InteractionHandler; name, guildId: string;
-                body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C_2">dsl: template addAutocomplete(handler: InteractionHandler; name, guildId: string;
-                body: untyped{nkStmtList})</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocomplete(handler: InteractionHandler; name, optionName, guildId: string;
-                body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C">dsl: template addAutocomplete(handler: InteractionHandler; name, optionName, guildId: string;
-                body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: proc choice(name: string; value: string): ChoiceSpec" href="dimslash/types.html#choice%2Cstring%2Cstring">types: proc choice(name: string; value: string): ChoiceSpec</a></li>
           </ul></dd>
-<dt><a name="addAutocompleteForOption" href="#addAutocompleteForOption"><span>addAutocompleteForOption:</span></a></dt><dd><ul class="simple">
+<dt><a name="ChoiceSpec" href="#ChoiceSpec"><span>ChoiceSpec:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         callback: CommandHandlerProc; guildId = &quot;&quot;)" href="dimslash/dsl.html#addAutocompleteForOption%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring">dsl: proc addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2C">dsl: template addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         body: untyped{nkStmtList})</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addAutocompleteForOption(handler: InteractionHandler;
-                         name, optionName, guildId: string;
-                         body: untyped{nkStmtList})" href="dimslash/dsl.html#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C">dsl: template addAutocompleteForOption(handler: InteractionHandler;
-                         name, optionName, guildId: string;
-                         body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: object ChoiceSpec" href="dimslash/types.html#ChoiceSpec">types: object ChoiceSpec</a></li>
           </ul></dd>
-<dt><a name="addButton" href="#addButton"><span>addButton:</span></a></dt><dd><ul class="simple">
+<dt><a name="ChoiceValue" href="#ChoiceValue"><span>ChoiceValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addButton(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)" href="dimslash/dsl.html#addButton%2CInteractionHandler%2Cstring%2CCommandHandlerProc">dsl: proc addButton(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addButton(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})" href="dimslash/dsl.html#addButton.t%2CInteractionHandler%2Cstring%2C">dsl: template addButton(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: object ChoiceValue" href="dimslash/types.html#ChoiceValue">types: object ChoiceValue</a></li>
           </ul></dd>
-<dt><a name="addMessage" href="#addMessage"><span>addMessage:</span></a></dt><dd><ul class="simple">
+<dt><a name="ChoiceValueKind" href="#ChoiceValueKind"><span>ChoiceValueKind:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addMessage(handler: InteractionHandler; name: string;
-           callback: CommandHandlerProc; guildId = &quot;&quot;)" href="dimslash/dsl.html#addMessage%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring">dsl: proc addMessage(handler: InteractionHandler; name: string;
-           callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addMessage(handler: InteractionHandler; name: string; body: untyped{nkStmtList})" href="dimslash/dsl.html#addMessage.t%2CInteractionHandler%2Cstring%2C">dsl: template addMessage(handler: InteractionHandler; name: string; body: untyped{nkStmtList})</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addMessage(handler: InteractionHandler; name, guildId: string;
-           body: untyped{nkStmtList})" href="dimslash/dsl.html#addMessage.t%2CInteractionHandler%2Cstring%2Cstring%2C">dsl: template addMessage(handler: InteractionHandler; name, guildId: string;
-           body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: enum ChoiceValueKind" href="dimslash/types.html#ChoiceValueKind">types: enum ChoiceValueKind</a></li>
           </ul></dd>
-<dt><a name="addModal" href="#addModal"><span>addModal:</span></a></dt><dd><ul class="simple">
+<dt><a name="CommandMeta" href="#CommandMeta"><span>CommandMeta:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addModal(handler: InteractionHandler; customId: string;
-         callback: CommandHandlerProc)" href="dimslash/dsl.html#addModal%2CInteractionHandler%2Cstring%2CCommandHandlerProc">dsl: proc addModal(handler: InteractionHandler; customId: string;
-         callback: CommandHandlerProc)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addModal(handler: InteractionHandler; customId: string;
-         body: untyped{nkStmtList})" href="dimslash/dsl.html#addModal.t%2CInteractionHandler%2Cstring%2C">dsl: template addModal(handler: InteractionHandler; customId: string;
-         body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: object CommandMeta" href="dimslash/types.html#CommandMeta">types: object CommandMeta</a></li>
           </ul></dd>
-<dt><a name="addSelect" href="#addSelect"><span>addSelect:</span></a></dt><dd><ul class="simple">
+<dt><a name="ComponentContext" href="#ComponentContext"><span>ComponentContext:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addSelect(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)" href="dimslash/dsl.html#addSelect%2CInteractionHandler%2Cstring%2CCommandHandlerProc">dsl: proc addSelect(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addSelect(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})" href="dimslash/dsl.html#addSelect.t%2CInteractionHandler%2Cstring%2C">dsl: template addSelect(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})</a></li>
+          data-doc-search-tag="types: type ComponentContext" href="dimslash/types.html#ComponentContext">types: type ComponentContext</a></li>
           </ul></dd>
-<dt><a name="addSlash" href="#addSlash"><span>addSlash:</span></a></dt><dd><ul class="simple">
+<dt><a name="ComponentEntry" href="#ComponentEntry"><span>ComponentEntry:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: macro addSlash(handler: InteractionHandler; name, description: string;
-         parameters: varargs[untyped]): untyped" href="dimslash/dsl.html#addSlash.m%2CInteractionHandler%2Cstring%2Cstring%2Cvarargs%5Buntyped%5D">dsl: macro addSlash(handler: InteractionHandler; name, description: string;
-         parameters: varargs[untyped]): untyped</a></li>
+          data-doc-search-tag="types: object ComponentEntry" href="dimslash/types.html#ComponentEntry">types: object ComponentEntry</a></li>
           </ul></dd>
-<dt><a name="addSlashProc" href="#addSlashProc"><span>addSlashProc:</span></a></dt><dd><ul class="simple">
+<dt><a name="ComponentRun" href="#ComponentRun"><span>ComponentRun:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addSlashProc(handler: InteractionHandler; name, description: string;
-             callback: CommandHandlerProc; guildId = &quot;&quot;)" href="dimslash/dsl.html#addSlashProc%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring">dsl: proc addSlashProc(handler: InteractionHandler; name, description: string;
-             callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
+          data-doc-search-tag="types: type ComponentRun" href="dimslash/types.html#ComponentRun">types: type ComponentRun</a></li>
           </ul></dd>
-<dt><a name="addUser" href="#addUser"><span>addUser:</span></a></dt><dd><ul class="simple">
+<dt><a name="ComponentTable" href="#ComponentTable"><span>ComponentTable:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc addUser(handler: InteractionHandler; name: string; callback: CommandHandlerProc;
-        guildId = &quot;&quot;)" href="dimslash/dsl.html#addUser%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring">dsl: proc addUser(handler: InteractionHandler; name: string; callback: CommandHandlerProc;
-        guildId = &quot;&quot;)</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addUser(handler: InteractionHandler; name: string; body: untyped{nkStmtList})" href="dimslash/dsl.html#addUser.t%2CInteractionHandler%2Cstring%2C">dsl: template addUser(handler: InteractionHandler; name: string; body: untyped{nkStmtList})</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="dsl: template addUser(handler: InteractionHandler; name, guildId: string;
-        body: untyped{nkStmtList})" href="dimslash/dsl.html#addUser.t%2CInteractionHandler%2Cstring%2Cstring%2C">dsl: template addUser(handler: InteractionHandler; name, guildId: string;
-        body: untyped{nkStmtList})</a></li>
-          </ul></dd>
-<dt><a name="ckAutocomplete" href="#ckAutocomplete"><span>ckAutocomplete:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckAutocomplete" href="dimslash/types.html#ckAutocomplete">types: CommandKind.ckAutocomplete</a></li>
-          </ul></dd>
-<dt><a name="ckButton" href="#ckButton"><span>ckButton:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckButton" href="dimslash/types.html#ckButton">types: CommandKind.ckButton</a></li>
-          </ul></dd>
-<dt><a name="ckMessage" href="#ckMessage"><span>ckMessage:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckMessage" href="dimslash/types.html#ckMessage">types: CommandKind.ckMessage</a></li>
-          </ul></dd>
-<dt><a name="ckModal" href="#ckModal"><span>ckModal:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckModal" href="dimslash/types.html#ckModal">types: CommandKind.ckModal</a></li>
-          </ul></dd>
-<dt><a name="ckSelect" href="#ckSelect"><span>ckSelect:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckSelect" href="dimslash/types.html#ckSelect">types: CommandKind.ckSelect</a></li>
-          </ul></dd>
-<dt><a name="ckSlash" href="#ckSlash"><span>ckSlash:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckSlash" href="dimslash/types.html#ckSlash">types: CommandKind.ckSlash</a></li>
-          </ul></dd>
-<dt><a name="ckUser" href="#ckUser"><span>ckUser:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: CommandKind.ckUser" href="dimslash/types.html#ckUser">types: CommandKind.ckUser</a></li>
-          </ul></dd>
-<dt><a name="CommandHandlerProc" href="#CommandHandlerProc"><span>CommandHandlerProc:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: type CommandHandlerProc" href="dimslash/types.html#CommandHandlerProc">types: type CommandHandlerProc</a></li>
-          </ul></dd>
-<dt><a name="CommandKind" href="#CommandKind"><span>CommandKind:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: enum CommandKind" href="dimslash/types.html#CommandKind">types: enum CommandKind</a></li>
-          </ul></dd>
-<dt><a name="CommandRegistry" href="#CommandRegistry"><span>CommandRegistry:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: type CommandRegistry" href="dimslash/types.html#CommandRegistry">types: type CommandRegistry</a></li>
+          data-doc-search-tag="types: object ComponentTable" href="dimslash/types.html#ComponentTable">types: object ComponentTable</a></li>
           </ul></dd>
 <dt><a name="customId" href="#customId"><span>customId:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="componentargs: proc customId(i: Interaction): Option[string]" href="dimslash/componentargs.html#customId%2CInteraction">componentargs: proc customId(i: Interaction): Option[string]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc customId(ctx: ComponentContext | ModalContext): string" href="dimslash/context.html#customId">context: proc customId(ctx: ComponentContext | ModalContext): string</a></li>
           </ul></dd>
-<dt><a name="deferResponse" href="#deferResponse"><span>deferResponse:</span></a></dt><dd><ul class="simple">
+<dt><a name="CustomIdPattern" href="#CustomIdPattern"><span>CustomIdPattern:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="context: proc deferResponse(handler: InteractionHandler; i: Interaction): Future[void]" href="dimslash/context.html#deferResponse%2CInteractionHandler%2CInteraction">context: proc deferResponse(handler: InteractionHandler; i: Interaction): Future[void]</a></li>
+          data-doc-search-tag="types: object CustomIdPattern" href="dimslash/types.html#CustomIdPattern">types: object CustomIdPattern</a></li>
           </ul></dd>
-<dt><a name="ensureImplemented" href="#ensureImplemented"><span>ensureImplemented:</span></a></dt><dd><ul class="simple">
+<dt><a name="cvFloat" href="#cvFloat"><span>cvFloat:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="types: proc ensureImplemented(kind: CommandKind)" href="dimslash/types.html#ensureImplemented%2CCommandKind">types: proc ensureImplemented(kind: CommandKind)</a></li>
+          data-doc-search-tag="types: ChoiceValueKind.cvFloat" href="dimslash/types.html#cvFloat">types: ChoiceValueKind.cvFloat</a></li>
           </ul></dd>
-<dt><a name="find" href="#find"><span>find:</span></a></dt><dd><ul class="simple">
+<dt><a name="cvInt" href="#cvInt"><span>cvInt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="registry: proc find(registry: CommandRegistry; kind: CommandKind; name: string): RegisteredCommand" href="dimslash/registry.html#find%2CCommandRegistry%2CCommandKind%2Cstring">registry: proc find(registry: CommandRegistry; kind: CommandKind; name: string): RegisteredCommand</a></li>
+          data-doc-search-tag="types: ChoiceValueKind.cvInt" href="dimslash/types.html#cvInt">types: ChoiceValueKind.cvInt</a></li>
           </ul></dd>
-<dt><a name="findAutocomplete" href="#findAutocomplete"><span>findAutocomplete:</span></a></dt><dd><ul class="simple">
+<dt><a name="cvString" href="#cvString"><span>cvString:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="registry: proc findAutocomplete(registry: CommandRegistry; name: string; optionName = &quot;&quot;): RegisteredCommand" href="dimslash/registry.html#findAutocomplete%2CCommandRegistry%2Cstring%2Cstring">registry: proc findAutocomplete(registry: CommandRegistry; name: string; optionName = &quot;&quot;): RegisteredCommand</a></li>
+          data-doc-search-tag="types: ChoiceValueKind.cvString" href="dimslash/types.html#cvString">types: ChoiceValueKind.cvString</a></li>
+          </ul></dd>
+<dt><a name="defaultOnError" href="#defaultOnError"><span>defaultOnError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc defaultOnError(ctx: InteractionContext; e: ref Exception): owned(
+    Future[void])" href="dimslash/context.html#defaultOnError%2CInteractionContext%2Cref.Exception">context: proc defaultOnError(ctx: InteractionContext; e: ref Exception): owned(
+    Future[void])</a></li>
+          </ul></dd>
+<dt><a name="deferReply" href="#deferReply"><span>deferReply:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])" href="dimslash/context.html#deferReply%2CInteractionContext">context: proc deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])</a></li>
+          </ul></dd>
+<dt><a name="deferUpdate" href="#deferUpdate"><span>deferUpdate:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])" href="dimslash/context.html#deferUpdate">context: proc deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])</a></li>
+          </ul></dd>
+<dt><a name="delete" href="#delete"><span>delete:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc delete(ctx: InteractionContext; messageId = &quot;@original&quot;): Future[void]" href="dimslash/context.html#delete%2CInteractionContext%2Cstring">context: proc delete(ctx: InteractionContext; messageId = &quot;@original&quot;): Future[void]</a></li>
+          </ul></dd>
+<dt><a name="DimslashError" href="#DimslashError"><span>DimslashError:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object DimslashError" href="dimslash/types.html#DimslashError">types: object DimslashError</a></li>
+          </ul></dd>
+<dt><a name="edit" href="#edit"><span>edit:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc edit(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+     components: seq[MessageComponent] = @[];
+     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+     allowedMentions = none AllowedMentions; messageId = &quot;@original&quot;): Future[
+    Message]" href="dimslash/context.html#edit%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D%2Cstring">context: proc edit(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+     components: seq[MessageComponent] = @[];
+     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+     allowedMentions = none AllowedMentions; messageId = &quot;@original&quot;): Future[
+    Message]</a></li>
+          </ul></dd>
+<dt><a name="ErrorHook" href="#ErrorHook"><span>ErrorHook:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type ErrorHook" href="dimslash/types.html#ErrorHook">types: type ErrorHook</a></li>
+          </ul></dd>
+<dt><a name="field" href="#field"><span>field:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc field(ctx: ModalContext; customId: string): Option[string]" href="dimslash/context.html#field%2CModalContext%2Cstring">context: proc field(ctx: ModalContext; customId: string): Option[string]</a></li>
+          </ul></dd>
+<dt><a name="fields" href="#fields"><span>fields:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc fields(ctx: ModalContext): Table[string, string]" href="dimslash/context.html#fields%2CModalContext">context: proc fields(ctx: ModalContext): Table[string, string]</a></li>
           </ul></dd>
 <dt><a name="focusedOption" href="#focusedOption"><span>focusedOption:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
+          data-doc-search-tag="extract: proc focusedOption(options: LeafOptions): Option[
+    ApplicationCommandInteractionDataOption]" href="dimslash/extract.html#focusedOption%2CLeafOptions">extract: proc focusedOption(options: LeafOptions): Option[
+    ApplicationCommandInteractionDataOption]</a></li>
+          <li><a class="reference external"
           data-doc-search-tag="slashargs: proc focusedOption(i: Interaction): Option[ApplicationCommandInteractionDataOption]" href="dimslash/slashargs.html#focusedOption%2CInteraction">slashargs: proc focusedOption(i: Interaction): Option[ApplicationCommandInteractionDataOption]</a></li>
           </ul></dd>
 <dt><a name="focusedOptionName" href="#focusedOptionName"><span>focusedOptionName:</span></a></dt><dd><ul class="simple">
@@ -202,10 +217,20 @@
 <li><a class="reference external"
           data-doc-search-tag="slashargs: proc focusedOptionValue(i: Interaction): Option[string]" href="dimslash/slashargs.html#focusedOptionValue%2CInteraction">slashargs: proc focusedOptionValue(i: Interaction): Option[string]</a></li>
           </ul></dd>
+<dt><a name="focusedValue" href="#focusedValue"><span>focusedValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc focusedValue(ctx: AutocompleteContext): string" href="dimslash/context.html#focusedValue%2CAutocompleteContext">context: proc focusedValue(ctx: AutocompleteContext): string</a></li>
+          </ul></dd>
 <dt><a name="followup" href="#followup"><span>followup:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="context: proc followup(handler: InteractionHandler; i: Interaction; content: string): Future[
-    Message]" href="dimslash/context.html#followup%2CInteractionHandler%2CInteraction%2Cstring">context: proc followup(handler: InteractionHandler; i: Interaction; content: string): Future[
+          data-doc-search-tag="context: proc followup(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+         components: seq[MessageComponent] = @[];
+         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[
+    Message]" href="dimslash/context.html#followup%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D">context: proc followup(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+         components: seq[MessageComponent] = @[];
+         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[
     Message]</a></li>
           </ul></dd>
 <dt><a name="getSlashArg" href="#getSlashArg"><span>getSlashArg:</span></a></dt><dd><ul class="simple">
@@ -222,39 +247,119 @@
           <li><a class="reference external"
           data-doc-search-tag="slashargs: proc getSlashArg(i: Interaction; name: string; _: typedesc[User]): Option[User]" href="dimslash/slashargs.html#getSlashArg%2CInteraction%2Cstring%2Ctypedesc%5BUser%5D">slashargs: proc getSlashArg(i: Interaction; name: string; _: typedesc[User]): Option[User]</a></li>
           </ul></dd>
+<dt><a name="guildId" href="#guildId"><span>guildId:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc guildId(ctx: InteractionContext): Option[string]" href="dimslash/context.html#guildId%2CInteractionContext">context: proc guildId(ctx: InteractionContext): Option[string]</a></li>
+          </ul></dd>
 <dt><a name="handleInteraction" href="#handleInteraction"><span>handleInteraction:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="dispatch: proc handleInteraction(handler: InteractionHandler; s: Shard; i: Interaction): Future[
     bool]" href="dimslash/dispatch.html#handleInteraction%2CInteractionHandler%2CShard%2CInteraction">dispatch: proc handleInteraction(handler: InteractionHandler; s: Shard; i: Interaction): Future[
     bool]</a></li>
           </ul></dd>
-<dt><a name="HandlerError" href="#HandlerError"><span>HandlerError:</span></a></dt><dd><ul class="simple">
+<dt><a name="hasCaptures" href="#hasCaptures"><span>hasCaptures:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="types: object HandlerError" href="dimslash/types.html#HandlerError">types: object HandlerError</a></li>
+          data-doc-search-tag="extract: proc hasCaptures(pattern: CustomIdPattern): bool" href="dimslash/extract.html#hasCaptures%2CCustomIdPattern">extract: proc hasCaptures(pattern: CustomIdPattern): bool</a></li>
           </ul></dd>
-<dt><a name="HandlerErrorKind" href="#HandlerErrorKind"><span>HandlerErrorKind:</span></a></dt><dd><ul class="simple">
+<dt><a name="inGuild" href="#inGuild"><span>inGuild:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="types: enum HandlerErrorKind" href="dimslash/types.html#HandlerErrorKind">types: enum HandlerErrorKind</a></li>
+          data-doc-search-tag="context: proc inGuild(ctx: InteractionContext): bool" href="dimslash/context.html#inGuild%2CInteractionContext">context: proc inGuild(ctx: InteractionContext): bool</a></li>
           </ul></dd>
-<dt><a name="hasSlashOption" href="#hasSlashOption"><span>hasSlashOption:</span></a></dt><dd><ul class="simple">
+<dt><a name="InteractionContext" href="#InteractionContext"><span>InteractionContext:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc hasSlashOption(handler: InteractionHandler; commandName, optionName: string): bool" href="dimslash/dsl.html#hasSlashOption%2CInteractionHandler%2Cstring%2Cstring">dsl: proc hasSlashOption(handler: InteractionHandler; commandName, optionName: string): bool</a></li>
-          </ul></dd>
-<dt><a name="hekInvalidInteraction" href="#hekInvalidInteraction"><span>hekInvalidInteraction:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: HandlerErrorKind.hekInvalidInteraction" href="dimslash/types.html#hekInvalidInteraction">types: HandlerErrorKind.hekInvalidInteraction</a></li>
-          </ul></dd>
-<dt><a name="hekNotFound" href="#hekNotFound"><span>hekNotFound:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: HandlerErrorKind.hekNotFound" href="dimslash/types.html#hekNotFound">types: HandlerErrorKind.hekNotFound</a></li>
-          </ul></dd>
-<dt><a name="hekNotImplemented" href="#hekNotImplemented"><span>hekNotImplemented:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: HandlerErrorKind.hekNotImplemented" href="dimslash/types.html#hekNotImplemented">types: HandlerErrorKind.hekNotImplemented</a></li>
+          data-doc-search-tag="types: type InteractionContext" href="dimslash/types.html#InteractionContext">types: type InteractionContext</a></li>
           </ul></dd>
 <dt><a name="InteractionHandler" href="#InteractionHandler"><span>InteractionHandler:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: type InteractionHandler" href="dimslash/types.html#InteractionHandler">types: type InteractionHandler</a></li>
+          </ul></dd>
+<dt><a name="LeafOptions" href="#LeafOptions"><span>LeafOptions:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: type LeafOptions" href="dimslash/extract.html#LeafOptions">extract: type LeafOptions</a></li>
+          </ul></dd>
+<dt><a name="leafOptions" href="#leafOptions"><span>leafOptions:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc leafOptions(data: ApplicationCommandInteractionData): tuple[path: seq[string],
+    options: LeafOptions]" href="dimslash/extract.html#leafOptions%2CApplicationCommandInteractionData">extract: proc leafOptions(data: ApplicationCommandInteractionData): tuple[path: seq[string],
+    options: LeafOptions]</a></li>
+          </ul></dd>
+<dt><a name="literalPrefixLen" href="#literalPrefixLen"><span>literalPrefixLen:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc literalPrefixLen(pattern: CustomIdPattern): int" href="dimslash/extract.html#literalPrefixLen%2CCustomIdPattern">extract: proc literalPrefixLen(pattern: CustomIdPattern): int</a></li>
+          </ul></dd>
+<dt><a name="locale" href="#locale"><span>locale:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc locale(ctx: InteractionContext): Option[string]" href="dimslash/context.html#locale%2CInteractionContext">context: proc locale(ctx: InteractionContext): Option[string]</a></li>
+          </ul></dd>
+<dt><a name="lookup" href="#lookup"><span>lookup:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc lookup[H](table: ComponentTable[H]; customId: string): Option[
+    tuple[handler: H, captures: Table[string, string]]]" href="dimslash/registry.html#lookup%2CComponentTable%5BH%5D%2Cstring">registry: proc lookup[H](table: ComponentTable[H]; customId: string): Option[
+    tuple[handler: H, captures: Table[string, string]]]</a></li>
+          </ul></dd>
+<dt><a name="matchCustomId" href="#matchCustomId"><span>matchCustomId:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc matchCustomId(pattern: CustomIdPattern; id: string): Option[
+    Table[string, string]]" href="dimslash/extract.html#matchCustomId%2CCustomIdPattern%2Cstring">extract: proc matchCustomId(pattern: CustomIdPattern; id: string): Option[
+    Table[string, string]]</a></li>
+          </ul></dd>
+<dt><a name="member" href="#member"><span>member:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc member(ctx: InteractionContext): Option[Member]" href="dimslash/context.html#member%2CInteractionContext">context: proc member(ctx: InteractionContext): Option[Member]</a></li>
+          </ul></dd>
+<dt><a name="Mentionable" href="#Mentionable"><span>Mentionable:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object Mentionable" href="dimslash/types.html#Mentionable">types: object Mentionable</a></li>
+          </ul></dd>
+<dt><a name="MentionableKind" href="#MentionableKind"><span>MentionableKind:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum MentionableKind" href="dimslash/types.html#MentionableKind">types: enum MentionableKind</a></li>
+          </ul></dd>
+<dt><a name="message" href="#message"><span>message:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc message(ctx: ComponentContext): Option[Message]" href="dimslash/context.html#message%2CComponentContext">context: proc message(ctx: ComponentContext): Option[Message]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="dsl: macro message(handler: untyped; name: static string; body: untyped): untyped" href="dimslash/dsl.html#message.m%2Cuntyped%2Cstaticstring%2Cuntyped">dsl: macro message(handler: untyped; name: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="MessageCommand" href="#MessageCommand"><span>MessageCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type MessageCommand" href="dimslash/types.html#MessageCommand">types: type MessageCommand</a></li>
+          </ul></dd>
+<dt><a name="MessageContext" href="#MessageContext"><span>MessageContext:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type MessageContext" href="dimslash/types.html#MessageContext">types: type MessageContext</a></li>
+          </ul></dd>
+<dt><a name="MessagePayload" href="#MessagePayload"><span>MessagePayload:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: object MessagePayload" href="dimslash/types.html#MessagePayload">types: object MessagePayload</a></li>
+          </ul></dd>
+<dt><a name="MessageRun" href="#MessageRun"><span>MessageRun:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type MessageRun" href="dimslash/types.html#MessageRun">types: type MessageRun</a></li>
+          </ul></dd>
+<dt><a name="mkRole" href="#mkRole"><span>mkRole:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: MentionableKind.mkRole" href="dimslash/types.html#mkRole">types: MentionableKind.mkRole</a></li>
+          </ul></dd>
+<dt><a name="mkUser" href="#mkUser"><span>mkUser:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: MentionableKind.mkUser" href="dimslash/types.html#mkUser">types: MentionableKind.mkUser</a></li>
+          </ul></dd>
+<dt><a name="modal" href="#modal"><span>modal:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="dsl: macro modal(handler: untyped; customId: static string; body: untyped): untyped" href="dimslash/dsl.html#modal.m%2Cuntyped%2Cstaticstring%2Cuntyped">dsl: macro modal(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="ModalContext" href="#ModalContext"><span>ModalContext:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type ModalContext" href="dimslash/types.html#ModalContext">types: type ModalContext</a></li>
+          </ul></dd>
+<dt><a name="modalFields" href="#modalFields"><span>modalFields:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc modalFields(components: seq[MessageComponent]): Table[string, string]" href="dimslash/extract.html#modalFields%2Cseq%5BMessageComponent%5D">extract: proc modalFields(components: seq[MessageComponent]): Table[string, string]</a></li>
+          </ul></dd>
+<dt><a name="ModalRun" href="#ModalRun"><span>ModalRun:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type ModalRun" href="dimslash/types.html#ModalRun">types: type ModalRun</a></li>
           </ul></dd>
 <dt><a name="modalValue" href="#modalValue"><span>modalValue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -264,55 +369,101 @@
 <li><a class="reference external"
           data-doc-search-tag="componentargs: proc modalValues(i: Interaction): Table[string, string]" href="dimslash/componentargs.html#modalValues%2CInteraction">componentargs: proc modalValues(i: Interaction): Table[string, string]</a></li>
           </ul></dd>
+<dt><a name="newDimscordBackend" href="#newDimscordBackend"><span>newDimscordBackend:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="rest: proc newDimscordBackend(discord: DiscordClient): RestBackend" href="dimslash/rest.html#newDimscordBackend%2CDiscordClient">rest: proc newDimscordBackend(discord: DiscordClient): RestBackend</a></li>
+          </ul></dd>
 <dt><a name="newInteractionHandler" href="#newInteractionHandler"><span>newInteractionHandler:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dimslash: proc newInteractionHandler(discord: DiscordClient; defaultGuildId = &quot;&quot;): InteractionHandler" href="dimslash.html#newInteractionHandler%2CDiscordClient%2Cstring">dimslash: proc newInteractionHandler(discord: DiscordClient; defaultGuildId = &quot;&quot;): InteractionHandler</a></li>
-          </ul></dd>
-<dt><a name="newInvalidInteractionError" href="#newInvalidInteractionError"><span>newInvalidInteractionError:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: proc newInvalidInteractionError(message: string): ref HandlerError" href="dimslash/types.html#newInvalidInteractionError%2Cstring">types: proc newInvalidInteractionError(message: string): ref HandlerError</a></li>
-          </ul></dd>
-<dt><a name="newNotFoundError" href="#newNotFoundError"><span>newNotFoundError:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: proc newNotFoundError(message: string): ref HandlerError" href="dimslash/types.html#newNotFoundError%2Cstring">types: proc newNotFoundError(message: string): ref HandlerError</a></li>
-          </ul></dd>
-<dt><a name="newNotImplementedError" href="#newNotImplementedError"><span>newNotImplementedError:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: proc newNotImplementedError(message: string): ref HandlerError" href="dimslash/types.html#newNotImplementedError%2Cstring">types: proc newNotImplementedError(message: string): ref HandlerError</a></li>
+          data-doc-search-tag="rest: proc newInteractionHandler(discord: DiscordClient; defaultGuildId = &quot;&quot;): InteractionHandler" href="dimslash/rest.html#newInteractionHandler%2CDiscordClient%2Cstring">rest: proc newInteractionHandler(discord: DiscordClient; defaultGuildId = &quot;&quot;): InteractionHandler</a></li>
           </ul></dd>
 <dt><a name="newRegistry" href="#newRegistry"><span>newRegistry:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="registry: proc newRegistry(): CommandRegistry" href="dimslash/registry.html#newRegistry">registry: proc newRegistry(): CommandRegistry</a></li>
+          data-doc-search-tag="types: proc newRegistry(): Registry" href="dimslash/types.html#newRegistry">types: proc newRegistry(): Registry</a></li>
+          </ul></dd>
+<dt><a name="newTextInput" href="#newTextInput"><span>newTextInput:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc newTextInput(customId, label: string; style = tisShort; required = true;
+             placeholder = &quot;&quot;; value = &quot;&quot;; minLen = 0; maxLen = 0): MessageComponent" href="dimslash/context.html#newTextInput%2Cstring%2Cstring%2Cstring%2Cstring%2Cint%2Cint">context: proc newTextInput(customId, label: string; style = tisShort; required = true;
+             placeholder = &quot;&quot;; value = &quot;&quot;; minLen = 0; maxLen = 0): MessageComponent</a></li>
           </ul></dd>
 <dt><a name="normalizeOptionName" href="#normalizeOptionName"><span>normalizeOptionName:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="slashargs: proc normalizeOptionName(name: string): string" href="dimslash/slashargs.html#normalizeOptionName%2Cstring">slashargs: proc normalizeOptionName(name: string): string</a></li>
           </ul></dd>
-<dt><a name="pairs" href="#pairs"><span>pairs:</span></a></dt><dd><ul class="simple">
+<dt><a name="opt" href="#opt"><span>opt:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="registry: iterator pairs(registry: CommandRegistry; kind: CommandKind): (string, RegisteredCommand)" href="dimslash/registry.html#pairs.i%2CCommandRegistry%2CCommandKind">registry: iterator pairs(registry: CommandRegistry; kind: CommandKind): (string, RegisteredCommand)</a></li>
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Attachment]): Option[Attachment]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BAttachment%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Attachment]): Option[Attachment]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[bool]): Option[bool]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5Bbool%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[bool]): Option[bool]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[float]): Option[float]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5Bfloat%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[float]): Option[float]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[int]): Option[int]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5Bint%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[int]): Option[int]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Member]): Option[Member]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BMember%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Member]): Option[Member]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Mentionable]): Option[
+    Mentionable]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BMentionable%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Mentionable]): Option[
+    Mentionable]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[ResolvedChannel]): Option[
+    ResolvedChannel]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BResolvedChannel%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[ResolvedChannel]): Option[
+    ResolvedChannel]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Role]): Option[Role]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BRole%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[Role]): Option[Role]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[string]): Option[string]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5Bstring%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[string]): Option[string]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc opt(ctx: SlashContext; name: string; T: typedesc[User]): Option[User]" href="dimslash/extract.html#opt%2CSlashContext%2Cstring%2Ctypedesc%5BUser%5D">extract: proc opt(ctx: SlashContext; name: string; T: typedesc[User]): Option[User]</a></li>
           </ul></dd>
-<dt><a name="register" href="#register"><span>register:</span></a></dt><dd><ul class="simple">
+<dt><a name="OptionSpec" href="#OptionSpec"><span>OptionSpec:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="registry: proc register(registry: CommandRegistry; command: RegisteredCommand)" href="dimslash/registry.html#register%2CCommandRegistry%2CRegisteredCommand">registry: proc register(registry: CommandRegistry; command: RegisteredCommand)</a></li>
+          data-doc-search-tag="types: object OptionSpec" href="dimslash/types.html#OptionSpec">types: object OptionSpec</a></li>
           </ul></dd>
-<dt><a name="registerCommands" href="#registerCommands"><span>registerCommands:</span></a></dt><dd><ul class="simple">
+<dt><a name="original" href="#original"><span>original:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="sync: proc registerCommands(handler: InteractionHandler; guildId = &quot;&quot;): Future[void]" href="dimslash/sync.html#registerCommands%2CInteractionHandler%2Cstring">sync: proc registerCommands(handler: InteractionHandler; guildId = &quot;&quot;): Future[void]</a></li>
+          data-doc-search-tag="context: proc original(ctx: InteractionContext): Future[Message]" href="dimslash/context.html#original%2CInteractionContext">context: proc original(ctx: InteractionContext): Future[Message]</a></li>
           </ul></dd>
-<dt><a name="RegisteredCommand" href="#RegisteredCommand"><span>RegisteredCommand:</span></a></dt><dd><ul class="simple">
+<dt><a name="parseCustomIdPattern" href="#parseCustomIdPattern"><span>parseCustomIdPattern:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="types: object RegisteredCommand" href="dimslash/types.html#RegisteredCommand">types: object RegisteredCommand</a></li>
+          data-doc-search-tag="extract: proc parseCustomIdPattern(raw: string): CustomIdPattern" href="dimslash/extract.html#parseCustomIdPattern%2Cstring">extract: proc parseCustomIdPattern(raw: string): CustomIdPattern</a></li>
           </ul></dd>
-<dt><a name="registerSlashOptionNames" href="#registerSlashOptionNames"><span>registerSlashOptionNames:</span></a></dt><dd><ul class="simple">
+<dt><a name="PatternSegment" href="#PatternSegment"><span>PatternSegment:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc registerSlashOptionNames(handler: InteractionHandler; commandName: string;
-                         optionNames: openArray[string])" href="dimslash/dsl.html#registerSlashOptionNames%2CInteractionHandler%2Cstring%2CopenArray%5Bstring%5D">dsl: proc registerSlashOptionNames(handler: InteractionHandler; commandName: string;
-                         optionNames: openArray[string])</a></li>
+          data-doc-search-tag="types: object PatternSegment" href="dimslash/types.html#PatternSegment">types: object PatternSegment</a></li>
+          </ul></dd>
+<dt><a name="PatternSegmentKind" href="#PatternSegmentKind"><span>PatternSegmentKind:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum PatternSegmentKind" href="dimslash/types.html#PatternSegmentKind">types: enum PatternSegmentKind</a></li>
+          </ul></dd>
+<dt><a name="psCapture" href="#psCapture"><span>psCapture:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: PatternSegmentKind.psCapture" href="dimslash/types.html#psCapture">types: PatternSegmentKind.psCapture</a></li>
+          </ul></dd>
+<dt><a name="psLiteral" href="#psLiteral"><span>psLiteral:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: PatternSegmentKind.psLiteral" href="dimslash/types.html#psLiteral">types: PatternSegmentKind.psLiteral</a></li>
+          </ul></dd>
+<dt><a name="Registry" href="#Registry"><span>Registry:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type Registry" href="dimslash/types.html#Registry">types: type Registry</a></li>
           </ul></dd>
 <dt><a name="reply" href="#reply"><span>reply:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="context: proc reply(handler: InteractionHandler; i: Interaction; content: string): Future[void]" href="dimslash/context.html#reply%2CInteractionHandler%2CInteraction%2Cstring">context: proc reply(handler: InteractionHandler; i: Interaction; content: string): Future[void]</a></li>
+          data-doc-search-tag="context: proc reply(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+      components: seq[MessageComponent] = @[];
+      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(
+    Future[void])" href="dimslash/context.html#reply%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D">context: proc reply(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+      components: seq[MessageComponent] = @[];
+      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(
+    Future[void])</a></li>
+          </ul></dd>
+<dt><a name="req" href="#req"><span>req:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc req[T](ctx: SlashContext; name: string; t: typedesc[T]): T" href="dimslash/extract.html#req%2CSlashContext%2Cstring%2Ctypedesc%5BT%5D">extract: proc req[T](ctx: SlashContext; name: string; t: typedesc[T]): T</a></li>
           </ul></dd>
 <dt><a name="requireSlashArg" href="#requireSlashArg"><span>requireSlashArg:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -328,13 +479,87 @@
           <li><a class="reference external"
           data-doc-search-tag="slashargs: proc requireSlashArg(i: Interaction; name: string; _: typedesc[User]): User" href="dimslash/slashargs.html#requireSlashArg%2CInteraction%2Cstring%2Ctypedesc%5BUser%5D">slashargs: proc requireSlashArg(i: Interaction; name: string; _: typedesc[User]): User</a></li>
           </ul></dd>
+<dt><a name="resolveApplicationId" href="#resolveApplicationId"><span>resolveApplicationId:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: proc resolveApplicationId(handler: InteractionHandler): Future[string]" href="dimslash/sync.html#resolveApplicationId%2CInteractionHandler">sync: proc resolveApplicationId(handler: InteractionHandler): Future[string]</a></li>
+          </ul></dd>
+<dt><a name="resolveLeaf" href="#resolveLeaf"><span>resolveLeaf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="registry: proc resolveLeaf(cmd: SlashCommand; path: seq[string]): Option[SlashNode]" href="dimslash/registry.html#resolveLeaf%2CSlashCommand%2Cseq%5Bstring%5D">registry: proc resolveLeaf(cmd: SlashCommand; path: seq[string]): Option[SlashNode]</a></li>
+          </ul></dd>
+<dt><a name="ResponseState" href="#ResponseState"><span>ResponseState:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum ResponseState" href="dimslash/types.html#ResponseState">types: enum ResponseState</a></li>
+          </ul></dd>
+<dt><a name="RestBackend" href="#RestBackend"><span>RestBackend:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type RestBackend" href="dimslash/types.html#RestBackend">types: type RestBackend</a></li>
+          </ul></dd>
+<dt><a name="rsDeferred" href="#rsDeferred"><span>rsDeferred:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: ResponseState.rsDeferred" href="dimslash/types.html#rsDeferred">types: ResponseState.rsDeferred</a></li>
+          </ul></dd>
+<dt><a name="rsNone" href="#rsNone"><span>rsNone:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: ResponseState.rsNone" href="dimslash/types.html#rsNone">types: ResponseState.rsNone</a></li>
+          </ul></dd>
+<dt><a name="rsResponded" href="#rsResponded"><span>rsResponded:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: ResponseState.rsResponded" href="dimslash/types.html#rsResponded">types: ResponseState.rsResponded</a></li>
+          </ul></dd>
+<dt><a name="select" href="#select"><span>select:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="dsl: macro select(handler: untyped; customId: static string; body: untyped): untyped" href="dimslash/dsl.html#select.m%2Cuntyped%2Cstaticstring%2Cuntyped">dsl: macro select(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="selectedChannels" href="#selectedChannels"><span>selectedChannels:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc selectedChannels(ctx: ComponentContext): seq[ResolvedChannel]" href="dimslash/context.html#selectedChannels%2CComponentContext">context: proc selectedChannels(ctx: ComponentContext): seq[ResolvedChannel]</a></li>
+          </ul></dd>
+<dt><a name="selectedMembers" href="#selectedMembers"><span>selectedMembers:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc selectedMembers(ctx: ComponentContext): seq[Member]" href="dimslash/context.html#selectedMembers%2CComponentContext">context: proc selectedMembers(ctx: ComponentContext): seq[Member]</a></li>
+          </ul></dd>
+<dt><a name="selectedRoles" href="#selectedRoles"><span>selectedRoles:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc selectedRoles(ctx: ComponentContext): seq[Role]" href="dimslash/context.html#selectedRoles%2CComponentContext">context: proc selectedRoles(ctx: ComponentContext): seq[Role]</a></li>
+          </ul></dd>
+<dt><a name="selectedUsers" href="#selectedUsers"><span>selectedUsers:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc selectedUsers(ctx: ComponentContext): seq[User]" href="dimslash/context.html#selectedUsers%2CComponentContext">context: proc selectedUsers(ctx: ComponentContext): seq[User]</a></li>
+          </ul></dd>
+<dt><a name="SelectKinds" href="#SelectKinds"><span>SelectKinds:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: const SelectKinds" href="dimslash/extract.html#SelectKinds">extract: const SelectKinds</a></li>
+          </ul></dd>
 <dt><a name="selectValues" href="#selectValues"><span>selectValues:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="componentargs: proc selectValues(i: Interaction): seq[string]" href="dimslash/componentargs.html#selectValues%2CInteraction">componentargs: proc selectValues(i: Interaction): seq[string]</a></li>
           </ul></dd>
-<dt><a name="slashOptionNames" href="#slashOptionNames"><span>slashOptionNames:</span></a></dt><dd><ul class="simple">
+<dt><a name="showModal" href="#showModal"><span>showModal:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="dsl: proc slashOptionNames(handler: InteractionHandler; commandName: string): seq[string]" href="dimslash/dsl.html#slashOptionNames%2CInteractionHandler%2Cstring">dsl: proc slashOptionNames(handler: InteractionHandler; commandName: string): seq[string]</a></li>
+          data-doc-search-tag="context: proc showModal(ctx: InteractionContext; customId, title: string;
+          components: seq[MessageComponent]): owned(Future[void])" href="dimslash/context.html#showModal%2CInteractionContext%2Cstring%2Cstring%2Cseq%5BMessageComponent%5D">context: proc showModal(ctx: InteractionContext; customId, title: string;
+          components: seq[MessageComponent]): owned(Future[void])</a></li>
+          </ul></dd>
+<dt><a name="slash" href="#slash"><span>slash:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="dsl: macro slash(handler: untyped; name, description: static string; body: untyped): untyped" href="dimslash/dsl.html#slash.m%2Cuntyped%2Cstaticstring%2Cstaticstring%2Cuntyped">dsl: macro slash(handler: untyped; name, description: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="SlashCommand" href="#SlashCommand"><span>SlashCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type SlashCommand" href="dimslash/types.html#SlashCommand">types: type SlashCommand</a></li>
+          </ul></dd>
+<dt><a name="SlashContext" href="#SlashContext"><span>SlashContext:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type SlashContext" href="dimslash/types.html#SlashContext">types: type SlashContext</a></li>
+          </ul></dd>
+<dt><a name="SlashNode" href="#SlashNode"><span>SlashNode:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type SlashNode" href="dimslash/types.html#SlashNode">types: type SlashNode</a></li>
+          </ul></dd>
+<dt><a name="SlashNodeKind" href="#SlashNodeKind"><span>SlashNodeKind:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: enum SlashNodeKind" href="dimslash/types.html#SlashNodeKind">types: enum SlashNodeKind</a></li>
           </ul></dd>
 <dt><a name="slashOptions" href="#slashOptions"><span>slashOptions:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -342,21 +567,123 @@
                                     ApplicationCommandInteractionDataOption]" href="dimslash/slashargs.html#slashOptions%2CInteraction">slashargs: proc slashOptions(i: Interaction): Table[string,
                                     ApplicationCommandInteractionDataOption]</a></li>
           </ul></dd>
+<dt><a name="SlashRun" href="#SlashRun"><span>SlashRun:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type SlashRun" href="dimslash/types.html#SlashRun">types: type SlashRun</a></li>
+          </ul></dd>
+<dt><a name="snGroup" href="#snGroup"><span>snGroup:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: SlashNodeKind.snGroup" href="dimslash/types.html#snGroup">types: SlashNodeKind.snGroup</a></li>
+          </ul></dd>
+<dt><a name="snLeaf" href="#snLeaf"><span>snLeaf:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: SlashNodeKind.snLeaf" href="dimslash/types.html#snLeaf">types: SlashNodeKind.snLeaf</a></li>
+          </ul></dd>
+<dt><a name="stringValue" href="#stringValue"><span>stringValue:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc stringValue(opt: ApplicationCommandInteractionDataOption): Option[string]" href="dimslash/extract.html#stringValue%2CApplicationCommandInteractionDataOption">extract: proc stringValue(opt: ApplicationCommandInteractionDataOption): Option[string]</a></li>
+          </ul></dd>
 <dt><a name="suggest" href="#suggest"><span>suggest:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="context: proc suggest(handler: InteractionHandler; i: Interaction;
-        choices: seq[ApplicationCommandOptionChoice]): Future[void]" href="dimslash/context.html#suggest%2CInteractionHandler%2CInteraction%2Cseq%5BApplicationCommandOptionChoice%5D">context: proc suggest(handler: InteractionHandler; i: Interaction;
-        choices: seq[ApplicationCommandOptionChoice]): Future[void]</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="context: proc suggest(handler: InteractionHandler; i: Interaction; choices: seq[string]): Future[
-    void]" href="dimslash/context.html#suggest%2CInteractionHandler%2CInteraction%2Cseq%5Bstring%5D">context: proc suggest(handler: InteractionHandler; i: Interaction; choices: seq[string]): Future[
+          data-doc-search-tag="context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[
+    void]" href="dimslash/context.html#suggest%2CAutocompleteContext%2CopenArray%5B%5D">context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[
     void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[
+    void]" href="dimslash/context.html#suggest%2CAutocompleteContext%2CopenArray%5B%5D_2">context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[
+    void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[
+    void]" href="dimslash/context.html#suggest%2CAutocompleteContext%2CopenArray%5B%5D_3">context: proc suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[
+    void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[
+    void]" href="dimslash/context.html#suggest%2CAutocompleteContext%2Cseq%5BApplicationCommandOptionChoice%5D">context: proc suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[
+    void]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]" href="dimslash/context.html#suggest%2CAutocompleteContext%2Cseq%5Bstring%5D">context: proc suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]</a></li>
+          </ul></dd>
+<dt><a name="syncCommands" href="#syncCommands"><span>syncCommands:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: proc syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]" href="dimslash/sync.html#syncCommands%2CInteractionHandler">sync: proc syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]</a></li>
+          </ul></dd>
+<dt><a name="SyncResult" href="#SyncResult"><span>SyncResult:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: object SyncResult" href="dimslash/sync.html#SyncResult">sync: object SyncResult</a></li>
+          </ul></dd>
+<dt><a name="target" href="#target"><span>target:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc target(ctx: MessageContext): Message" href="dimslash/context.html#target%2CMessageContext">context: proc target(ctx: MessageContext): Message</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="context: proc target(ctx: UserContext): User" href="dimslash/context.html#target%2CUserContext">context: proc target(ctx: UserContext): User</a></li>
+          </ul></dd>
+<dt><a name="targetMember" href="#targetMember"><span>targetMember:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc targetMember(ctx: UserContext): Option[Member]" href="dimslash/context.html#targetMember%2CUserContext">context: proc targetMember(ctx: UserContext): Option[Member]</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="extract: proc targetMember(i: Interaction): Option[Member]" href="dimslash/extract.html#targetMember%2CInteraction">extract: proc targetMember(i: Interaction): Option[Member]</a></li>
+          </ul></dd>
+<dt><a name="targetMessage" href="#targetMessage"><span>targetMessage:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc targetMessage(i: Interaction): Option[Message]" href="dimslash/extract.html#targetMessage%2CInteraction">extract: proc targetMessage(i: Interaction): Option[Message]</a></li>
+          </ul></dd>
+<dt><a name="targetUser" href="#targetUser"><span>targetUser:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="extract: proc targetUser(i: Interaction): Option[User]" href="dimslash/extract.html#targetUser%2CInteraction">extract: proc targetUser(i: Interaction): Option[User]</a></li>
+          </ul></dd>
+<dt><a name="toCommandJson" href="#toCommandJson"><span>toCommandJson:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: proc toCommandJson(cmd: MessageCommand): JsonNode" href="dimslash/sync.html#toCommandJson%2CMessageCommand">sync: proc toCommandJson(cmd: MessageCommand): JsonNode</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="sync: proc toCommandJson(cmd: SlashCommand): JsonNode" href="dimslash/sync.html#toCommandJson%2CSlashCommand">sync: proc toCommandJson(cmd: SlashCommand): JsonNode</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="sync: proc toCommandJson(cmd: UserCommand): JsonNode" href="dimslash/sync.html#toCommandJson%2CUserCommand">sync: proc toCommandJson(cmd: UserCommand): JsonNode</a></li>
+          </ul></dd>
+<dt><a name="toOptionJson" href="#toOptionJson"><span>toOptionJson:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="sync: proc toOptionJson(spec: OptionSpec): JsonNode" href="dimslash/sync.html#toOptionJson%2COptionSpec">sync: proc toOptionJson(spec: OptionSpec): JsonNode</a></li>
+          </ul></dd>
+<dt><a name="UnknownHook" href="#UnknownHook"><span>UnknownHook:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type UnknownHook" href="dimslash/types.html#UnknownHook">types: type UnknownHook</a></li>
+          </ul></dd>
+<dt><a name="update" href="#update"><span>update:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc update(ctx: ComponentContext | ModalContext; content = &quot;&quot;;
+       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];
+       attachments: seq[Attachment] = @[];
+       allowedMentions = none AllowedMentions): owned(Future[void])" href="dimslash/context.html#update%2C%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D">context: proc update(ctx: ComponentContext | ModalContext; content = &quot;&quot;;
+       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];
+       attachments: seq[Attachment] = @[];
+       allowedMentions = none AllowedMentions): owned(Future[void])</a></li>
+          </ul></dd>
+<dt><a name="user" href="#user"><span>user:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc user(ctx: InteractionContext): User" href="dimslash/context.html#user%2CInteractionContext">context: proc user(ctx: InteractionContext): User</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="dsl: macro user(handler: untyped; name: static string; body: untyped): untyped" href="dimslash/dsl.html#user.m%2Cuntyped%2Cstaticstring%2Cuntyped">dsl: macro user(handler: untyped; name: static string; body: untyped): untyped</a></li>
+          </ul></dd>
+<dt><a name="UserCommand" href="#UserCommand"><span>UserCommand:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type UserCommand" href="dimslash/types.html#UserCommand">types: type UserCommand</a></li>
+          </ul></dd>
+<dt><a name="UserContext" href="#UserContext"><span>UserContext:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type UserContext" href="dimslash/types.html#UserContext">types: type UserContext</a></li>
+          </ul></dd>
+<dt><a name="UserRun" href="#UserRun"><span>UserRun:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: type UserRun" href="dimslash/types.html#UserRun">types: type UserRun</a></li>
+          </ul></dd>
+<dt><a name="values" href="#values"><span>values:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="context: proc values(ctx: ComponentContext): seq[string]" href="dimslash/context.html#values%2CComponentContext">context: proc values(ctx: ComponentContext): seq[string]</a></li>
           </ul></dd>
 </dl>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-18 16:21:01 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
       </div>
     </div>
   </div>

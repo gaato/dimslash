@@ -1,7 +1,10 @@
 nimTitle	sync	dimslash/sync.html	module src/dimslash/sync		0
-nim	registerCommands	dimslash/sync.html#registerCommands,InteractionHandler,string	proc registerCommands(handler: InteractionHandler; guildId = ""): Future[void]		102
-heading	Parameters	dimslash/sync.html#propagation-timing-parameters	  Parameters		0
-heading	Raises	dimslash/sync.html#propagation-timing-raises	  Raises		0
-heading	Example	dimslash/sync.html#propagation-timing-example	  Example		0
-heading	Which commands are synced?	dimslash/sync.html#which-commands-are-syncedqmark	 Which commands are synced?		0
-heading	Propagation timing	dimslash/sync.html#propagation-timing	 Propagation timing		0
+nim	SyncResult	dimslash/sync.html#SyncResult	object SyncResult		27
+nim	toOptionJson	dimslash/sync.html#toOptionJson,OptionSpec	proc toOptionJson(spec: OptionSpec): JsonNode		40
+nim	toCommandJson	dimslash/sync.html#toCommandJson,SlashCommand	proc toCommandJson(cmd: SlashCommand): JsonNode		127
+nim	toCommandJson	dimslash/sync.html#toCommandJson,UserCommand	proc toCommandJson(cmd: UserCommand): JsonNode		147
+nim	toCommandJson	dimslash/sync.html#toCommandJson,MessageCommand	proc toCommandJson(cmd: MessageCommand): JsonNode		151
+nim	canonicalize	dimslash/sync.html#canonicalize,JsonNode	proc canonicalize(commands: JsonNode): JsonNode		230
+nim	resolveApplicationId	dimslash/sync.html#resolveApplicationId,InteractionHandler	proc resolveApplicationId(handler: InteractionHandler): Future[string]		248
+nim	syncCommands	dimslash/sync.html#syncCommands,InteractionHandler	proc syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]		271
+nimgrp	tocommandjson	dimslash/sync.html#toCommandJson-procs-all	proc		127

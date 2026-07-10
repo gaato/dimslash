@@ -1,0 +1,3 @@
+nimTitle	rest	dimslash/rest.html	module src/dimslash/rest		0
+nim	newDimscordBackend	dimslash/rest.html#newDimscordBackend,DiscordClient	proc newDimscordBackend(discord: DiscordClient): RestBackend		14
+nim	newInteractionHandler	dimslash/rest.html#newInteractionHandler,DiscordClient,string	proc newInteractionHandler(discord: DiscordClient; defaultGuildId = ""): InteractionHandler		80

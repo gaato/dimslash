@@ -1,216 +1,74 @@
-## Command registry — the central store for all registered interaction handlers.
+## Command registration and lookup.
 ##
-## `CommandRegistry` groups `RegisteredCommand` objects by `CommandKind`.
-## You normally don't interact with this module directly; the DSL helpers
-## (`addSlash`, `addUser`, …) and `handleInteraction` call into it.
-##
-## Key concepts
-## ============
-##
-## - **Names are normalised** — all lookups are case-insensitive (lowercased).
-## - **Duplicates are rejected** — re-registering the same name raises
-##   `ValueError`, preventing silent overwrites.
-## - **Autocomplete uses composite keys** — fallback handlers use
-##   ``"commandname"``; option-specific handlers use ``"commandname#optionname"``.
-##   `findAutocomplete` tries the specific key first, then falls back.
-##
-## Example: manual registration and lookup
-## ----------------------------------------
-## .. code-block:: nim
-##   import dimslash
-##
-##   var reg = newRegistry()
-##   reg.register RegisteredCommand(
-##     kind: ckSlash, name: "ping", description: "Pong!",
-##     callback: proc (s: Shard, i: Interaction) {.async.} = discard
-##   )
-##   let cmd = reg.find(ckSlash, "ping")
-##   assert cmd.name == "ping"
-##
-##   # Iteration:
-##   for name, cmd in reg.pairs(ckSlash):
-##     echo name, " -> ", cmd.description
+## The DSL macros in `dsl` expand to calls into this module; the procs are
+## public so commands can also be registered programmatically.
 
-import std/[tables, strutils]
+import std/[algorithm, options, tables]
 
-import ./types
+import ./types, ./extract
 
-proc newRegistry*(): CommandRegistry =
-  ## Creates an empty `CommandRegistry` with all kind-buckets initialised.
-  runnableExamples "-d:ssl":
-    import dimslash/types, std/tables
-    let reg = newRegistry()
-    doAssert len(reg.slash) == 0
-    doAssert len(reg.user) == 0
-  #==#
-  CommandRegistry(
-    slash: initOrderedTable[string, RegisteredCommand](),
-    user: initOrderedTable[string, RegisteredCommand](),
-    message: initOrderedTable[string, RegisteredCommand](),
-    button: initOrderedTable[string, RegisteredCommand](),
-    select: initOrderedTable[string, RegisteredCommand](),
-    modal: initOrderedTable[string, RegisteredCommand](),
-    autocomplete: initOrderedTable[string, RegisteredCommand](),
-  )
+proc addSlashCommand*(handler: InteractionHandler, cmd: SlashCommand) =
+  let name = cmd.root.name
+  if handler.registry.slash.hasKey(name):
+    raise newException(DimslashError, "duplicate slash command: " & name)
+  handler.registry.slash[name] = cmd
 
-proc normalizeName(name: string): string =
-  ## Internal helper: lowercases `name` for case-insensitive lookup.
-  name.toLowerAscii()
+proc addUserCommand*(handler: InteractionHandler, cmd: UserCommand) =
+  if handler.registry.user.hasKey(cmd.name):
+    raise newException(DimslashError, "duplicate user command: " & cmd.name)
+  handler.registry.user[cmd.name] = cmd
 
-proc autocompleteKey(commandName, optionName: string): string =
-  ## Builds the composite key used for autocomplete lookup.
-  ##
-  ## - ``autocompleteKey("search", "")``       → ``"search"``   (fallback)
-  ## - ``autocompleteKey("search", "query")``  → ``"search#query"`` (specific)
-  let c = normalizeName(commandName)
-  let o = normalizeName(optionName)
-  if o.len == 0: c else: c & "#" & o
+proc addMessageCommand*(handler: InteractionHandler, cmd: MessageCommand) =
+  if handler.registry.message.hasKey(cmd.name):
+    raise newException(DimslashError, "duplicate message command: " & cmd.name)
+  handler.registry.message[cmd.name] = cmd
 
-proc register*(registry: CommandRegistry, command: RegisteredCommand) =
-  ## Inserts `command` into the appropriate bucket of `registry`.
-  ##
-  ## Raises `ValueError` when a command with the same (normalised) name
-  ## already exists in that bucket — this prevents silent overwrites.
-  runnableExamples "-d:ssl":
-    import dimslash/types, std/[asyncdispatch, tables]
-    import dimscord
+proc add[H](table: var ComponentTable[H], customId: string, run: H,
+            what: string) =
+  let pattern = parseCustomIdPattern(customId)
+  if not pattern.hasCaptures:
+    if table.exact.hasKey(customId):
+      raise newException(DimslashError, "duplicate " & what & ": " & customId)
+    table.exact[customId] = run
+  else:
+    for entry in table.patterns:
+      if entry.pattern.raw == customId:
+        raise newException(DimslashError, "duplicate " & what & ": " & customId)
+    table.patterns.add ComponentEntry[H](pattern: pattern, handler: run)
+    # longest literal prefix wins; sort is stable so ties keep insert order
+    table.patterns.sort(
+      proc (a, b: ComponentEntry[H]): int =
+        b.pattern.literalPrefixLen - a.pattern.literalPrefixLen)
 
-    var reg = newRegistry()
-    reg.register RegisteredCommand(
-      kind: ckSlash, name: "hello", description: "Say hello",
-      callback: proc (s: Shard, i: Interaction) {.async.} = discard
-    )
-    doAssert len(reg.slash) == 1
+proc addButtonHandler*(handler: InteractionHandler, customId: string,
+                       run: ComponentRun) =
+  handler.registry.buttons.add(customId, run, "button handler")
 
-    # Duplicate registration raises:
-    doAssertRaises(ValueError):
-      reg.register RegisteredCommand(
-        kind: ckSlash, name: "hello", description: "duplicate",
-        callback: proc (s: Shard, i: Interaction) {.async.} = discard
-      )
-  #==#
-  let key =
-    if command.kind == ckAutocomplete:
-      autocompleteKey(command.name, command.optionName)
-    else:
-      normalizeName(command.name)
-  case command.kind
-  of ckSlash:
-    if registry.slash.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.slash[key] = command
-  of ckUser:
-    if registry.user.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.user[key] = command
-  of ckMessage:
-    if registry.message.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.message[key] = command
-  of ckButton:
-    if registry.button.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.button[key] = command
-  of ckSelect:
-    if registry.select.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.select[key] = command
-  of ckModal:
-    if registry.modal.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.modal[key] = command
-  of ckAutocomplete:
-    if registry.autocomplete.hasKey(key): raise newException(ValueError, "duplicate command registration: " & command.name)
-    registry.autocomplete[key] = command
+proc addSelectHandler*(handler: InteractionHandler, customId: string,
+                       run: ComponentRun) =
+  handler.registry.selects.add(customId, run, "select handler")
 
-proc find*(registry: CommandRegistry, kind: CommandKind, name: string): RegisteredCommand =
-  ## Looks up the `RegisteredCommand` for `kind` + `name` (case-insensitive).
-  ##
-  ## Raises `HandlerError(hekNotFound)` when no match exists.
-  runnableExamples "-d:ssl":
-    import dimslash/types, std/asyncdispatch
-    import dimscord
+proc addModalHandler*(handler: InteractionHandler, customId: string,
+                      run: ModalRun) =
+  handler.registry.modals.add(customId, run, "modal handler")
 
-    var reg = newRegistry()
-    reg.register RegisteredCommand(
-      kind: ckUser, name: "Info", description: "",
-      callback: proc (s: Shard, i: Interaction) {.async.} = discard
-    )
-    let found = reg.find(ckUser, "info")  # case-insensitive
-    doAssert found.name == "Info"
+proc lookup*[H](table: ComponentTable[H], customId: string):
+    Option[tuple[handler: H, captures: Table[string, string]]] =
+  ## Exact custom_id match first, then patterns in priority order.
+  if table.exact.hasKey(customId):
+    return some (table.exact[customId], initTable[string, string]())
+  for entry in table.patterns:
+    let m = matchCustomId(entry.pattern, customId)
+    if m.isSome:
+      return some (entry.handler, m.get)
 
-    doAssertRaises(HandlerError):
-      discard reg.find(ckUser, "nonexistent")
-  #==#
-  let key =
-    if kind == ckAutocomplete:
-      autocompleteKey(name, "")
-    else:
-      normalizeName(name)
-  case kind
-  of ckSlash:
-    if not registry.slash.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.slash[key]
-  of ckUser:
-    if not registry.user.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.user[key]
-  of ckMessage:
-    if not registry.message.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.message[key]
-  of ckButton:
-    if not registry.button.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.button[key]
-  of ckSelect:
-    if not registry.select.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.select[key]
-  of ckModal:
-    if not registry.modal.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.modal[key]
-  of ckAutocomplete:
-    if not registry.autocomplete.hasKey(key): raise newNotFoundError("command not found: " & name)
-    registry.autocomplete[key]
-
-proc findAutocomplete*(registry: CommandRegistry, name: string, optionName = ""): RegisteredCommand =
-  ## Looks up an autocomplete handler for `name` and focused `optionName`.
-  ##
-  ## Resolution order:
-  ## 1. If `optionName` is non-empty, try the specific key
-  ##    ``"name#optionname"``.
-  ## 2. Fall back to the generic key ``"name"``.
-  ## 3. Raise `HandlerError(hekNotFound)` if neither exists.
-  ##
-  ## This two-level lookup lets you register a general autocomplete handler
-  ## and override it for individual options:
-  ##
-  ## .. code-block:: nim
-  ##   # Generic fallback
-  ##   handler.addAutocomplete("search") do:
-  ##     await handler.suggest(i, @["fallback"])
-  ##
-  ##   # Option-specific override (takes priority for "query")
-  ##   handler.addAutocompleteForOption("search", "query") do:
-  ##     await handler.suggest(i, @["specific"])
-  let specific = autocompleteKey(name, optionName)
-  if optionName.len > 0 and registry.autocomplete.hasKey(specific):
-    return registry.autocomplete[specific]
-
-  let generic = autocompleteKey(name, "")
-  if registry.autocomplete.hasKey(generic):
-    return registry.autocomplete[generic]
-
-  raise newNotFoundError("command not found: " & name)
-
-iterator pairs*(registry: CommandRegistry, kind: CommandKind): (string, RegisteredCommand) =
-  ## Yields `(name, RegisteredCommand)` pairs for every command of `kind`.
-  ##
-  ## Useful for serialising registered commands into the Discord bulk-overwrite
-  ## payload (see `sync.nim`).
-  case kind
-  of ckSlash:
-    for pair in registry.slash.pairs: yield pair
-  of ckUser:
-    for pair in registry.user.pairs: yield pair
-  of ckMessage:
-    for pair in registry.message.pairs: yield pair
-  of ckButton:
-    for pair in registry.button.pairs: yield pair
-  of ckSelect:
-    for pair in registry.select.pairs: yield pair
-  of ckModal:
-    for pair in registry.modal.pairs: yield pair
-  of ckAutocomplete:
-    for pair in registry.autocomplete.pairs: yield pair
+proc resolveLeaf*(cmd: SlashCommand, path: seq[string]): Option[SlashNode] =
+  ## Follows a group/subcommand path (as produced by `extract.leafOptions`)
+  ## down the command tree to the leaf that should run.
+  var node = cmd.root
+  for name in path:
+    if node.kind != snGroup or not node.children.hasKey(name):
+      return none SlashNode
+    node = node.children[name]
+  if node.kind == snLeaf:
+    return some node

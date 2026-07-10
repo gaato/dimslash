@@ -1,24 +1,59 @@
 nimTitle	types	dimslash/types.html	module src/dimslash/types		0
-nim	ckSlash	dimslash/types.html#ckSlash	CommandKind.ckSlash		50
-nim	ckUser	dimslash/types.html#ckUser	CommandKind.ckUser		50
-nim	ckMessage	dimslash/types.html#ckMessage	CommandKind.ckMessage		50
-nim	ckButton	dimslash/types.html#ckButton	CommandKind.ckButton		50
-nim	ckSelect	dimslash/types.html#ckSelect	CommandKind.ckSelect		50
-nim	ckModal	dimslash/types.html#ckModal	CommandKind.ckModal		50
-nim	ckAutocomplete	dimslash/types.html#ckAutocomplete	CommandKind.ckAutocomplete		50
-nim	CommandKind	dimslash/types.html#CommandKind	enum CommandKind		50
-nim	hekNotImplemented	dimslash/types.html#hekNotImplemented	HandlerErrorKind.hekNotImplemented		74
-nim	hekNotFound	dimslash/types.html#hekNotFound	HandlerErrorKind.hekNotFound		74
-nim	hekInvalidInteraction	dimslash/types.html#hekInvalidInteraction	HandlerErrorKind.hekInvalidInteraction		74
-nim	HandlerErrorKind	dimslash/types.html#HandlerErrorKind	enum HandlerErrorKind		74
-nim	HandlerError	dimslash/types.html#HandlerError	object HandlerError		95
-nim	InteractionHandler	dimslash/types.html#InteractionHandler	type InteractionHandler		109
-nim	CommandHandlerProc	dimslash/types.html#CommandHandlerProc	type CommandHandlerProc		143
-nim	RegisteredCommand	dimslash/types.html#RegisteredCommand	object RegisteredCommand		148
-nim	CommandRegistry	dimslash/types.html#CommandRegistry	type CommandRegistry		160
-nim	newNotImplementedError	dimslash/types.html#newNotImplementedError,string	proc newNotImplementedError(message: string): ref HandlerError		179
-nim	newNotFoundError	dimslash/types.html#newNotFoundError,string	proc newNotFoundError(message: string): ref HandlerError		189
-nim	newInvalidInteractionError	dimslash/types.html#newInvalidInteractionError,string	proc newInvalidInteractionError(message: string): ref HandlerError		198
-nim	ensureImplemented	dimslash/types.html#ensureImplemented,CommandKind	proc ensureImplemented(kind: CommandKind)		207
-heading	Error handling	dimslash/types.html#error-handling	 Error handling		0
-heading	Architecture overview	dimslash/types.html#architecture-overview	 Architecture overview		0
+nim	DimslashError	dimslash/types.html#DimslashError	object DimslashError		12
+nim	mkUser	dimslash/types.html#mkUser	MentionableKind.mkUser		17
+nim	mkRole	dimslash/types.html#mkRole	MentionableKind.mkRole		17
+nim	MentionableKind	dimslash/types.html#MentionableKind	enum MentionableKind		17
+nim	Mentionable	dimslash/types.html#Mentionable	object Mentionable		19
+nim	cvString	dimslash/types.html#cvString	ChoiceValueKind.cvString		25
+nim	cvInt	dimslash/types.html#cvInt	ChoiceValueKind.cvInt		25
+nim	cvFloat	dimslash/types.html#cvFloat	ChoiceValueKind.cvFloat		25
+nim	ChoiceValueKind	dimslash/types.html#ChoiceValueKind	enum ChoiceValueKind		25
+nim	ChoiceValue	dimslash/types.html#ChoiceValue	object ChoiceValue		27
+nim	ChoiceSpec	dimslash/types.html#ChoiceSpec	object ChoiceSpec		32
+nim	OptionSpec	dimslash/types.html#OptionSpec	object OptionSpec		37
+nim	CommandMeta	dimslash/types.html#CommandMeta	object CommandMeta		50
+nim	rsNone	dimslash/types.html#rsNone	ResponseState.rsNone		60
+nim	rsDeferred	dimslash/types.html#rsDeferred	ResponseState.rsDeferred		60
+nim	rsResponded	dimslash/types.html#rsResponded	ResponseState.rsResponded		60
+nim	ResponseState	dimslash/types.html#ResponseState	enum ResponseState		60
+nim	InteractionContext	dimslash/types.html#InteractionContext	type InteractionContext		65
+nim	SlashContext	dimslash/types.html#SlashContext	type SlashContext		73
+nim	UserContext	dimslash/types.html#UserContext	type UserContext		77
+nim	MessageContext	dimslash/types.html#MessageContext	type MessageContext		78
+nim	ComponentContext	dimslash/types.html#ComponentContext	type ComponentContext		80
+nim	ModalContext	dimslash/types.html#ModalContext	type ModalContext		83
+nim	AutocompleteContext	dimslash/types.html#AutocompleteContext	type AutocompleteContext		86
+nim	SlashRun	dimslash/types.html#SlashRun	type SlashRun		91
+nim	UserRun	dimslash/types.html#UserRun	type UserRun		92
+nim	MessageRun	dimslash/types.html#MessageRun	type MessageRun		93
+nim	ComponentRun	dimslash/types.html#ComponentRun	type ComponentRun		94
+nim	ModalRun	dimslash/types.html#ModalRun	type ModalRun		95
+nim	AutocompleteRun	dimslash/types.html#AutocompleteRun	type AutocompleteRun		96
+nim	psLiteral	dimslash/types.html#psLiteral	PatternSegmentKind.psLiteral		98
+nim	psCapture	dimslash/types.html#psCapture	PatternSegmentKind.psCapture		98
+nim	PatternSegmentKind	dimslash/types.html#PatternSegmentKind	enum PatternSegmentKind		98
+nim	capString	dimslash/types.html#capString	CaptureKind.capString		100
+nim	capInt	dimslash/types.html#capInt	CaptureKind.capInt		100
+nim	CaptureKind	dimslash/types.html#CaptureKind	enum CaptureKind		100
+nim	PatternSegment	dimslash/types.html#PatternSegment	object PatternSegment		102
+nim	CustomIdPattern	dimslash/types.html#CustomIdPattern	object CustomIdPattern		110
+nim	snLeaf	dimslash/types.html#snLeaf	SlashNodeKind.snLeaf		116
+nim	snGroup	dimslash/types.html#snGroup	SlashNodeKind.snGroup		116
+nim	SlashNodeKind	dimslash/types.html#SlashNodeKind	enum SlashNodeKind		116
+nim	SlashNode	dimslash/types.html#SlashNode	type SlashNode		118
+nim	SlashCommand	dimslash/types.html#SlashCommand	type SlashCommand		132
+nim	UserCommand	dimslash/types.html#UserCommand	type UserCommand		136
+nim	MessageCommand	dimslash/types.html#MessageCommand	type MessageCommand		141
+nim	ComponentEntry	dimslash/types.html#ComponentEntry	object ComponentEntry		146
+nim	ComponentTable	dimslash/types.html#ComponentTable	object ComponentTable		149
+nim	Registry	dimslash/types.html#Registry	type Registry		153
+nim	MessagePayload	dimslash/types.html#MessagePayload	object MessagePayload		161
+nim	RestBackend	dimslash/types.html#RestBackend	type RestBackend		172
+nim	ErrorHook	dimslash/types.html#ErrorHook	type ErrorHook		194
+nim	UnknownHook	dimslash/types.html#UnknownHook	type UnknownHook		195
+nim	InteractionHandler	dimslash/types.html#InteractionHandler	type InteractionHandler		197
+nim	choice	dimslash/types.html#choice,string,string	proc choice(name: string; value: string): ChoiceSpec		209
+nim	choice	dimslash/types.html#choice,string,int	proc choice(name: string; value: int): ChoiceSpec		212
+nim	choice	dimslash/types.html#choice,string,float	proc choice(name: string; value: float): ChoiceSpec		215
+nim	newRegistry	dimslash/types.html#newRegistry	proc newRegistry(): Registry		218
+nimgrp	choice	dimslash/types.html#choice-procs-all	proc		209

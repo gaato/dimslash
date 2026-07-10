@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">src/dimslash/context</h1>
       <div class="row">
@@ -51,8 +54,7 @@
       </select>
     </div>
     <ul class="simple simple-toc" id="toc-list">
-  <li><a class="reference" id="response-flow-cheatminussheet_toc" href="#response-flow-cheatminussheet">Response flow cheat-sheet</a></li>
-<li><a class="reference" id="full-example_toc" href="#full-example">Full example</a></li>
+  <li><a class="reference" id="response-flow_toc" href="#response-flow">Response flow</a></li>
 <li>
   <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
 </li>
@@ -60,27 +62,177 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">deferResponse
-  <li><a class="reference" href="#deferResponse%2CInteractionHandler%2CInteraction" title="deferResponse(handler: InteractionHandler; i: Interaction): Future[void]">deferResponse(handler: InteractionHandler; i: Interaction): Future[void]</a></li>
+      <ul class="simple nested-toc-section">appPermissions
+  <li><a class="reference" href="#appPermissions%2CInteractionContext" title="appPermissions(ctx: InteractionContext): set[PermissionFlags]">appPermissions(ctx: InteractionContext): set[PermissionFlags]</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">followup
-  <li><a class="reference" href="#followup%2CInteractionHandler%2CInteraction%2Cstring" title="followup(handler: InteractionHandler; i: Interaction; content: string): Future[
-    Message]">followup(handler: InteractionHandler; i: Interaction; content: string): Future[
+<ul class="simple nested-toc-section">channelId
+  <li><a class="reference" href="#channelId%2CInteractionContext" title="channelId(ctx: InteractionContext): string">channelId(ctx: InteractionContext): string</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">customId
+  <li><a class="reference" href="#customId" title="customId(ctx: ComponentContext | ModalContext): string">customId(ctx: ComponentContext | ModalContext): string</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">defaultOnError
+  <li><a class="reference" href="#defaultOnError%2CInteractionContext%2Cref.Exception" title="defaultOnError(ctx: InteractionContext; e: ref Exception): owned(
+    Future[void])">defaultOnError(ctx: InteractionContext; e: ref Exception): owned(
+    Future[void])</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">deferReply
+  <li><a class="reference" href="#deferReply%2CInteractionContext" title="deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])">deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">deferUpdate
+  <li><a class="reference" href="#deferUpdate" title="deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])">deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">delete
+  <li><a class="reference" href="#delete%2CInteractionContext%2Cstring" title="delete(ctx: InteractionContext; messageId = &quot;@original&quot;): Future[void]">delete(ctx: InteractionContext; messageId = &quot;@original&quot;): Future[void]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">edit
+  <li><a class="reference" href="#edit%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D%2Cstring" title="edit(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+     components: seq[MessageComponent] = @[];
+     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+     allowedMentions = none AllowedMentions; messageId = &quot;@original&quot;): Future[
+    Message]">edit(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+     components: seq[MessageComponent] = @[];
+     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+     allowedMentions = none AllowedMentions; messageId = &quot;@original&quot;): Future[
     Message]</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">field
+  <li><a class="reference" href="#field%2CModalContext%2Cstring" title="field(ctx: ModalContext; customId: string): Option[string]">field(ctx: ModalContext; customId: string): Option[string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">fields
+  <li><a class="reference" href="#fields%2CModalContext" title="fields(ctx: ModalContext): Table[string, string]">fields(ctx: ModalContext): Table[string, string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">focusedValue
+  <li><a class="reference" href="#focusedValue%2CAutocompleteContext" title="focusedValue(ctx: AutocompleteContext): string">focusedValue(ctx: AutocompleteContext): string</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">followup
+  <li><a class="reference" href="#followup%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D" title="followup(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+         components: seq[MessageComponent] = @[];
+         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[
+    Message]">followup(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+         components: seq[MessageComponent] = @[];
+         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[
+    Message]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">guildId
+  <li><a class="reference" href="#guildId%2CInteractionContext" title="guildId(ctx: InteractionContext): Option[string]">guildId(ctx: InteractionContext): Option[string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">inGuild
+  <li><a class="reference" href="#inGuild%2CInteractionContext" title="inGuild(ctx: InteractionContext): bool">inGuild(ctx: InteractionContext): bool</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">locale
+  <li><a class="reference" href="#locale%2CInteractionContext" title="locale(ctx: InteractionContext): Option[string]">locale(ctx: InteractionContext): Option[string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">member
+  <li><a class="reference" href="#member%2CInteractionContext" title="member(ctx: InteractionContext): Option[Member]">member(ctx: InteractionContext): Option[Member]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">message
+  <li><a class="reference" href="#message%2CComponentContext" title="message(ctx: ComponentContext): Option[Message]">message(ctx: ComponentContext): Option[Message]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">newTextInput
+  <li><a class="reference" href="#newTextInput%2Cstring%2Cstring%2Cstring%2Cstring%2Cint%2Cint" title="newTextInput(customId, label: string; style = tisShort; required = true;
+             placeholder = &quot;&quot;; value = &quot;&quot;; minLen = 0; maxLen = 0): MessageComponent">newTextInput(customId, label: string; style = tisShort; required = true;
+             placeholder = &quot;&quot;; value = &quot;&quot;; minLen = 0; maxLen = 0): MessageComponent</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">original
+  <li><a class="reference" href="#original%2CInteractionContext" title="original(ctx: InteractionContext): Future[Message]">original(ctx: InteractionContext): Future[Message]</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">reply
-  <li><a class="reference" href="#reply%2CInteractionHandler%2CInteraction%2Cstring" title="reply(handler: InteractionHandler; i: Interaction; content: string): Future[void]">reply(handler: InteractionHandler; i: Interaction; content: string): Future[void]</a></li>
+  <li><a class="reference" href="#reply%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D" title="reply(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+      components: seq[MessageComponent] = @[];
+      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(
+    Future[void])">reply(ctx: InteractionContext; content = &quot;&quot;; embeds: seq[Embed] = @[];
+      components: seq[MessageComponent] = @[];
+      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];
+      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(
+    Future[void])</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">selectedChannels
+  <li><a class="reference" href="#selectedChannels%2CComponentContext" title="selectedChannels(ctx: ComponentContext): seq[ResolvedChannel]">selectedChannels(ctx: ComponentContext): seq[ResolvedChannel]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">selectedMembers
+  <li><a class="reference" href="#selectedMembers%2CComponentContext" title="selectedMembers(ctx: ComponentContext): seq[Member]">selectedMembers(ctx: ComponentContext): seq[Member]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">selectedRoles
+  <li><a class="reference" href="#selectedRoles%2CComponentContext" title="selectedRoles(ctx: ComponentContext): seq[Role]">selectedRoles(ctx: ComponentContext): seq[Role]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">selectedUsers
+  <li><a class="reference" href="#selectedUsers%2CComponentContext" title="selectedUsers(ctx: ComponentContext): seq[User]">selectedUsers(ctx: ComponentContext): seq[User]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">showModal
+  <li><a class="reference" href="#showModal%2CInteractionContext%2Cstring%2Cstring%2Cseq%5BMessageComponent%5D" title="showModal(ctx: InteractionContext; customId, title: string;
+          components: seq[MessageComponent]): owned(Future[void])">showModal(ctx: InteractionContext; customId, title: string;
+          components: seq[MessageComponent]): owned(Future[void])</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">suggest
-  <li><a class="reference" href="#suggest%2CInteractionHandler%2CInteraction%2Cseq%5BApplicationCommandOptionChoice%5D" title="suggest(handler: InteractionHandler; i: Interaction;
-        choices: seq[ApplicationCommandOptionChoice]): Future[void]">suggest(handler: InteractionHandler; i: Interaction;
-        choices: seq[ApplicationCommandOptionChoice]): Future[void]</a></li>
-<li><a class="reference" href="#suggest%2CInteractionHandler%2CInteraction%2Cseq%5Bstring%5D" title="suggest(handler: InteractionHandler; i: Interaction; choices: seq[string]): Future[
-    void]">suggest(handler: InteractionHandler; i: Interaction; choices: seq[string]): Future[
+  <li><a class="reference" href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D_3" title="suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[
+    void]">suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[
     void]</a></li>
+<li><a class="reference" href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D_2" title="suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[
+    void]">suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[
+    void]</a></li>
+<li><a class="reference" href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D" title="suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[
+    void]">suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[
+    void]</a></li>
+<li><a class="reference" href="#suggest%2CAutocompleteContext%2Cseq%5BApplicationCommandOptionChoice%5D" title="suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[
+    void]">suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[
+    void]</a></li>
+<li><a class="reference" href="#suggest%2CAutocompleteContext%2Cseq%5Bstring%5D" title="suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]">suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">target
+  <li><a class="reference" href="#target%2CMessageContext" title="target(ctx: MessageContext): Message">target(ctx: MessageContext): Message</a></li>
+<li><a class="reference" href="#target%2CUserContext" title="target(ctx: UserContext): User">target(ctx: UserContext): User</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">targetMember
+  <li><a class="reference" href="#targetMember%2CUserContext" title="targetMember(ctx: UserContext): Option[Member]">targetMember(ctx: UserContext): Option[Member]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">update
+  <li><a class="reference" href="#update%2C%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D" title="update(ctx: ComponentContext | ModalContext; content = &quot;&quot;;
+       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];
+       attachments: seq[Attachment] = @[];
+       allowedMentions = none AllowedMentions): owned(Future[void])">update(ctx: ComponentContext | ModalContext; content = &quot;&quot;;
+       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];
+       attachments: seq[Attachment] = @[];
+       allowedMentions = none AllowedMentions): owned(Future[void])</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">user
+  <li><a class="reference" href="#user%2CInteractionContext" title="user(ctx: InteractionContext): User">user(ctx: InteractionContext): User</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">values
+  <li><a class="reference" href="#values%2CComponentContext" title="values(ctx: ComponentContext): seq[string]">values(ctx: ComponentContext): seq[string]</a></li>
 
 </ul>
 
@@ -95,120 +247,461 @@
     
     <div id="tocRoot"></div>
     
-    <p class="module-desc"><p>Convenience helpers for responding to Discord interactions.</p>
-<p>These procs wrap the low-level dimscord REST calls so you don't have to remember which <tt class="docutils literal"><span class="pre"><span class="Identifier">interactionResponseMessage</span></span></tt> kind or endpoint to use.</p>
-
-<h1><a class="toc-backref" id="response-flow-cheatminussheet" href="#response-flow-cheatminussheet">Response flow cheat-sheet</a></h1><table border="1" class="docutils"><tr><th>Scenario</th><th>What to call</th></tr>
-<tr><td>Quick reply (&lt; 3 s)</td><td><tt class="docutils literal"><span class="pre">reply(handler, i, content)</span></tt></td></tr>
-<tr><td>Deferred reply (&gt; 3 s)</td><td><tt class="docutils literal"><span class="pre">deferResponse(handler, i)</span></tt> then <tt class="docutils literal"><span class="pre">followup</span></tt></td></tr>
-<tr><td>Follow-up messages</td><td><tt class="docutils literal"><span class="pre">followup(handler, i, content)</span></tt> (repeatable)</td></tr>
-<tr><td>Autocomplete results</td><td><tt class="docutils literal"><span class="pre">suggest(handler, i, choices)</span></tt></td></tr>
-</table><div class="admonition admonition-info"><span class="admonition-info-text"><b>Note:</b></span>
-Discord requires a response within 3 seconds.  If your handler does heavy work, call <tt class="docutils literal"><span class="pre"><span class="Identifier">deferResponse</span></span></tt> immediately, then send the real content with <tt class="docutils literal"><span class="pre"><span class="Identifier">followup</span></span></tt>.</div>
-
-<h1><a class="toc-backref" id="full-example" href="#full-example">Full example</a></h1><pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;slow&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Deferred example&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">deferResponse</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">)</span>         <span class="Comment"># shows &quot;thinking…&quot;</span>
-  <span class="Comment"># ... expensive work (e.g. database query) ...</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">followup</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Done!&quot;</span><span class="Punctuation">)</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">followup</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Here is another message&quot;</span><span class="Punctuation">)</span></pre></p>
+    <p class="module-desc">Context objects' behavior: typed accessors on the interaction and response helpers that track state so you can't double-respond.
+<h1><a class="toc-backref" id="response-flow" href="#response-flow">Response flow</a></h1><ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">reply</span></span></tt> sends the initial response; called again (or after <tt class="docutils literal"><span class="pre"><span class="Identifier">followup</span></span></tt>) it automatically becomes a followup, and after <tt class="docutils literal"><span class="pre"><span class="Identifier">deferReply</span></span></tt> it edits the deferred placeholder.</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">update</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">deferUpdate</span></span></tt> (components and modals) edit the message the component sits on instead of sending a new one.</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">suggest</span></span></tt> is the only response an autocomplete handler can send.</li>
+</ul>
+<p>All REST traffic goes through <tt class="docutils literal"><span class="pre"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">rest</span></span></tt>, so everything here is testable against a recording backend.</p>
+</p>
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="types.html">types</a>
+    <a class="reference external" href="types.html">types</a>, <a class="reference external" href="extract.html">extract</a>
   </dl>
 </div>
 <div class="section" id="12">
   <h1><a class="toc-backref" href="#12">Procs</a></h1>
   <dl class="item">
-    <div id="deferResponse-procs-all">
-  <div id="deferResponse,InteractionHandler,Interaction">
-  <dt><pre><span class="Keyword">proc</span> <a href="#deferResponse%2CInteractionHandler%2CInteraction"><span class="Identifier">deferResponse</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
-    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">RequesterError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span>
-    <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+    <div id="appPermissions-procs-all">
+  <div id="appPermissions,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#appPermissions%2CInteractionContext"><span class="Identifier">appPermissions</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">set</span><span class="Other">[</span><span class="Identifier">PermissionFlags</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Acknowledges the interaction and shows a &quot;thinking…&quot; indicator.</p>
-<p>Use this when your handler needs more than 3 seconds to produce a response.  Follow up later with <tt class="docutils literal"><span class="pre"><span class="Identifier">followup</span></span></tt>.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;slow&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Takes a while&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">deferResponse</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">)</span>
-  <span class="Comment"># ... long-running work ...</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">followup</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;All done!&quot;</span><span class="Punctuation">)</span></pre>
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="channelId-procs-all">
+  <div id="channelId,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#channelId%2CInteractionContext"><span class="Identifier">channelId</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="customId-procs-all">
+  <div id="customId">
+  <dt><pre><span class="Keyword">proc</span> <a href="#customId"><span class="Identifier">customId</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a> <span class="Operator">|</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="defaultOnError-procs-all">
+  <div id="defaultOnError,InteractionContext,ref.Exception">
+  <dt><pre><span class="Keyword">proc</span> <a href="#defaultOnError%2CInteractionContext%2Cref.Exception"><span class="Identifier">defaultOnError</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">e</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">Exception</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span>
+    <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">]</span><span class="Other">,</span>
+                    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Installed by <tt class="docutils literal"><span class="pre"><span class="Identifier">newInteractionHandler</span></span></tt>: logs to stderr and, if nothing was sent yet, replies with a generic ephemeral error message. Set <tt class="docutils literal"><span class="pre"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">onError</span> <span class="Operator">=</span> <span class="Keyword">nil</span></span></tt> to let exceptions propagate instead.
+    
+  </dd>
+</div>
+
+</div>
+<div id="deferReply-procs-all">
+  <div id="deferReply,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#deferReply%2CInteractionContext"><span class="Identifier">deferReply</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">ephemeral</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span>
+    <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
+                    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
+                    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Acknowledges the interaction with a loading placeholder; follow with <tt class="docutils literal"><span class="pre"><span class="Identifier">reply</span></span></tt> (which edits the placeholder) or <tt class="docutils literal"><span class="pre"><span class="Identifier">followup</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="deferUpdate-procs-all">
+  <div id="deferUpdate">
+  <dt><pre><span class="Keyword">proc</span> <a href="#deferUpdate"><span class="Identifier">deferUpdate</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a> <span class="Operator">|</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span><span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span></span>.}</pre></dt>
+  <dd>
+    
+    Acknowledges a component interaction without any visible change; follow with <tt class="docutils literal"><span class="pre"><span class="Identifier">update</span></span></tt> or <tt class="docutils literal"><span class="pre"><span class="Identifier">edit</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="delete-procs-all">
+  <div id="delete,InteractionContext,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#delete%2CInteractionContext%2Cstring"><span class="Identifier">delete</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">messageId</span> <span class="Other">=</span> <span class="StringLit">&quot;@original&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Deletes the original response (or a followup by id).
+    
+  </dd>
+</div>
+
+</div>
+<div id="edit-procs-all">
+  <div id="edit,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile],string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#edit%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D%2Cstring"><span class="Identifier">edit</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">content</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">embeds</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Embed</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+          <span class="Identifier">components</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+          <span class="Identifier">attachments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Attachment</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">files</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DiscordFile</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+          <span class="Identifier">allowedMentions</span> <span class="Other">=</span> <span class="Identifier">none</span> <span class="Identifier">AllowedMentions</span><span class="Other">;</span> <span class="Identifier">messageId</span> <span class="Other">=</span> <span class="StringLit">&quot;@original&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+    <span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
+               <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Edits the original response (or a followup by id). The message becomes exactly what you pass: omitted content/embeds/components are cleared.
+    
+  </dd>
+</div>
+
+</div>
+<div id="field-procs-all">
+  <div id="field,ModalContext,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#field%2CModalContext%2Cstring"><span class="Identifier">field</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    One text-input value of the submitted modal.
+    
+  </dd>
+</div>
+
+</div>
+<div id="fields-procs-all">
+  <div id="fields,ModalContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#fields%2CModalContext"><span class="Identifier">fields</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    All text-input values of the submitted modal, keyed by custom_id.
+    
+  </dd>
+</div>
+
+</div>
+<div id="focusedValue-procs-all">
+  <div id="focusedValue,AutocompleteContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#focusedValue%2CAutocompleteContext"><span class="Identifier">focusedValue</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    The partial text the user has typed so far, as a string.
     
   </dd>
 </div>
 
 </div>
 <div id="followup-procs-all">
-  <div id="followup,InteractionHandler,Interaction,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#followup%2CInteractionHandler%2CInteraction%2Cstring"><span class="Identifier">followup</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">;</span> <span class="Identifier">content</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span>
-    <span class="Identifier">RequesterError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span>
-    <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <div id="followup,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#followup%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D"><span class="Identifier">followup</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">content</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">embeds</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Embed</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+              <span class="Identifier">components</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+              <span class="Identifier">attachments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Attachment</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+              <span class="Identifier">files</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DiscordFile</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+              <span class="Identifier">allowedMentions</span> <span class="Other">=</span> <span class="Identifier">none</span> <span class="Identifier">AllowedMentions</span><span class="Other">;</span> <span class="Identifier">ephemeral</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">;</span>
+              <span class="Identifier">tts</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Sends a follow-up message after the initial response or deferral.</p>
-<p>Returns the <tt class="docutils literal"><span class="pre"><span class="Identifier">Message</span></span></tt> object created by Discord. You can call this multiple times to send several follow-up messages.</p>
-<pre class="listing"><span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">deferResponse</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">)</span>
-<span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">followup</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Step 1 complete&quot;</span><span class="Punctuation">)</span>
-<span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">followup</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Step 2 complete&quot;</span><span class="Punctuation">)</span></pre>
+    Sends a followup message (requires an initial response or deferral).
+    
+  </dd>
+</div>
+
+</div>
+<div id="guildId-procs-all">
+  <div id="guildId,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#guildId%2CInteractionContext"><span class="Identifier">guildId</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="inGuild-procs-all">
+  <div id="inGuild,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#inGuild%2CInteractionContext"><span class="Identifier">inGuild</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="locale-procs-all">
+  <div id="locale,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#locale%2CInteractionContext"><span class="Identifier">locale</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="member-procs-all">
+  <div id="member,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#member%2CInteractionContext"><span class="Identifier">member</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">Member</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="message-procs-all">
+  <div id="message,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#message%2CComponentContext"><span class="Identifier">message</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    The message the clicked component is attached to.
+    
+  </dd>
+</div>
+
+</div>
+<div id="newTextInput-procs-all">
+  <div id="newTextInput,string,string,string,string,int,int">
+  <dt><pre><span class="Keyword">proc</span> <a href="#newTextInput%2Cstring%2Cstring%2Cstring%2Cstring%2Cint%2Cint"><span class="Identifier">newTextInput</span></a><span class="Other">(</span><span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">label</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">style</span> <span class="Other">=</span> <span class="Identifier">tisShort</span><span class="Other">;</span> <span class="Identifier">required</span> <span class="Other">=</span> <span class="Identifier">true</span><span class="Other">;</span>
+                  <span class="Identifier">placeholder</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">value</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">minLen</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span> <span class="Identifier">maxLen</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">MessageComponent</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    A modal text input, already wrapped in the action row Discord requires (dimscord has builders for buttons/selects but not these). Pass the results straight to <tt class="docutils literal"><span class="pre"><span class="Identifier">showModal</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="original-procs-all">
+  <div id="original,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#original%2CInteractionContext"><span class="Identifier">original</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Fetches the original interaction response.
     
   </dd>
 </div>
 
 </div>
 <div id="reply-procs-all">
-  <div id="reply,InteractionHandler,Interaction,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#reply%2CInteractionHandler%2CInteraction%2Cstring"><span class="Identifier">reply</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">;</span> <span class="Identifier">content</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
-            <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">RequesterError</span><span class="Other">,</span> <span class="Identifier">IOError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span>
-    <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <div id="reply,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#reply%2CInteractionContext%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D%2Cseq%5BDiscordFile%5D"><span class="Identifier">reply</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">content</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">embeds</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Embed</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+           <span class="Identifier">components</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+           <span class="Identifier">attachments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Attachment</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">files</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DiscordFile</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+           <span class="Identifier">allowedMentions</span> <span class="Other">=</span> <span class="Identifier">none</span> <span class="Identifier">AllowedMentions</span><span class="Other">;</span> <span class="Identifier">ephemeral</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">;</span>
+           <span class="Identifier">tts</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span><span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Sends an immediate visible reply to the interaction.</p>
-<p>This corresponds to <tt class="docutils literal"><span class="pre"><span class="Identifier">irtChannelMessageWithSource</span></span></tt>. You <strong>must</strong> call this within 3 seconds of receiving the interaction, otherwise Discord will show &quot;The application did not respond&quot;.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;greet&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Says hi&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Hi there!&quot;</span><span class="Punctuation">)</span></pre>
+    <p>Replies to the interaction. State-aware: the first call sends the initial response, after <tt class="docutils literal"><span class="pre"><span class="Identifier">deferReply</span></span></tt> it fills in the placeholder, and any later call becomes a followup.</p>
+<p><tt class="docutils literal"><span class="pre"><span class="Identifier">files</span></span></tt> are only supported after a deferral or initial response (Discord limitation of the initial-response callback in dimscord).</p>
+
+    
+  </dd>
+</div>
+
+</div>
+<div id="selectedChannels-procs-all">
+  <div id="selectedChannels,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#selectedChannels%2CComponentContext"><span class="Identifier">selectedChannels</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">ResolvedChannel</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="selectedMembers-procs-all">
+  <div id="selectedMembers,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#selectedMembers%2CComponentContext"><span class="Identifier">selectedMembers</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Member</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="selectedRoles-procs-all">
+  <div id="selectedRoles,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#selectedRoles%2CComponentContext"><span class="Identifier">selectedRoles</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Role</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="selectedUsers-procs-all">
+  <div id="selectedUsers,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#selectedUsers%2CComponentContext"><span class="Identifier">selectedUsers</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">User</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="showModal-procs-all">
+  <div id="showModal,InteractionContext,string,string,seq[MessageComponent]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#showModal%2CInteractionContext%2Cstring%2Cstring%2Cseq%5BMessageComponent%5D"><span class="Identifier">showModal</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">title</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+               <span class="Identifier">components</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span><span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Opens a modal as the initial response. Not allowed for modal-submit or autocomplete interactions (Discord rejects those).
     
   </dd>
 </div>
 
 </div>
 <div id="suggest-procs-all">
-  <div id="suggest,InteractionHandler,Interaction,seq[ApplicationCommandOptionChoice]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CInteractionHandler%2CInteraction%2Cseq%5BApplicationCommandOptionChoice%5D"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">;</span>
-             <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">ApplicationCommandOptionChoice</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span>
-    <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <div id="suggest,AutocompleteContext,openArray[]_3">
+  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D_3"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">float</span><span class="Other">)</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+    <span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+            <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Responds to an autocomplete interaction with the given choices.</p>
-<p>Discord allows up to <strong>25 choices</strong> per autocomplete response. Each <tt class="docutils literal"><span class="pre"><span class="Identifier">ApplicationCommandOptionChoice</span></span></tt> specifies a <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> (shown to the user) and a <tt class="docutils literal"><span class="pre"><span class="Identifier">value</span></span></tt> (sent back when selected).</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocomplete</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">var</span> <span class="Identifier">choices</span><span class="Punctuation">:</span> <span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">ApplicationCommandOptionChoice</span><span class="Punctuation">]</span>
-  <span class="Identifier">choices</span><span class="Operator">.</span><span class="Identifier">add</span> <span class="Identifier">ApplicationCommandOptionChoice</span><span class="Punctuation">(</span>
-    <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;Nim&quot;</span><span class="Punctuation">,</span> <span class="Identifier">value</span><span class="Punctuation">:</span> <span class="Punctuation">(</span><span class="Identifier">some</span><span class="Punctuation">(</span><span class="StringLit">&quot;nim&quot;</span><span class="Punctuation">)</span><span class="Punctuation">,</span> <span class="Identifier">none</span><span class="Punctuation">(</span><span class="Identifier">int</span><span class="Punctuation">)</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
-  <span class="Identifier">choices</span><span class="Operator">.</span><span class="Identifier">add</span> <span class="Identifier">ApplicationCommandOptionChoice</span><span class="Punctuation">(</span>
-    <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="StringLit">&quot;Go&quot;</span><span class="Punctuation">,</span>  <span class="Identifier">value</span><span class="Punctuation">:</span> <span class="Punctuation">(</span><span class="Identifier">some</span><span class="Punctuation">(</span><span class="StringLit">&quot;go&quot;</span><span class="Punctuation">)</span><span class="Punctuation">,</span>  <span class="Identifier">none</span><span class="Punctuation">(</span><span class="Identifier">int</span><span class="Punctuation">)</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Identifier">choices</span><span class="Punctuation">)</span></pre>
+    (label, value) number suggestions (raw JSON: dimscord's choice type cannot represent float values).
     
   </dd>
 </div>
-<div id="suggest,InteractionHandler,Interaction,seq[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CInteractionHandler%2CInteraction%2Cseq%5Bstring%5D"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span> <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span>
-    <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span>
-    <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="suggest,AutocompleteContext,openArray[]_2">
+  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D_2"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+    <span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+            <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    <p>Convenience overload: maps each string to a choice where <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span> <span class="Operator">==</span> <span class="Identifier">value</span></span></tt>.</p>
-<p>This is the simplest way to provide autocomplete suggestions:</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocomplete</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">partial</span> <span class="Operator">=</span> <span class="Identifier">focusedOptionValue</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="StringLit">&quot;&quot;</span><span class="Punctuation">)</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="Identifier">partial</span> <span class="Operator">&amp;</span> <span class="StringLit">&quot;-one&quot;</span><span class="Punctuation">,</span> <span class="Identifier">partial</span> <span class="Operator">&amp;</span> <span class="StringLit">&quot;-two&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span></pre>
+    (label, value) integer suggestions.
+    
+  </dd>
+</div>
+<div id="suggest,AutocompleteContext,openArray[]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CAutocompleteContext%2CopenArray%5B%5D"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Other">(</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+    <span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+            <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    (label, value) string suggestions.
+    
+  </dd>
+</div>
+<div id="suggest,AutocompleteContext,seq[ApplicationCommandOptionChoice]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CAutocompleteContext%2Cseq%5BApplicationCommandOptionChoice%5D"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">;</span>
+             <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">ApplicationCommandOptionChoice</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Sends autocomplete suggestions. Only the first 25 are sent (Discord's hard limit).
+    
+  </dd>
+</div>
+<div id="suggest,AutocompleteContext,seq[string]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#suggest%2CAutocompleteContext%2Cseq%5Bstring%5D"><span class="Identifier">suggest</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    String suggestions where the label is also the value.
+    
+  </dd>
+</div>
+
+</div>
+<div id="target-procs-all">
+  <div id="target,MessageContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#target%2CMessageContext"><span class="Identifier">target</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#MessageContext"><span class="Identifier">MessageContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Message</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="target,UserContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#target%2CUserContext"><span class="Identifier">target</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#UserContext"><span class="Identifier">UserContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">User</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">DimslashError</span><span class="Other">]</span><span class="Other">,</span>
+                                      <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="targetMember-procs-all">
+  <div id="targetMember,UserContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#targetMember%2CUserContext"><span class="Identifier">targetMember</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#UserContext"><span class="Identifier">UserContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">Member</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Guild member data for the target user, when invoked in a guild.
+    
+  </dd>
+</div>
+
+</div>
+<div id="update-procs-all">
+  <div id="update,,string,seq[Embed],seq[MessageComponent],seq[Attachment]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#update%2C%2Cstring%2Cseq%5BEmbed%5D%2Cseq%5BMessageComponent%5D%2Cseq%5BAttachment%5D"><span class="Identifier">update</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a> <span class="Operator">|</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">content</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span>
+            <span class="Identifier">embeds</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Embed</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">components</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+            <span class="Identifier">attachments</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Attachment</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+            <span class="Identifier">allowedMentions</span> <span class="Other">=</span> <span class="Identifier">none</span> <span class="Identifier">AllowedMentions</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span><span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span></span>.}</pre></dt>
+  <dd>
+    
+    Edits the message the component/modal came from instead of sending a new one. After <tt class="docutils literal"><span class="pre"><span class="Identifier">deferUpdate</span></span></tt> this edits the original message via REST.
+    
+  </dd>
+</div>
+
+</div>
+<div id="user-procs-all">
+  <div id="user,InteractionContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#user%2CInteractionContext"><span class="Identifier">user</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">User</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    The invoking user (in guilds, taken from the member object).
+    
+  </dd>
+</div>
+
+</div>
+<div id="values-procs-all">
+  <div id="values,ComponentContext">
+  <dt><pre><span class="Keyword">proc</span> <a href="#values%2CComponentContext"><span class="Identifier">values</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Raw values picked in a select menu (empty for buttons).
     
   </dd>
 </div>
@@ -224,7 +717,7 @@ Discord requires a response within 3 seconds.  If your handler does heavy work, 
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-18 16:20:53 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
       </div>
     </div>
   </div>

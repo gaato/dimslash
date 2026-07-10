@@ -1,8 +1,8 @@
 # Package
 
-version       = "0.0.2"
+version       = "0.1.0"
 author        = "Gakuto Furuya"
-description   = "Interactive command handler for Dimscord"
+description   = "Declarative interaction command DSL for Dimscord"
 license       = "BlueOak-1.0.0"
 srcDir        = "src"
 

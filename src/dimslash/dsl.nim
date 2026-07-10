@@ -1,542 +1,689 @@
-## DSL for declaratively registering interaction commands.
+## The declarative command DSL — dimslash's primary API surface.
 ##
-## This is the primary API surface of **dimslash**.  It provides template /
-## macro wrappers that let you add commands with minimal boilerplate.
-##
-## Quick reference
-## ---------------
-## ============================  ====================================================
-## Helper                        Purpose
-## ============================  ====================================================
-## ``addSlash``                  Slash command with typed parameter extraction
-## ``addSlashProc``              Slash command from a raw ``CommandHandlerProc``
-## ``addUser``                   User context-menu command
-## ``addMessage``                Message context-menu command
-## ``addButton``                 Button component handler
-## ``addSelect``                 Select-menu component handler
-## ``addModal``                  Modal submit handler
-## ``addAutocomplete``           Autocomplete handler (fallback or option-scoped)
-## ``addAutocompleteForOption``  Autocomplete handler with option-name validation
-## ============================  ====================================================
-##
-## Every ``add*`` helper comes in **two flavours**:
-##
-## 1. **Proc overload** — accepts a ``CommandHandlerProc`` directly.
-## 2. **Template overload** — accepts a ``do:`` block that auto-injects
-##    ``s: Shard`` and ``i: Interaction`` into scope.
-##
-## ``addSlash`` is a **macro** that additionally generates typed
-## ``requireSlashArg`` / ``getSlashArg`` calls from the do-block
-## parameters.
-##
-## Lifecycle
-## ---------
-## ::
-##   1. Register  — handler.addSlash / addUser / addButton / …
-##   2. Sync      — handler.registerCommands()   (onReady)
-##   3. Dispatch  — handler.handleInteraction(s, i)
-##
-## Minimal bot
-## -----------
 ## .. code-block:: nim
-##   import dimscord, asyncdispatch, os
-##   import dimslash
+##   handler.slash("roll", "Roll some dice"):
+##     ## number of sides
+##     sides {.min: 1, max: 1000.}: int = 6
+##     ## how many dice
+##     count: Option[int]
+##     execute:
+##       await ctx.reply($rollDice(sides, count.get(1)))
 ##
-##   let discord = newDiscordClient(getEnv("DISCORD_TOKEN"))
-##   var handler = newInteractionHandler(discord)
+##   handler.slash("admin", "Admin tools"):
+##     permissions = {permManageGuild}
+##     group "user", "User management":
+##       sub "ban", "Ban a user":
+##         ## who to ban
+##         target: User
+##         execute:
+##           await ctx.reply(target.username & " banned", ephemeral = true)
 ##
-##   handler.addSlash("ping", "Replies with pong") do:
-##     await handler.reply(i, "pong")
+##   handler.button("page:{n:int}"):
+##     await ctx.update("page " & $n)
 ##
-##   handler.addSlash("sum", "Adds two numbers") do (i: Interaction, a: int, b: int):
-##     await handler.reply(i, $(a + b))
+## Inside a `slash` block:
 ##
-##   handler.addUser("userinfo") do:
-##     await handler.reply(i, "user: " & i.member.get.user.username)
+## - `name: Type` declares an option; `Option[T]` makes it optional, a
+##   default (`= 6`) makes it optional on Discord but non-Option in Nim.
+##   The description comes from a `## doc` comment **on the preceding
+##   line** (same-line doc comments don't survive parsing) or a
+##   `{.desc: "…".}` pragma.
+## - Per-option pragmas: `desc`, `name` (wire-name override), `min`/`max`
+##   (int/float), `minLen`/`maxLen` (string), `choices` (string/int/float),
+##   `channels` (Channel), `nameLoc`/`descLoc` (localization tables).
+## - `key = value` lines configure the command: `guild`, `permissions`,
+##   `nsfw`, `contexts`, `integrations`, `nameLocalizations`,
+##   `descriptionLocalizations`.
+## - `execute:` is the handler body; `ctx: SlashContext` and one variable
+##   per declared option are in scope.
+## - `group "name", "desc":` / `sub "name", "desc":` nest subcommands
+##   (max depth: group → sub).
+## - `autocomplete <option>:` attaches an autocomplete handler for one
+##   option (compile-time checked); `autocomplete:` is the fallback for
+##   the whole (sub)command. `ctx: AutocompleteContext` is in scope.
 ##
-##   handler.addButton("my_button") do:
-##     await handler.reply(i, "Button clicked!")
-##
-##   handler.addAutocomplete("sum") do:
-##     await handler.suggest(i, @["1", "2", "3"])
-##
-##   proc onReady(s: Shard, r: Ready) {.event(discord).} =
-##     await handler.registerCommands()
-##
-##   proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-##     discard await handler.handleInteraction(s, i)
-##
-##   waitFor discord.startSession(gateway_intents = {giGuilds})
+## Everything the macros can check is checked at compile time: Discord
+## name rules, duplicate/misordered options, group depth, choices vs
+## autocomplete conflicts, and unknown pragma keys.
 
-import asyncdispatch
+import std/[macros, options, strutils, tables]
 import dimscord
-import macros
-import std/[strutils, tables]
 
-import ./types
-import ./registry
-import ./slashargs
+import ./types, ./registry, ./extract, ./context, ./dispatch
 
-proc addCommand(handler: InteractionHandler, kind: CommandKind, name, description: string,
-                callback: CommandHandlerProc, guildId = "", optionName = "") =
-  ## Internal helper — builds a `RegisteredCommand` and delegates to
-  ## `registry.register`.  All public ``add*`` helpers ultimately call
-  ## this proc.
-  handler.registry.register RegisteredCommand(
-    kind: kind,
-    name: name,
-    optionName: optionName,
-    description: description,
-    guildId: guildId,
-    callback: callback
-  )
+export types, registry, extract, context, dispatch
 
-proc normalizeOptionNameLocal(name: string): string =
-  name.toLowerAscii().replace("_", "")
+type
+  OptClass = enum
+    ocString, ocInt, ocFloat, ocBool, ocUser, ocMember, ocRole, ocChannel,
+    ocMentionable, ocAttachment
 
-proc registerSlashOptionNames*(handler: InteractionHandler, commandName: string,
-                               optionNames: openArray[string]) =
-  ## Stores the known slash option parameter names for `commandName`.
-  ##
-  ## Called automatically by `addSlash` after parsing the do-block formals.
-  ## The stored names are used by `addAutocompleteForOption` to validate
-  ## that the option being linked actually exists in the slash definition.
-  ##
-  ## Names are normalised (lower-cased, underscores removed) before storage.
-  let key = commandName.toLowerAscii()
-  var normalized: seq[string] = @[]
-  for item in optionNames:
-    let option = normalizeOptionNameLocal(item)
-    if option.len == 0:
-      continue
-    if option notin normalized:
-      normalized.add option
-  handler.slashOptionNames[key] = normalized
+  OptIR = ref object
+    node: NimNode              # declaration site, for error positions
+    nimName: NimNode           # ident bound in the execute body
+    wireName: string
+    class: OptClass
+    optional: bool             # Option[T]
+    default: NimNode           # nil if absent
+    description: string
+    minV, maxV: NimNode
+    minLen, maxLen: NimNode
+    choices: NimNode           # nnkTableConstr or nil
+    channels: NimNode          # set literal or nil
+    nameLoc, descLoc: NimNode  # table constructors or nil
+    autocomplete: bool
 
-proc slashOptionNames*(handler: InteractionHandler, commandName: string): seq[string] =
-  ## Returns the normalised option names registered for `commandName`.
-  ## Returns an empty seq when no names are recorded.
-  let key = commandName.toLowerAscii()
-  if handler.slashOptionNames.hasKey(key):
-    return handler.slashOptionNames[key]
-  @[]
+  NodeIR = ref object
+    node: NimNode
+    name, description: string
+    isGroup: bool
+    options: seq[OptIR]
+    executeBody: NimNode
+    autocompleters: seq[tuple[optionName: string, body: NimNode,
+                              site: NimNode]]
+    children: seq[NodeIR]
 
-proc hasSlashOption*(handler: InteractionHandler, commandName, optionName: string): bool =
-  ## Returns ``true`` when `optionName` is a known parameter of
-  ## `commandName`.  Both values are normalised before comparison.
-  let key = commandName.toLowerAscii()
-  if not handler.slashOptionNames.hasKey(key):
-    return false
-  let normalized = normalizeOptionNameLocal(optionName)
-  normalized in handler.slashOptionNames[key]
+  MetaIR = ref object
+    guild, permissions, nsfw, contexts, integrations: NimNode
+    nameLoc, descLoc: NimNode
 
-proc addSlashProc*(handler: InteractionHandler, name, description: string,
-                   callback: CommandHandlerProc, guildId = "") =
-  ## Registers a slash command from an explicit `CommandHandlerProc`.
-  ##
-  ## You must supply a non-empty `description` (Discord rejects empty ones
-  ## for slash commands).  For the ergonomic do-block syntax use the
-  ## `addSlash` macro instead.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSlashProc("ping", "Pong!",
-  ##     proc (s: Shard, i: Interaction) {.async.} =
-  ##       await handler.reply(i, "pong")
-  ##   )
-  if description.len == 0:
-    raise newException(ValueError, "slash command description must not be empty")
-  handler.addCommand(ckSlash, name, description, callback, guildId)
+const
+  scalarClasses = {ocString, ocInt, ocFloat}
+  numberClasses = {ocInt, ocFloat}
 
-proc addUser*(handler: InteractionHandler, name: string,
-              callback: CommandHandlerProc, guildId = "") =
-  ## Registers a user context-menu command.
-  ##
-  ## User commands appear under **Apps > name** when right-clicking a user.
-  ## No description is shown in the Discord UI for context-menu commands.
-  ##
-  ## See the template overload below for the do-block syntax.
-  handler.addCommand(ckUser, name, "", callback, guildId)
+proc validateApiName(name: string, site: NimNode, what: string) =
+  if name.len < 1 or name.len > 32:
+    error(what & " name must be 1..32 characters: \"" & name & "\"", site)
+  for c in name:
+    if c in {'A'..'Z'}:
+      error(what & " names must be lowercase (Discord requirement): \"" &
+        name & "\"", site)
+    if c in {' ', '/', '\\'}:
+      error(what & " names must not contain '" & c & "': \"" & name & "\"",
+        site)
 
-template addUser*(handler: InteractionHandler, name: string,
-                  body: untyped{nkStmtList}) =
-  ## Registers a user context-menu command using a do-block.
-  ##
-  ## Inside the block, `s` (Shard) and `i` (Interaction) are implicitly
-  ## available.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addUser("userinfo") do:
-  ##     let user = i.member.get.user
-  ##     await handler.reply(i, "User: " & user.username)
-  handler.addUser(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+proc validateDescription(desc: string, site: NimNode, what: string) =
+  if desc.len < 1 or desc.len > 100:
+    error(what & " description must be 1..100 characters", site)
 
-template addUser*(handler: InteractionHandler, name, guildId: string,
-                  body: untyped{nkStmtList}) =
-  ## Registers a guild-scoped user context-menu command using a do-block.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addUser("userinfo", "123456789") do:
-  ##     await handler.reply(i, "guild-scoped user command")
-  handler.addUser(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    guildId = guildId
-  )
+proc classOf(t: NimNode): OptClass =
+  if t.kind == nnkIdent:
+    case $t
+    of "string": return ocString
+    of "int": return ocInt
+    of "float": return ocFloat
+    of "bool": return ocBool
+    of "User": return ocUser
+    of "Member": return ocMember
+    of "Role": return ocRole
+    of "Channel", "ResolvedChannel": return ocChannel
+    of "Mentionable": return ocMentionable
+    of "Attachment": return ocAttachment
+    else: discard
+  error("unsupported option type: " & t.repr &
+    " (supported: string, int, float, bool, User, Member, Role, Channel, " &
+    "Mentionable, Attachment, and Option[T] of those)", t)
 
-proc addMessage*(handler: InteractionHandler, name: string,
-                 callback: CommandHandlerProc, guildId = "") =
-  ## Registers a message context-menu command.
-  ##
-  ## Message commands appear under **Apps > name** when right-clicking a
-  ## message.
-  handler.addCommand(ckMessage, name, "", callback, guildId)
+proc acotOf(class: OptClass): NimNode =
+  case class
+  of ocString: bindSym"acotStr"
+  of ocInt: bindSym"acotInt"
+  of ocFloat: bindSym"acotNumber"
+  of ocBool: bindSym"acotBool"
+  of ocUser, ocMember: bindSym"acotUser"
+  of ocRole: bindSym"acotRole"
+  of ocChannel: bindSym"acotChannel"
+  of ocMentionable: bindSym"acotMentionable"
+  of ocAttachment: bindSym"acotAttachment"
 
-template addMessage*(handler: InteractionHandler, name: string,
-                     body: untyped{nkStmtList}) =
-  ## Registers a message context-menu command using a do-block.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addMessage("quote") do:
-  ##     await handler.reply(i, "You quoted a message!")
-  handler.addMessage(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+proc extractTypeOf(class: OptClass): NimNode =
+  # open idents on purpose: a bindSym'd type symbol fails to match the
+  # generic typedesc parameters of `opt`/`req`
+  case class
+  of ocString: ident"string"
+  of ocInt: ident"int"
+  of ocFloat: ident"float"
+  of ocBool: ident"bool"
+  of ocUser: ident"User"
+  of ocMember: ident"Member"
+  of ocRole: ident"Role"
+  of ocChannel: ident"ResolvedChannel"
+  of ocMentionable: ident"Mentionable"
+  of ocAttachment: ident"Attachment"
 
-template addMessage*(handler: InteractionHandler, name, guildId: string,
-                     body: untyped{nkStmtList}) =
-  ## Registers a guild-scoped message context-menu command using a do-block.
-  handler.addMessage(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    guildId = guildId
-  )
-
-proc isOptionType(n: NimNode): bool {.compileTime.} =
-  n.kind == nnkBracketExpr and $n[0] == "Option"
-
-proc isNamedType(n: NimNode, name: string): bool {.compileTime.} =
-  case n.kind
-  of nnkIdent, nnkSym:
-    n.strVal == name
-  else:
-    false
-
-macro addSlash*(handler: InteractionHandler, name, description: string,
-                parameters: varargs[untyped]): untyped =
-  ## Registers a slash command with automatic typed parameter extraction.
-  ##
-  ## This is the recommended way to add slash commands.  The macro inspects
-  ## the `do` block's formal parameters and generates `requireSlashArg` /
-  ## `getSlashArg` calls at compile time.
-  ##
-  ## **Supported parameter types:**
-  ## - `string`, `int`, `bool`, `float` – required, extracted via `requireSlashArg`.
-  ## - `User`, `Role` – resolved objects, also required.
-  ## - `Option[T]` for any of the above – optional, extracted via `getSlashArg`.
-  ## - `Interaction` – bound to the raw interaction object (no extraction).
-  ## - `Shard` – bound to the gateway shard (no extraction).
-  ##
-  ## **Named parameters:**
-  ## - `guildId = "..."` – restrict the command to a specific guild.
-  ##
-  ## Simple command (no typed params)
-  ## --------------------------------
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSlash("ping", "Replies with pong") do:
-  ##     await handler.reply(i, "pong")
-  ##
-  ## Typed parameters
-  ## ----------------
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSlash("sum", "Adds two numbers") do (i: Interaction, a: int, b: int):
-  ##     await handler.reply(i, "sum = " & $(a + b))
-  ##
-  ## Optional parameters
-  ## -------------------
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSlash("greet", "Greets someone") do (i: Interaction, name: Option[string]):
-  ##     let who = if name.isSome: name.get else: "world"
-  ##     await handler.reply(i, "Hello, " & who & "!")
-  ##
-  ## Guild-scoped command
-  ## --------------------
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSlash("admin", "Admin only", guildId = "123456789") do (i: Interaction):
-  ##     await handler.reply(i, "admin only")
-  runnableExamples "-r:off -d:ssl":
-    import dimscord, asyncdispatch, options
-    import dimslash
-
-    let discord = newDiscordClient("TOKEN")
-    var h = newInteractionHandler(discord)
-
-    # Typed parameters:
-    h.addSlash("sum", "Adds two numbers") do (i: Interaction, a: int, b: int):
-      await h.reply(i, $(a + b))
-
-    # Optional parameter:
-    h.addSlash("greet", "Greets someone") do (i: Interaction, name: Option[string]):
-      let who = if name.isSome: name.get else: "world"
-      await h.reply(i, "Hello, " & who & "!")
-  #==#
-  var doNode: NimNode = nil
-  var bareBody: NimNode = nil
-  var guildId = newLit("")
-
-  for arg in parameters:
-    case arg.kind
-    of nnkDo, nnkLambda:
-      doNode = arg
-    of nnkStmtList:
-      bareBody = arg
-    of nnkExprEqExpr:
-      if $arg[0] == "guildId" or $arg[0] == "guildID":
-        guildId = arg[1]
-      else:
-        error("Unknown named parameter: " & $arg[0], arg)
+proc parseOptionPragmas(o: OptIR, pragma: NimNode) =
+  for entry in pragma:
+    if entry.kind != nnkExprColonExpr or entry[0].kind != nnkIdent:
+      error("option pragmas take the form key: value", entry)
+    let key = $entry[0]
+    let value = entry[1]
+    case key
+    of "desc":
+      value.expectKind nnkStrLit
+      o.description = value.strVal
+    of "name":
+      value.expectKind nnkStrLit
+      o.wireName = value.strVal
+    of "min":
+      if o.class notin numberClasses:
+        error("min is only valid for int/float options", entry)
+      o.minV = value
+    of "max":
+      if o.class notin numberClasses:
+        error("max is only valid for int/float options", entry)
+      o.maxV = value
+    of "minLen":
+      if o.class != ocString:
+        error("minLen is only valid for string options", entry)
+      o.minLen = value
+    of "maxLen":
+      if o.class != ocString:
+        error("maxLen is only valid for string options", entry)
+      o.maxLen = value
+    of "choices":
+      if o.class notin scalarClasses:
+        error("choices are only valid for string/int/float options", entry)
+      value.expectKind nnkTableConstr
+      if value.len == 0 or value.len > 25:
+        error("choices must have 1..25 entries", entry)
+      o.choices = value
+    of "channels":
+      if o.class != ocChannel:
+        error("channels is only valid for Channel options", entry)
+      o.channels = value
+    of "nameLoc":
+      value.expectKind nnkTableConstr
+      o.nameLoc = value
+    of "descLoc":
+      value.expectKind nnkTableConstr
+      o.descLoc = value
     else:
-      error("Unknown addSlash parameter node kind: " & $arg.kind, arg)
+      error("unknown option pragma: " & key & " (valid: desc, name, min, " &
+        "max, minLen, maxLen, choices, channels, nameLoc, descLoc)", entry)
 
-  if doNode.isNil and bareBody.isNil:
-    error("addSlash requires a do block")
+proc parseOptionDecl(stmt: NimNode, pendingDoc: string): OptIR =
+  ## `name: Type`, `name: Type = default`, with an optional pragma list:
+  ## Call(Ident|PragmaExpr, StmtList(TypeExpr | Asgn(TypeExpr, default)))
+  result = OptIR(node: stmt, description: pendingDoc)
+  var head = stmt[0]
+  var pragma: NimNode = nil
+  if head.kind == nnkPragmaExpr:
+    pragma = head[1]
+    head = head[0]
+  head.expectKind nnkIdent
+  result.nimName = head
+  result.wireName = $head
 
-  let formalParams = if doNode.isNil: newNimNode(nnkFormalParams) else: doNode[3]
-  let body = if doNode.isNil: bareBody else: doNode[6]
-  let shardIdent = genSym(nskParam, "s")
-  let interactionIdent = genSym(nskParam, "i")
-  var declaredNames: seq[string] = @[]
-  var optionNamesNode = newNimNode(nnkBracket)
+  var typeExpr = stmt[1][0]
+  if typeExpr.kind == nnkAsgn:
+    result.default = typeExpr[1]
+    typeExpr = typeExpr[0]
+  if typeExpr.kind == nnkBracketExpr and typeExpr.len == 2 and
+      typeExpr[0].kind == nnkIdent and $typeExpr[0] == "Option":
+    if result.default != nil:
+      error("an Option[T] option cannot also have a default; " &
+        "use a plain type with a default instead", stmt)
+    result.optional = true
+    typeExpr = typeExpr[1]
+  result.class = classOf(typeExpr)
 
-  var parseStmts = newStmtList()
-  for paramIndex in 1..<formalParams.len:
-    let def = formalParams[paramIndex]
-    if def.kind != nnkIdentDefs:
-      error("Unsupported parameter definition", def)
-    let paramType = def[1]
-    for j in 0..<(def.len - 2):
-      let paramNameNode = def[j]
-      let paramName = $paramNameNode
-      declaredNames.add paramName
-      let normalizedName = newLit(paramName.toLowerAscii().replace("_", ""))
+  if pragma != nil:
+    result.parseOptionPragmas(pragma)
+  validateApiName(result.wireName, stmt, "option")
+  if result.description.len == 0:
+    warning("option \"" & result.wireName & "\" has no description " &
+      "(add a ## doc comment on the line above or a desc pragma); " &
+      "using the option name", stmt)
+    result.description = result.wireName
+  validateDescription(result.description, stmt, "option")
 
-      if isNamedType(paramType, "Interaction"):
-        parseStmts.add quote do:
-          let `paramNameNode` = `interactionIdent`
-        continue
+proc parseNodeBody(body: NimNode, ir: NodeIR, meta: MetaIR, isRoot: bool,
+                   inGroup: bool)
 
-      if isNamedType(paramType, "Shard"):
-        parseStmts.add quote do:
-          let `paramNameNode` = `shardIdent`
-        continue
+proc parseGroupOrSub(stmt: NimNode, ir: NodeIR, isGroup: bool,
+                     inGroup: bool) =
+  let what = if isGroup: "group" else: "sub"
+  if stmt.len != 4:
+    error(what & " takes a name, a description, and a block: " &
+      what & " \"name\", \"description\": ...", stmt)
+  stmt[1].expectKind nnkStrLit
+  stmt[2].expectKind nnkStrLit
+  let child = NodeIR(node: stmt, name: stmt[1].strVal,
+                     description: stmt[2].strVal, isGroup: isGroup)
+  validateApiName(child.name, stmt, what)
+  validateDescription(child.description, stmt, what)
+  if isGroup and inGroup:
+    error("groups cannot be nested inside groups (Discord allows " &
+      "command → group → subcommand at most)", stmt)
+  for existing in ir.children:
+    if existing.name == child.name:
+      error("duplicate " & what & " name: " & child.name, stmt)
+  parseNodeBody(stmt[3], child, nil, isRoot = false, inGroup = isGroup)
+  if not isGroup and child.executeBody == nil:
+    error("sub \"" & child.name & "\" is missing an execute block", stmt)
+  ir.children.add child
 
-      optionNamesNode.add newLit(paramName)
+proc parseSetting(stmt: NimNode, meta: MetaIR) =
+  stmt[0].expectKind nnkIdent
+  let value = stmt[1]
+  case $stmt[0]
+  of "guild": meta.guild = value
+  of "permissions": meta.permissions = value
+  of "nsfw": meta.nsfw = value
+  of "contexts": meta.contexts = value
+  of "integrations": meta.integrations = value
+  of "nameLocalizations":
+    value.expectKind nnkTableConstr
+    meta.nameLoc = value
+  of "descriptionLocalizations":
+    value.expectKind nnkTableConstr
+    meta.descLoc = value
+  else:
+    error("unknown command setting: " & $stmt[0] & " (valid: guild, " &
+      "permissions, nsfw, contexts, integrations, nameLocalizations, " &
+      "descriptionLocalizations)", stmt)
 
-      if paramType.isOptionType():
-        let innerType = paramType[1]
-        parseStmts.add quote do:
-          let `paramNameNode` = getSlashArg(`interactionIdent`, `normalizedName`, `innerType`)
+proc parseNodeBody(body: NimNode, ir: NodeIR, meta: MetaIR, isRoot: bool,
+                   inGroup: bool) =
+  body.expectKind nnkStmtList
+  var pendingDoc = ""
+  for stmt in body:
+    case stmt.kind
+    of nnkCommentStmt:
+      pendingDoc = stmt.strVal
+      continue
+    of nnkCall:
+      if stmt[0].kind == nnkIdent and $stmt[0] == "execute":
+        if inGroup:
+          error("groups cannot have an execute block; put it in a sub",
+            stmt)
+        if ir.executeBody != nil:
+          error("duplicate execute block", stmt)
+        stmt[1].expectKind nnkStmtList
+        ir.executeBody = stmt[1]
+      elif stmt[0].kind == nnkIdent and $stmt[0] == "autocomplete":
+        # `autocomplete:` — whole-command fallback
+        stmt[1].expectKind nnkStmtList
+        ir.autocompleters.add (optionName: "", body: stmt[1], site: stmt)
       else:
-        parseStmts.add quote do:
-          let `paramNameNode` = requireSlashArg(`interactionIdent`, `normalizedName`, `paramType`)
+        if inGroup:
+          error("groups can only contain sub blocks", stmt)
+        let opt = parseOptionDecl(stmt, pendingDoc)
+        for existing in ir.options:
+          if existing.wireName == opt.wireName:
+            error("duplicate option name: " & opt.wireName, stmt)
+        ir.options.add opt
+    of nnkCommand:
+      stmt[0].expectKind nnkIdent
+      case $stmt[0]
+      of "group":
+        if not isRoot:
+          error("group is only allowed at the top level of a slash block",
+            stmt)
+        parseGroupOrSub(stmt, ir, isGroup = true, inGroup = inGroup)
+      of "sub":
+        parseGroupOrSub(stmt, ir, isGroup = false, inGroup = inGroup)
+      of "autocomplete":
+        # `autocomplete <option>:` — option-scoped handler
+        if stmt.len != 3 or stmt[1].kind != nnkIdent:
+          error("autocomplete takes an option name: autocomplete query: ...",
+            stmt)
+        stmt[2].expectKind nnkStmtList
+        ir.autocompleters.add (optionName: $stmt[1], body: stmt[2],
+                               site: stmt)
+      else:
+        error("unexpected statement in " &
+          (if isRoot: "slash" else: "sub") & " block: " & stmt.repr, stmt)
+    of nnkAsgn:
+      if not isRoot:
+        error("command settings (key = value) are only allowed at the " &
+          "top level of a slash block", stmt)
+      parseSetting(stmt, meta)
+    else:
+      error("unexpected statement in slash block: " & stmt.repr, stmt)
+    pendingDoc = ""
 
-  var aliasStmts = newStmtList()
-  if "s" notin declaredNames:
-    aliasStmts.add quote do:
-      let s {.inject, used.} = `shardIdent`
-  if "i" notin declaredNames:
-    aliasStmts.add quote do:
-      let i {.inject, used.} = `interactionIdent`
+proc validateNode(ir: NodeIR) =
+  if ir.children.len > 0:
+    if ir.options.len > 0 or ir.executeBody != nil:
+      error("a command with subcommands cannot have its own options or " &
+        "execute block", ir.node)
+    if ir.autocompleters.len > 0:
+      error("autocomplete blocks belong inside the sub they refer to",
+        ir.autocompleters[0].site)
+    if ir.children.len > 25:
+      error("at most 25 subcommands/groups are allowed", ir.node)
+    for child in ir.children:
+      validateNode(child)
+    return
+  if ir.executeBody == nil:
+    error("missing execute block", ir.node)
+  if ir.options.len > 25:
+    error("at most 25 options are allowed", ir.node)
+  var seenOptional = false
+  for opt in ir.options:
+    let optionalOnWire = opt.optional or opt.default != nil
+    if optionalOnWire:
+      seenOptional = true
+    elif seenOptional:
+      error("required option \"" & opt.wireName & "\" must come before " &
+        "all optional ones (Discord requirement)", opt.node)
+  for (optionName, _, site) in ir.autocompleters:
+    if optionName.len == 0:
+      continue
+    var found = false
+    for opt in ir.options:
+      if opt.wireName == optionName:
+        if opt.class notin scalarClasses:
+          error("autocomplete only works on string/int/float options", site)
+        if opt.choices != nil:
+          error("option \"" & optionName & "\" has choices; choices and " &
+            "autocomplete are mutually exclusive", site)
+        opt.autocomplete = true
+        found = true
+    if not found:
+      error("autocomplete refers to unknown option \"" & optionName & "\"",
+        site)
 
-  let callback = quote do:
-    proc (`shardIdent`: Shard, `interactionIdent`: Interaction) {.async, closure.} =
-      `aliasStmts`
-      `parseStmts`
+# --- Code generation ---------------------------------------------------------
+
+proc genChoices(o: OptIR): NimNode =
+  ## `{"label": value, ...}` → `@[choice("label", string(value)), ...]`
+  ## (the conversion pins the value type to the option type).
+  let conv = extractTypeOf(o.class)
+  var bracket = newNimNode(nnkBracket)
+  for entry in o.choices:
+    entry.expectKind nnkExprColonExpr
+    bracket.add newCall(bindSym"choice", entry[0],
+                        newCall(conv, entry[1]))
+  newCall(bindSym"@", bracket)
+
+proc genOptionSpec(o: OptIR): tuple[stmts, specVar: NimNode] =
+  let spec = genSym(nskVar, "spec")
+  let (wire, desc) = (newLit o.wireName, newLit o.description)
+  let kindE = acotOf(o.class)
+  let required = newLit(not o.optional and o.default == nil)
+  let ac = newLit o.autocomplete
+  var stmts = newStmtList()
+  stmts.add quote do:
+    var `spec` = OptionSpec(name: `wire`, description: `desc`,
+                            kind: `kindE`, required: `required`,
+                            autocomplete: `ac`)
+  if o.minV != nil:
+    let v = o.minV
+    stmts.add quote do:
+      `spec`.minValue = some(float(`v`))
+  if o.maxV != nil:
+    let v = o.maxV
+    stmts.add quote do:
+      `spec`.maxValue = some(float(`v`))
+  if o.minLen != nil:
+    let v = o.minLen
+    stmts.add quote do:
+      `spec`.minLen = some(int(`v`))
+  if o.maxLen != nil:
+    let v = o.maxLen
+    stmts.add quote do:
+      `spec`.maxLen = some(int(`v`))
+  if o.choices != nil:
+    let choicesE = genChoices(o)
+    stmts.add quote do:
+      `spec`.choices = `choicesE`
+  if o.channels != nil:
+    let ch = o.channels
+    stmts.add quote do:
+      for channelType in `ch`:
+        `spec`.channelTypes.add channelType
+  if o.nameLoc != nil:
+    let loc = o.nameLoc
+    stmts.add quote do:
+      `spec`.nameLoc = toTable(`loc`)
+  if o.descLoc != nil:
+    let loc = o.descLoc
+    stmts.add quote do:
+      `spec`.descLoc = toTable(`loc`)
+  result = (stmts, spec)
+
+proc genRun(ir: NodeIR): NimNode =
+  ## The leaf's run closure: one `let` per option, then the user body.
+  let ctxId = ident"ctx"
+  let (optSym, reqSym) = (bindSym"opt", bindSym"req")
+  var body = newStmtList()
+  for o in ir.options:
+    let (nimName, wire, typeE) = (o.nimName, newLit o.wireName,
+                                  extractTypeOf(o.class))
+    if o.default != nil:
+      let default = o.default
+      body.add quote do:
+        let `nimName` = `optSym`(`ctxId`, `wire`, `typeE`).get(`default`)
+    elif o.optional:
+      body.add quote do:
+        let `nimName` = `optSym`(`ctxId`, `wire`, `typeE`)
+    else:
+      body.add quote do:
+        let `nimName` = `reqSym`(`ctxId`, `wire`, `typeE`)
+  body.add ir.executeBody
+  result = quote do:
+    proc (`ctxId`: SlashContext): Future[void] {.async.} =
       `body`
 
+proc genAutocompleter(body: NimNode): NimNode =
+  let ctxId = ident"ctx"
   result = quote do:
-    addSlashProc(`handler`, `name`, `description`, `callback`, guildId = `guildId`)
-    registerSlashOptionNames(`handler`, `name`, `optionNamesNode`)
+    proc (`ctxId`: AutocompleteContext): Future[void] {.async.} =
+      `body`
 
-proc addButton*(handler: InteractionHandler, customId: string,
-                callback: CommandHandlerProc) =
-  ## Registers a handler for a button component identified by `customId`.
-  ##
-  ## When a user clicks a button whose ``custom_id`` matches, dimslash
-  ## routes the ``itMessageComponent`` interaction to this handler.
-  ##
-  ## **Tip:** if both a button and select handler share the same
-  ## ``customId``, the dispatcher tries button first.  See the
-  ## dispatch module docs for the full fallback logic.
-  handler.addCommand(ckButton, customId, "", callback)
+proc genNode(ir: NodeIR): tuple[stmts, nodeVar: NimNode] =
+  let node = genSym(nskVar, "node")
+  let (name, desc) = (newLit ir.name, newLit ir.description)
+  var stmts = newStmtList()
+  if ir.children.len > 0:
+    stmts.add quote do:
+      var `node` = SlashNode(kind: snGroup, name: `name`,
+                             description: `desc`)
+    for child in ir.children:
+      let (childStmts, childVar) = genNode(child)
+      stmts.add childStmts
+      let childName = newLit child.name
+      stmts.add quote do:
+        `node`.children[`childName`] = `childVar`
+  else:
+    let runE = genRun(ir)
+    stmts.add quote do:
+      var `node` = SlashNode(kind: snLeaf, name: `name`,
+                             description: `desc`, run: `runE`)
+    for o in ir.options:
+      let (specStmts, specVar) = genOptionSpec(o)
+      stmts.add specStmts
+      stmts.add quote do:
+        `node`.options.add `specVar`
+    for (optionName, acBody, _) in ir.autocompleters:
+      let keyE = newLit optionName
+      let acE = genAutocompleter(acBody)
+      stmts.add quote do:
+        `node`.autocompleters[`keyE`] = `acE`
+  result = (stmts, node)
 
-template addButton*(handler: InteractionHandler, customId: string,
-                    body: untyped{nkStmtList}) =
-  ## Registers a button handler using a do-block.
-  ##
-  ## ``s`` and ``i`` are injected automatically.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addButton("confirm:delete") do:
-  ##     await handler.reply(i, "Deleted!")
-  handler.addButton(customId,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+proc genMeta(meta: MetaIR): tuple[stmts, metaVar: NimNode] =
+  let m = genSym(nskVar, "meta")
+  var stmts = newStmtList()
+  stmts.add quote do:
+    var `m` = CommandMeta()
+  if meta.guild != nil:
+    let v = meta.guild
+    stmts.add quote do:
+      `m`.guildId = `v`
+  if meta.permissions != nil:
+    let v = meta.permissions
+    stmts.add quote do:
+      `m`.permissions = some(`v`)
+  if meta.nsfw != nil:
+    let v = meta.nsfw
+    stmts.add quote do:
+      `m`.nsfw = `v`
+  if meta.contexts != nil:
+    let v = meta.contexts
+    stmts.add quote do:
+      `m`.contexts = some(`v`)
+  if meta.integrations != nil:
+    let v = meta.integrations
+    stmts.add quote do:
+      `m`.integrations = some(`v`)
+  if meta.nameLoc != nil:
+    let v = meta.nameLoc
+    stmts.add quote do:
+      `m`.nameLoc = toTable(`v`)
+  if meta.descLoc != nil:
+    let v = meta.descLoc
+    stmts.add quote do:
+      `m`.descLoc = toTable(`v`)
+  result = (stmts, m)
 
-proc addSelect*(handler: InteractionHandler, customId: string,
-                callback: CommandHandlerProc) =
-  ## Registers a handler for a select-menu component identified by `customId`.
-  ##
-  ## Use `componentargs.selectValues` inside the handler to extract the
-  ## user's selections.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addSelect("role_picker") do:
-  ##     let values = i.selectValues
-  ##     await handler.reply(i, "You picked: " & values.join(", "))
-  handler.addCommand(ckSelect, customId, "", callback)
+proc normalizeBody(body: NimNode): NimNode =
+  ## Accept both `handler.slash(...): ...` and `slash(handler, ...) do: ...`.
+  if body.kind == nnkDo:
+    body.body
+  else:
+    body
 
-template addSelect*(handler: InteractionHandler, customId: string,
-                    body: untyped{nkStmtList}) =
-  ## Registers a select-menu handler using a do-block.
-  handler.addSelect(customId,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+macro slash*(handler: untyped; name, description: static string;
+             body: untyped): untyped =
+  ## Declares and registers a slash command. See the module docs for the
+  ## full block grammar.
+  let body = normalizeBody(body)
+  let root = NodeIR(node: body, name: name, description: description)
+  var meta = MetaIR()
+  validateApiName(name, body, "slash command")
+  validateDescription(description, body, "slash command")
+  parseNodeBody(body, root, meta, isRoot = true, inGroup = false)
+  validateNode(root)
 
-proc addModal*(handler: InteractionHandler, customId: string,
-               callback: CommandHandlerProc) =
-  ## Registers a handler for a modal submit identified by `customId`.
-  ##
-  ## When a user submits a modal whose ``custom_id`` matches, dimslash
-  ## routes the ``itModalSubmit`` interaction here.  Use
-  ## `componentargs.modalValues` / `componentargs.modalValue` inside
-  ## the handler to extract submitted text inputs.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addModal("feedback_form") do:
-  ##     let fields = i.modalValues
-  ##     await handler.reply(i, "Thanks for your feedback!")
-  handler.addCommand(ckModal, customId, "", callback)
+  let (nodeStmts, nodeVar) = genNode(root)
+  let (metaStmts, metaVar) = genMeta(meta)
+  result = quote do:
+    block:
+      `metaStmts`
+      `nodeStmts`
+      addSlashCommand(`handler`,
+        SlashCommand(meta: `metaVar`, root: `nodeVar`))
 
-template addModal*(handler: InteractionHandler, customId: string,
-                   body: untyped{nkStmtList}) =
-  ## Registers a modal-submit handler using a do-block.
-  handler.addModal(customId,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+const settingKeys = ["guild", "permissions", "nsfw", "contexts",
+                     "integrations", "nameLocalizations",
+                     "descriptionLocalizations"]
 
-proc addAutocomplete*(handler: InteractionHandler, name: string,
-                      callback: CommandHandlerProc, guildId = "", optionName = "") =
-  ## Registers an autocomplete handler for the slash command `name`.
-  ##
-  ## - **Fallback handler** (``optionName`` is empty) — invoked whenever
-  ##   the user types in *any* option of the given command and no
-  ##   option-specific handler matches.
-  ## - **Option-specific handler** (``optionName`` provided) — invoked
-  ##   only when the focused option matches.
-  ##
-  ## Resolution order (see also `registry.findAutocomplete`):
-  ## 1. Exact match on ``name + optionName``.
-  ## 2. Fallback match on ``name`` alone.
-  ## 3. ``hekNotFound`` error.
-  handler.addCommand(ckAutocomplete, name, "", callback, guildId, optionName)
+proc splitSettingsAndBody(body: NimNode, meta: MetaIR): NimNode =
+  ## Context-menu commands: leading `key = value` lines whose key is a
+  ## known setting are consumed as settings, everything else (including
+  ## ordinary assignments) is the handler body.
+  result = newStmtList()
+  var inSettings = true
+  for stmt in body:
+    if inSettings and stmt.kind == nnkAsgn and stmt[0].kind == nnkIdent and
+        $stmt[0] in settingKeys:
+      parseSetting(stmt, meta)
+    else:
+      inSettings = false
+      result.add stmt
 
-proc addAutocompleteForOption*(handler: InteractionHandler, name, optionName: string,
-                               callback: CommandHandlerProc, guildId = "") =
-  ## Registers an option-specific autocomplete handler with **validation**.
-  ##
-  ## Unlike ``addAutocomplete`` with an ``optionName`` argument, this proc
-  ## verifies that ``optionName`` was declared in the ``addSlash`` do-block
-  ## for ``name``.  If the option is unknown a ``ValueError`` is raised at
-  ## registration time, catching typos early.
-  ##
-  ## .. code-block:: nim
-  ##   # Register slash with typed params first:
-  ##   handler.addSlash("search", "Search items") do (i: Interaction, query: string, category: string):
-  ##     await handler.reply(i, "Searching...")
-  ##
-  ##   # Now add autocomplete for 'category':
-  ##   handler.addAutocompleteForOption("search", "category") do:
-  ##     await handler.suggest(i, @["books", "movies", "music"])
-  if not handler.hasSlashOption(name, optionName):
-    raise newException(ValueError,
-      "unknown slash option for autocomplete link: " & name & "." & optionName)
+macro user*(handler: untyped; name: static string; body: untyped): untyped =
+  ## Declares a user context-menu command. The block is the handler body
+  ## (`ctx: UserContext` is in scope), optionally preceded by
+  ## `key = value` settings.
+  if name.len < 1 or name.len > 32:
+    error("user command name must be 1..32 characters", body)
+  var meta = MetaIR()
+  let runBody = splitSettingsAndBody(normalizeBody(body), meta)
+  let (metaStmts, metaVar) = genMeta(meta)
+  let ctxId = ident"ctx"
+  let nameE = newLit name
+  result = quote do:
+    block:
+      `metaStmts`
+      addUserCommand(`handler`, UserCommand(name: `nameE`, meta: `metaVar`,
+        run: proc (`ctxId`: UserContext): Future[void] {.async.} =
+          `runBody`))
 
-  handler.addAutocomplete(name, callback, guildId = guildId, optionName = optionName)
+macro message*(handler: untyped; name: static string;
+               body: untyped): untyped =
+  ## Declares a message context-menu command. The block is the handler
+  ## body (`ctx: MessageContext` is in scope), optionally preceded by
+  ## `key = value` settings.
+  if name.len < 1 or name.len > 32:
+    error("message command name must be 1..32 characters", body)
+  var meta = MetaIR()
+  let runBody = splitSettingsAndBody(normalizeBody(body), meta)
+  let (metaStmts, metaVar) = genMeta(meta)
+  let ctxId = ident"ctx"
+  let nameE = newLit name
+  result = quote do:
+    block:
+      `metaStmts`
+      addMessageCommand(`handler`, MessageCommand(name: `nameE`,
+        meta: `metaVar`,
+        run: proc (`ctxId`: MessageContext): Future[void] {.async.} =
+          `runBody`))
 
-template addAutocomplete*(handler: InteractionHandler, name: string,
-                          body: untyped{nkStmtList}) =
-  ## Registers a **fallback** autocomplete handler using a do-block.
-  ##
-  ## Use `focusedOptionName` and `focusedOptionValue` inside the block
-  ## to inspect what the user is typing, then call `suggest` to reply.
-  ##
-  ## .. code-block:: nim
-  ##   handler.addAutocomplete("search") do:
-  ##     let partial = i.focusedOptionValue
-  ##     await handler.suggest(i, @["apple", "banana", "cherry"])
-  handler.addAutocomplete(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+proc genCaptureLets(pattern: string, site: NimNode,
+                    ctxId: NimNode): NimNode =
+  ## Compile-time pattern validation + one typed `let` per capture.
+  result = newStmtList()
+  var parsed: CustomIdPattern
+  try:
+    parsed = parseCustomIdPattern(pattern)
+  except DimslashError as e:
+    error(e.msg, site)
+  for segment in parsed.segments:
+    if segment.kind != psCapture:
+      continue
+    let nameId = ident(segment.name)
+    let nameLit = newLit segment.name
+    let parseIntSym = bindSym"parseInt"
+    if segment.capture == capInt:
+      result.add quote do:
+        let `nameId` = `parseIntSym`(`ctxId`.captures[`nameLit`])
+    else:
+      result.add quote do:
+        let `nameId` = `ctxId`.captures[`nameLit`]
 
-template addAutocomplete*(handler: InteractionHandler, name, optionName: string,
-                          body: untyped{nkStmtList}) =
-  ## Registers an **option-scoped** autocomplete handler using a do-block.
-  ##
-  ## This handler is selected only when the focused option matches
-  ## `optionName`.  Falls back to the generic autocomplete handler if
-  ## no option-specific match is found.
-  handler.addAutocomplete(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    optionName = optionName
-  )
+macro button*(handler: untyped; customId: static string;
+              body: untyped): untyped =
+  ## Registers a button handler. `customId` may contain `{name}` /
+  ## `{name:int}` captures, which become typed variables in the body
+  ## (`ctx: ComponentContext` is in scope).
+  let ctxId = ident"ctx"
+  let body = normalizeBody(body)
+  let lets = genCaptureLets(customId, body, ctxId)
+  let idE = newLit customId
+  result = quote do:
+    addButtonHandler(`handler`, `idE`,
+      proc (`ctxId`: ComponentContext): Future[void] {.async.} =
+        `lets`
+        `body`)
 
-template addAutocompleteForOption*(handler: InteractionHandler, name, optionName: string,
-                                   body: untyped{nkStmtList}) =
-  ## Registers an option-scoped autocomplete handler with slash-option validation.
-  handler.addAutocompleteForOption(name,
-    optionName,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body
-  )
+macro select*(handler: untyped; customId: static string;
+              body: untyped): untyped =
+  ## Registers a select-menu handler (all five select kinds).
+  ## Captures work like `button`; `ctx: ComponentContext` is in scope.
+  let ctxId = ident"ctx"
+  let body = normalizeBody(body)
+  let lets = genCaptureLets(customId, body, ctxId)
+  let idE = newLit customId
+  result = quote do:
+    addSelectHandler(`handler`, `idE`,
+      proc (`ctxId`: ComponentContext): Future[void] {.async.} =
+        `lets`
+        `body`)
 
-template addAutocomplete*(handler: InteractionHandler, name, guildId: string,
-                          body: untyped{nkStmtList}) =
-  ## Guild-scoped fallback autocomplete handler variant.
-  handler.addAutocomplete(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    guildId = guildId
-  )
-
-template addAutocomplete*(handler: InteractionHandler, name, optionName, guildId: string,
-                          body: untyped{nkStmtList}) =
-  ## Guild-scoped option-specific autocomplete handler variant.
-  handler.addAutocomplete(name,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    guildId = guildId,
-    optionName = optionName
-  )
-
-template addAutocompleteForOption*(handler: InteractionHandler, name, optionName, guildId: string,
-                                   body: untyped{nkStmtList}) =
-  ## Guild-scoped option-specific autocomplete handler with validation.
-  handler.addAutocompleteForOption(name,
-    optionName,
-    proc (s {.inject.}: Shard, i {.inject.}: Interaction) {.async, closure.} =
-      body,
-    guildId = guildId
-  )
+macro modal*(handler: untyped; customId: static string;
+             body: untyped): untyped =
+  ## Registers a modal-submit handler. Captures work like `button`;
+  ## `ctx: ModalContext` is in scope.
+  let ctxId = ident"ctx"
+  let body = normalizeBody(body)
+  let lets = genCaptureLets(customId, body, ctxId)
+  let idE = newLit customId
+  result = quote do:
+    addModalHandler(`handler`, `idE`,
+      proc (`ctxId`: ModalContext): Future[void] {.async.} =
+        `lets`
+        `body`)

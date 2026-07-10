@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">src/dimslash/types</h1>
       <div class="row">
@@ -51,44 +54,165 @@
       </select>
     </div>
     <ul class="simple simple-toc" id="toc-list">
-  <li><a class="reference" id="error-handling_toc" href="#error-handling">Error handling</a></li>
-<li><a class="reference" id="architecture-overview_toc" href="#architecture-overview">Architecture overview</a></li>
-<li>
+  <li>
   <details open>
     <summary><a class="reference reference-toplevel" href="#7" id="57">Types</a></summary>
     <ul class="simple simple-toc-section">
-      <li><a class="reference" href="#CommandHandlerProc" title="CommandHandlerProc = proc (s: Shard; i: Interaction): Future[void] {.closure.}">CommandHandlerProc</a></li>
-<li><a class="reference" href="#CommandKind" title="CommandKind = enum
-  ckSlash, ckUser, ckMessage, ckButton, ckSelect, ckModal, ckAutocomplete">CommandKind</a></li>
-<li><a class="reference" href="#CommandRegistry" title="CommandRegistry = ref object
-  slash*: OrderedTable[string, RegisteredCommand]
-  user*: OrderedTable[string, RegisteredCommand]
-  message*: OrderedTable[string, RegisteredCommand]
-  button*: OrderedTable[string, RegisteredCommand]
-  select*: OrderedTable[string, RegisteredCommand]
-  modal*: OrderedTable[string, RegisteredCommand]
-  autocomplete*: OrderedTable[string, RegisteredCommand]">CommandRegistry</a></li>
-<li><a class="reference" href="#HandlerError" title="HandlerError = object of CatchableError
-  kind*: HandlerErrorKind">HandlerError</a></li>
-<li><a class="reference" href="#HandlerErrorKind" title="HandlerErrorKind = enum
-  hekNotImplemented, hekNotFound, hekInvalidInteraction">HandlerErrorKind</a></li>
+      <li><a class="reference" href="#AutocompleteContext" title="AutocompleteContext = ref object of InteractionContext
+  path*: seq[string]
+  options*: Table[string, ApplicationCommandInteractionDataOption]
+  focusedName*: string">AutocompleteContext</a></li>
+<li><a class="reference" href="#AutocompleteRun" title="AutocompleteRun = proc (ctx: AutocompleteContext): Future[void]">AutocompleteRun</a></li>
+<li><a class="reference" href="#CaptureKind" title="CaptureKind = enum
+  capString, capInt">CaptureKind</a></li>
+<li><a class="reference" href="#ChoiceSpec" title="ChoiceSpec = object
+  name*: string
+  value*: ChoiceValue">ChoiceSpec</a></li>
+<li><a class="reference" href="#ChoiceValue" title="ChoiceValue = object
+  case kind*: ChoiceValueKind
+  of cvString:
+    strVal*: string
+  of cvInt:
+    intVal*: BiggestInt
+  of cvFloat:
+    floatVal*: float">ChoiceValue</a></li>
+<li><a class="reference" href="#ChoiceValueKind" title="ChoiceValueKind = enum
+  cvString, cvInt, cvFloat">ChoiceValueKind</a></li>
+<li><a class="reference" href="#CommandMeta" title="CommandMeta = object
+  guildId*: string           ## &quot;&quot; = global (or handler default)
+  permissions*: Option[set[PermissionFlags]]
+  nsfw*: bool
+  contexts*: Option[set[InteractionContextType]]
+  integrations*: Option[set[ApplicationIntegrationType]]
+  nameLoc*, descLoc*: Table[string, string]">CommandMeta</a></li>
+<li><a class="reference" href="#ComponentContext" title="ComponentContext = ref object of InteractionContext
+  captures*: Table[string, string] ## custom_id pattern captures">ComponentContext</a></li>
+<li><a class="reference" href="#ComponentEntry" title="ComponentEntry[H] = object
+  pattern*: CustomIdPattern
+  handler*: H">ComponentEntry</a></li>
+<li><a class="reference" href="#ComponentRun" title="ComponentRun = proc (ctx: ComponentContext): Future[void]">ComponentRun</a></li>
+<li><a class="reference" href="#ComponentTable" title="ComponentTable[H] = object
+  exact*: Table[string, H]
+  patterns*: seq[ComponentEntry[H]] ## longest literal prefix first">ComponentTable</a></li>
+<li><a class="reference" href="#CustomIdPattern" title="CustomIdPattern = object
+  raw*: string
+  segments*: seq[PatternSegment]">CustomIdPattern</a></li>
+<li><a class="reference" href="#DimslashError" title="DimslashError = object of CatchableError">DimslashError</a></li>
+<li><a class="reference" href="#ErrorHook" title="ErrorHook = proc (ctx: InteractionContext; e: ref Exception): Future[void]">ErrorHook</a></li>
+<li><a class="reference" href="#InteractionContext" title="InteractionContext = ref object of RootObj
+  handler*: InteractionHandler
+  shard*: Shard              ## may be nil in tests
+  interaction*: Interaction
+  state*: ResponseState">InteractionContext</a></li>
 <li><a class="reference" href="#InteractionHandler" title="InteractionHandler = ref object
-  discord*: DiscordClient    ## The dimscord client used to call the REST API.
-  defaultGuildId*: string ## If non-empty, `registerCommands()` targets this guild by default
-                          ## instead of the global scope.  Guild-scoped commands update instantly;
-                          ## global commands can take up to 1 hour to propagate.
-  registry*: CommandRegistry ## Internal command registry.  Prefer the DSL helpers (`addSlash`,
-                             ## `addUser`, `addButton`, …) to populate it.
-  slashOptionNames*: OrderedTable[string, seq[string]] ## Known slash option names per command (normalised).  Populated
-                                                       ## automatically by `addSlash` and consumed by
-                                                       ## `addAutocompleteForOption` for validation.">InteractionHandler</a></li>
-<li><a class="reference" href="#RegisteredCommand" title="RegisteredCommand = object
-  kind*: CommandKind         ## What kind of interaction this command handles.
-  name*: string              ## Command or custom-id name (lowercased in registry).
-  optionName*: string        ## Focused option name (autocomplete only; empty for fallback).
-  description*: string       ## Description shown in the Discord UI (slash only).
-  guildId*: string           ## If non-empty, restrict sync to this guild.
-  callback*: CommandHandlerProc ## The handler to invoke at dispatch time.">RegisteredCommand</a></li>
+  discord*: DiscordClient    ## may be nil in tests
+  rest*: RestBackend
+  registry*: Registry
+  defaultGuildId*: string    ## guild for commands without `guild =`
+  applicationId*: string     ## resolved lazily; settable up front
+  onError*: ErrorHook ## called when a handler raises; default logs and sends an
+                      ## ephemeral error reply if nothing was sent yet. nil = re-raise.
+  onUnknown*: UnknownHook    ## called for interactions with no registered handler. nil = ignore.">InteractionHandler</a></li>
+<li><a class="reference" href="#Mentionable" title="Mentionable = object
+  case kind*: MentionableKind
+  of mkUser:
+    user*: User
+  of mkRole:
+    role*: Role">Mentionable</a></li>
+<li><a class="reference" href="#MentionableKind" title="MentionableKind = enum
+  mkUser, mkRole">MentionableKind</a></li>
+<li><a class="reference" href="#MessageCommand" title="MessageCommand = ref object
+  name*: string
+  meta*: CommandMeta
+  run*: MessageRun">MessageCommand</a></li>
+<li><a class="reference" href="#MessageContext" title="MessageContext = ref object of InteractionContext">MessageContext</a></li>
+<li><a class="reference" href="#MessagePayload" title="MessagePayload = object
+  content*: Option[string]
+  embeds*: seq[Embed]
+  components*: seq[MessageComponent]
+  attachments*: seq[Attachment]
+  files*: seq[DiscordFile]
+  allowedMentions*: Option[AllowedMentions]
+  flags*: set[MessageFlags]
+  tts*: bool">MessagePayload</a></li>
+<li><a class="reference" href="#MessageRun" title="MessageRun = proc (ctx: MessageContext): Future[void]">MessageRun</a></li>
+<li><a class="reference" href="#ModalContext" title="ModalContext = ref object of InteractionContext
+  captures*: Table[string, string]">ModalContext</a></li>
+<li><a class="reference" href="#ModalRun" title="ModalRun = proc (ctx: ModalContext): Future[void]">ModalRun</a></li>
+<li><a class="reference" href="#OptionSpec" title="OptionSpec = object
+  name*, description*: string
+  kind*: ApplicationCommandOptionType
+  required*: bool
+  choices*: seq[ChoiceSpec]
+  minValue*, maxValue*: Option[float] ## emitted as integers for acotInt
+  minLen*, maxLen*: Option[int]
+  channelTypes*: seq[ChannelType]
+  autocomplete*: bool
+  nameLoc*, descLoc*: Table[string, string]">OptionSpec</a></li>
+<li><a class="reference" href="#PatternSegment" title="PatternSegment = object
+  case kind*: PatternSegmentKind
+  of psLiteral:
+    lit*: string
+  of psCapture:
+    name*: string
+    capture*: CaptureKind">PatternSegment</a></li>
+<li><a class="reference" href="#PatternSegmentKind" title="PatternSegmentKind = enum
+  psLiteral, psCapture">PatternSegmentKind</a></li>
+<li><a class="reference" href="#Registry" title="Registry = ref object
+  slash*: OrderedTable[string, SlashCommand]
+  user*: OrderedTable[string, UserCommand]
+  message*: OrderedTable[string, MessageCommand]
+  buttons*: ComponentTable[ComponentRun]
+  selects*: ComponentTable[ComponentRun]
+  modals*: ComponentTable[ModalRun]">Registry</a></li>
+<li><a class="reference" href="#ResponseState" title="ResponseState = enum
+  rsNone,                   ## nothing sent yet
+  rsDeferred,               ## deferReply/deferUpdate sent; next reply edits/follows up
+  rsResponded                ## initial response sent; further replies become followups">ResponseState</a></li>
+<li><a class="reference" href="#RestBackend" title="RestBackend = ref object
+  createResponse*: proc (interactionId, token: string;
+                         kind: InteractionResponseType;
+                         data: InteractionCallbackDataMessage): Future[void]
+  createAutocomplete*: proc (interactionId, token: string; choices: JsonNode): Future[
+      void]
+  createModal*: proc (interactionId, token: string;
+                      data: InteractionCallbackDataModal): Future[void]
+  createFollowup*: proc (applicationId, token: string; payload: MessagePayload): Future[
+      Message]
+  editResponse*: proc (applicationId, token, messageId: string;
+                       payload: MessagePayload): Future[Message]
+  getResponse*: proc (applicationId, token, messageId: string): Future[Message]
+  deleteResponse*: proc (applicationId, token, messageId: string): Future[void]
+  getApplicationId*: proc (): Future[string]
+  getCommands*: proc (applicationId, guildId: string): Future[JsonNode]
+  putCommands*: proc (applicationId, guildId: string; payload: JsonNode): Future[
+      JsonNode]">RestBackend</a></li>
+<li><a class="reference" href="#SlashCommand" title="SlashCommand = ref object
+  meta*: CommandMeta
+  root*: SlashNode           ## root.name is the command name">SlashCommand</a></li>
+<li><a class="reference" href="#SlashContext" title="SlashContext = ref object of InteractionContext
+  path*: seq[string]         ## group/subcommand names, if any
+  options*: Table[string, ApplicationCommandInteractionDataOption]">SlashContext</a></li>
+<li><a class="reference" href="#SlashNode" title="SlashNode = ref object
+  name*, description*: string
+  nameLoc*, descLoc*: Table[string, string]
+  case kind*: SlashNodeKind
+  of snLeaf:
+    options*: seq[OptionSpec]
+    run*: SlashRun
+    autocompleters*: OrderedTable[string, AutocompleteRun] ## keyed by option name; &quot;&quot; is the whole-command fallback
+  of snGroup:
+    children*: OrderedTable[string, SlashNode]">SlashNode</a></li>
+<li><a class="reference" href="#SlashNodeKind" title="SlashNodeKind = enum
+  snLeaf, snGroup">SlashNodeKind</a></li>
+<li><a class="reference" href="#SlashRun" title="SlashRun = proc (ctx: SlashContext): Future[void]">SlashRun</a></li>
+<li><a class="reference" href="#UnknownHook" title="UnknownHook = proc (ctx: InteractionContext): Future[void]">UnknownHook</a></li>
+<li><a class="reference" href="#UserCommand" title="UserCommand = ref object
+  name*: string
+  meta*: CommandMeta
+  run*: UserRun">UserCommand</a></li>
+<li><a class="reference" href="#UserContext" title="UserContext = ref object of InteractionContext">UserContext</a></li>
+<li><a class="reference" href="#UserRun" title="UserRun = proc (ctx: UserContext): Future[void]">UserRun</a></li>
 
     </ul>
   </details>
@@ -97,20 +221,14 @@
   <details open>
     <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">ensureImplemented
-  <li><a class="reference" href="#ensureImplemented%2CCommandKind" title="ensureImplemented(kind: CommandKind)">ensureImplemented(kind: CommandKind)</a></li>
+      <ul class="simple nested-toc-section">choice
+  <li><a class="reference" href="#choice%2Cstring%2Cfloat" title="choice(name: string; value: float): ChoiceSpec">choice(name: string; value: float): ChoiceSpec</a></li>
+<li><a class="reference" href="#choice%2Cstring%2Cint" title="choice(name: string; value: int): ChoiceSpec">choice(name: string; value: int): ChoiceSpec</a></li>
+<li><a class="reference" href="#choice%2Cstring%2Cstring" title="choice(name: string; value: string): ChoiceSpec">choice(name: string; value: string): ChoiceSpec</a></li>
 
 </ul>
-<ul class="simple nested-toc-section">newInvalidInteractionError
-  <li><a class="reference" href="#newInvalidInteractionError%2Cstring" title="newInvalidInteractionError(message: string): ref HandlerError">newInvalidInteractionError(message: string): ref HandlerError</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">newNotFoundError
-  <li><a class="reference" href="#newNotFoundError%2Cstring" title="newNotFoundError(message: string): ref HandlerError">newNotFoundError(message: string): ref HandlerError</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">newNotImplementedError
-  <li><a class="reference" href="#newNotImplementedError%2Cstring" title="newNotImplementedError(message: string): ref HandlerError">newNotImplementedError(message: string): ref HandlerError</a></li>
+<ul class="simple nested-toc-section">newRegistry
+  <li><a class="reference" href="#newRegistry" title="newRegistry(): Registry">newRegistry(): Registry</a></li>
 
 </ul>
 
@@ -125,153 +243,437 @@
     
     <div id="tocRoot"></div>
     
-    <p class="module-desc"><p>Core type definitions for <strong>dimslash</strong>.</p>
-<p>This module defines the enumerations, error hierarchy, handler object, and registry that together form the backbone of the interaction handling pipeline. You typically do <strong>not</strong> import this module directly — <tt class="docutils literal"><span class="pre"><span class="Keyword">import</span> <span class="Identifier">dimslash</span></span></tt> re-exports everything.</p>
-
-<h1><a class="toc-backref" id="error-handling" href="#error-handling">Error handling</a></h1><p>dimslash signals dispatch problems through <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span></span></tt>, a subtype of <tt class="docutils literal"><span class="pre"><span class="Identifier">CatchableError</span></span></tt> that carries a <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerErrorKind</span></span></tt> for programmatic matching.</p>
-<pre class="listing"><span class="Keyword">try</span><span class="Punctuation">:</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">handleInteraction</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">)</span>
-<span class="Keyword">except</span> <span class="Identifier">HandlerError</span> <span class="Keyword">as</span> <span class="Identifier">e</span><span class="Punctuation">:</span>
-  <span class="Keyword">case</span> <span class="Identifier">e</span><span class="Operator">.</span><span class="Identifier">kind</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekNotFound</span><span class="Punctuation">:</span>
-    <span class="Identifier">echo</span> <span class="StringLit">&quot;no handler registered for this command&quot;</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekNotImplemented</span><span class="Punctuation">:</span>
-    <span class="Identifier">echo</span> <span class="StringLit">&quot;this interaction kind is not supported yet&quot;</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekInvalidInteraction</span><span class="Punctuation">:</span>
-    <span class="Identifier">echo</span> <span class="StringLit">&quot;malformed interaction payload&quot;</span></pre>
-<h1><a class="toc-backref" id="architecture-overview" href="#architecture-overview">Architecture overview</a></h1><pre class="listing"><span class="Identifier">InteractionHandler</span>
-  <span class="Identifier">├──</span> <span class="Identifier">discord</span><span class="Punctuation">:</span> <span class="Identifier">DiscordClient</span>     <span class="Identifier">─</span> <span class="Identifier">REST</span> <span class="Operator">/</span> <span class="Identifier">gateway</span>
-  <span class="Identifier">├──</span> <span class="Identifier">defaultGuildId</span><span class="Punctuation">:</span> <span class="Identifier">string</span>     <span class="Identifier">─</span> <span class="Identifier">default</span> <span class="Identifier">guild</span> <span class="Keyword">for</span> <span class="Identifier">sync</span>
-  <span class="Identifier">├──</span> <span class="Identifier">registry</span><span class="Punctuation">:</span> <span class="Identifier">CommandRegistry</span>  <span class="Identifier">─</span> <span class="Identifier">command</span> <span class="Identifier">lookup</span> <span class="Identifier">tables</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">slash</span>   <span class="Identifier">─</span> <span class="Identifier">OrderedTable</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">,</span> <span class="Identifier">RegisteredCommand</span><span class="Punctuation">]</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">user</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">message</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">button</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">select</span>
-  <span class="Identifier">│</span>     <span class="Identifier">├──</span> <span class="Identifier">modal</span>
-  <span class="Identifier">│</span>     <span class="Identifier">└──</span> <span class="Identifier">autocomplete</span>
-  <span class="Identifier">└──</span> <span class="Identifier">slashOptionNames</span>           <span class="Identifier">─</span> <span class="Identifier">metadata</span> <span class="Keyword">for</span> <span class="Identifier">autocomplete</span> <span class="Identifier">linking</span></pre></p>
+    <p class="module-desc"><p>Core data model for dimslash.</p>
+<p>Everything here is plain data: command descriptors built by the DSL macros in <tt class="docutils literal"><span class="pre"><span class="Identifier">dsl</span></span></tt>, the registry that stores them, the context objects passed to handlers, and the <tt class="docutils literal"><span class="pre"><span class="Identifier">RestBackend</span></span></tt> seam that all REST traffic goes through (so tests can swap in a recording backend).</p>
+</p>
     <div class="section" id="7">
   <h1><a class="toc-backref" href="#7">Types</a></h1>
   <dl class="item">
-    <div id="CommandHandlerProc">
-  <dt><pre><a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">s</span><span class="Other">:</span> <span class="Identifier">Shard</span><span class="Other">;</span> <span class="Identifier">i</span><span class="Other">:</span> <span class="Identifier">Interaction</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.<span class="Identifier">closure</span>.}</pre></dt>
+    <div id="AutocompleteContext">
+  <dt><pre><a href="#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a>
+  <span class="Identifier">path</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Identifier">options</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">ApplicationCommandInteractionDataOption</span><span class="Other">]</span>
+  <span class="Identifier">focusedName</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span></pre></dt>
   <dd>
     
-    Signature every command callback must match. The <tt class="docutils literal"><span class="pre"><span class="Identifier">Shard</span></span></tt> gives gateway context; the <tt class="docutils literal"><span class="pre"><span class="Identifier">Interaction</span></span></tt> carries the request payload.
+    
     
   </dd>
 </div>
-<div id="CommandKind">
-  <dt><pre><a href="types.html#CommandKind"><span class="Identifier">CommandKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
-  <span class="Identifier">ckSlash</span><span class="Other">,</span> <span class="Identifier">ckUser</span><span class="Other">,</span> <span class="Identifier">ckMessage</span><span class="Other">,</span> <span class="Identifier">ckButton</span><span class="Other">,</span> <span class="Identifier">ckSelect</span><span class="Other">,</span> <span class="Identifier">ckModal</span><span class="Other">,</span> <span class="Identifier">ckAutocomplete</span></pre></dt>
+<div id="AutocompleteRun">
+  <dt><pre><a href="#AutocompleteRun"><span class="Identifier">AutocompleteRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
   <dd>
     
-    <p>Discriminates the interaction kind a command is registered for.</p>
-<p>Each variant maps to one Discord interaction type or sub-type:</p>
-<table border="1" class="docutils"><tr><th>Variant</th><th>Discord concept</th><th>DSL helper</th></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckSlash</span></span></tt></td><td><tt class="docutils literal"><span class="pre">/command</span></tt> slash command</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addSlash</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckUser</span></span></tt></td><td>Apps &gt; User context menu</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addUser</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckMessage</span></span></tt></td><td>Apps &gt; Message context menu</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addMessage</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckButton</span></span></tt></td><td>Button component press</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addButton</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckSelect</span></span></tt></td><td>Select-menu component</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addSelect</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckModal</span></span></tt></td><td>Modal submit</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addModal</span></span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">ckAutocomplete</span></span></tt></td><td>Autocomplete callback</td><td><tt class="docutils literal"><span class="pre"><span class="Identifier">addAutocomplete</span></span></tt></td></tr>
-</table>
+    
     
   </dd>
 </div>
-<div id="CommandRegistry">
-  <dt><pre><a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">slash</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">user</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">message</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">button</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">select</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">modal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span>
-  <span class="Identifier">autocomplete</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a><span class="Other">]</span></pre></dt>
+<div id="CaptureKind">
+  <dt><pre><a href="#CaptureKind"><span class="Identifier">CaptureKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">capString</span><span class="Other">,</span> <span class="Identifier">capInt</span></pre></dt>
   <dd>
     
-    <p>Holds registered commands, bucketed by <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandKind</span></span></tt>.</p>
-<p>Prefer <tt class="docutils literal"><span class="pre"><span class="Identifier">registry</span><span class="Operator">.</span><span class="Identifier">register</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Identifier">registry</span><span class="Operator">.</span><span class="Identifier">find</span></span></tt> over direct table access.  The <tt class="docutils literal"><span class="pre"><span class="Identifier">pairs</span></span></tt> iterator lets you enumerate all commands of a given kind, which is used by <tt class="docutils literal"><span class="pre"><span class="Identifier">sync</span><span class="Operator">.</span><span class="Identifier">nim</span></span></tt> to build the bulk-overwrite payload.</p>
-<p>Each table uses the <strong>normalised</strong> (lowercased) command name as key. For autocomplete, the key format is <tt class="docutils literal"><span class="pre">&quot;commandname&quot;</span></tt> for fallback handlers and <tt class="docutils literal"><span class="pre">&quot;commandname#optionname&quot;</span></tt> for option-specific ones.</p>
-
+    
     
   </dd>
 </div>
-<div id="HandlerError">
-  <dt><pre><a href="types.html#HandlerError"><span class="Identifier">HandlerError</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">CatchableError</span>
-  <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#HandlerErrorKind"><span class="Identifier">HandlerErrorKind</span></a></pre></dt>
+<div id="ChoiceSpec">
+  <dt><pre><a href="#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">value</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ChoiceValue"><span class="Identifier">ChoiceValue</span></a></pre></dt>
   <dd>
     
-    Structured error type carrying a <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerErrorKind</span></span></tt>. Catch it to distinguish between &quot;not found&quot; vs &quot;not implemented&quot; etc.<pre class="listing"><span class="Keyword">try</span><span class="Punctuation">:</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">handleInteraction</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">)</span>
-<span class="Keyword">except</span> <span class="Identifier">HandlerError</span> <span class="Keyword">as</span> <span class="Identifier">e</span><span class="Punctuation">:</span>
-  <span class="Keyword">case</span> <span class="Identifier">e</span><span class="Operator">.</span><span class="Identifier">kind</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekNotFound</span><span class="Punctuation">:</span> <span class="Identifier">echo</span> <span class="StringLit">&quot;unknown command&quot;</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekNotImplemented</span><span class="Punctuation">:</span> <span class="Identifier">echo</span> <span class="StringLit">&quot;not yet supported&quot;</span>
-  <span class="Keyword">of</span> <span class="Identifier">hekInvalidInteraction</span><span class="Punctuation">:</span> <span class="Identifier">echo</span> <span class="StringLit">&quot;bad payload&quot;</span></pre>
+    One entry of an option's <tt class="docutils literal"><span class="pre"><span class="Identifier">choices</span></span></tt> list.
     
   </dd>
 </div>
-<div id="HandlerErrorKind">
-  <dt><pre><a href="types.html#HandlerErrorKind"><span class="Identifier">HandlerErrorKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
-  <span class="Identifier">hekNotImplemented</span><span class="Other">,</span> <span class="Identifier">hekNotFound</span><span class="Other">,</span> <span class="Identifier">hekInvalidInteraction</span></pre></dt>
+<div id="ChoiceValue">
+  <dt><pre><a href="#ChoiceValue"><span class="Identifier">ChoiceValue</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ChoiceValueKind"><span class="Identifier">ChoiceValueKind</span></a>
+  <span class="Keyword">of</span> <span class="Identifier">cvString</span><span class="Other">:</span>
+    <span class="Identifier">strVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Keyword">of</span> <span class="Identifier">cvInt</span><span class="Other">:</span>
+    <span class="Identifier">intVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">BiggestInt</span>
+  <span class="Keyword">of</span> <span class="Identifier">cvFloat</span><span class="Other">:</span>
+    <span class="Identifier">floatVal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">float</span></pre></dt>
   <dd>
     
-    Categorises errors raised during interaction dispatch.<table border="1" class="docutils"><tr><th>Variant</th><th>Meaning</th></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">hekNotImplemented</span></span></tt></td><td>The interaction kind is not yet supported.</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">hekNotFound</span></span></tt></td><td>No handler was registered for the command.</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre"><span class="Identifier">hekInvalidInteraction</span></span></tt></td><td>The payload is malformed or missing fields.</td></tr>
-</table><p>Catch <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span></span></tt> and inspect its <tt class="docutils literal"><span class="pre"><span class="Identifier">kind</span></span></tt> field to react differently:</p>
-<pre class="listing"><span class="Keyword">except</span> <span class="Identifier">HandlerError</span> <span class="Keyword">as</span> <span class="Identifier">e</span><span class="Punctuation">:</span>
-  <span class="Keyword">if</span> <span class="Identifier">e</span><span class="Operator">.</span><span class="Identifier">kind</span> <span class="Operator">==</span> <span class="Identifier">hekNotFound</span><span class="Punctuation">:</span>
-    <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Unknown command&quot;</span><span class="Punctuation">)</span></pre>
+    
+    
+  </dd>
+</div>
+<div id="ChoiceValueKind">
+  <dt><pre><a href="#ChoiceValueKind"><span class="Identifier">ChoiceValueKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">cvString</span><span class="Other">,</span> <span class="Identifier">cvInt</span><span class="Other">,</span> <span class="Identifier">cvFloat</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="CommandMeta">
+  <dt><pre><a href="#CommandMeta"><span class="Identifier">CommandMeta</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">guildId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>           <span class="Comment">## &quot;&quot; = global (or handler default)</span>
+  <span class="Identifier">permissions</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">set</span><span class="Other">[</span><span class="Identifier">PermissionFlags</span><span class="Other">]</span><span class="Other">]</span>
+  <span class="Identifier">nsfw</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
+  <span class="Identifier">contexts</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">set</span><span class="Other">[</span><span class="Identifier">InteractionContextType</span><span class="Other">]</span><span class="Other">]</span>
+  <span class="Identifier">integrations</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">set</span><span class="Other">[</span><span class="Identifier">ApplicationIntegrationType</span><span class="Other">]</span><span class="Other">]</span>
+  <span class="Identifier">nameLoc</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">descLoc</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Command-level registration settings shared by slash/user/message commands.
+    
+  </dd>
+</div>
+<div id="ComponentContext">
+  <dt><pre><a href="#ComponentContext"><span class="Identifier">ComponentContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a>
+  <span class="Identifier">captures</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span> <span class="Comment">## custom_id pattern captures</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ComponentEntry">
+  <dt><pre><a href="#ComponentEntry"><span class="Identifier">ComponentEntry</span></a><span class="Other">[</span><span class="Identifier">H</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">pattern</span><span class="Operator">*</span><span class="Other">:</span> <a href="#CustomIdPattern"><span class="Identifier">CustomIdPattern</span></a>
+  <span class="Identifier">handler</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">H</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ComponentRun">
+  <dt><pre><a href="#ComponentRun"><span class="Identifier">ComponentRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#ComponentContext"><span class="Identifier">ComponentContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ComponentTable">
+  <dt><pre><a href="#ComponentTable"><span class="Identifier">ComponentTable</span></a><span class="Other">[</span><span class="Identifier">H</span><span class="Other">]</span> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">exact</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">H</span><span class="Other">]</span>
+  <span class="Identifier">patterns</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#ComponentEntry"><span class="Identifier">ComponentEntry</span></a><span class="Other">[</span><span class="Identifier">H</span><span class="Other">]</span><span class="Other">]</span> <span class="Comment">## longest literal prefix first</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="CustomIdPattern">
+  <dt><pre><a href="#CustomIdPattern"><span class="Identifier">CustomIdPattern</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">raw</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">segments</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#PatternSegment"><span class="Identifier">PatternSegment</span></a><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Parsed form of a custom_id pattern like <tt class="docutils literal"><span class="pre"><span class="StringLit">&quot;page:{n:int}&quot;</span></span></tt>. A pattern without captures matches its literal text exactly.
+    
+  </dd>
+</div>
+<div id="DimslashError">
+  <dt><pre><a href="#DimslashError"><span class="Identifier">DimslashError</span></a> <span class="Other">=</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">CatchableError</span></pre></dt>
+  <dd>
+    
+    Raised on misuse of dimslash itself: duplicate registrations, responding twice to the same interaction, malformed custom_id patterns, and the like. Discord/network errors are dimscord's.
+    
+  </dd>
+</div>
+<div id="ErrorHook">
+  <dt><pre><a href="#ErrorHook"><span class="Identifier">ErrorHook</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">e</span><span class="Other">:</span> <span class="Keyword">ref</span> <span class="Identifier">Exception</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="InteractionContext">
+  <dt><pre><a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <span class="Identifier">RootObj</span>
+  <span class="Identifier">handler</span><span class="Operator">*</span><span class="Other">:</span> <a href="#InteractionHandler"><span class="Identifier">InteractionHandler</span></a>
+  <span class="Identifier">shard</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Shard</span>              <span class="Comment">## may be nil in tests</span>
+  <span class="Identifier">interaction</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Interaction</span>
+  <span class="Identifier">state</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ResponseState"><span class="Identifier">ResponseState</span></a></pre></dt>
+  <dd>
+    
+    Base context passed to every handler. Concrete subtypes add interaction-kind-specific accessors (see <tt class="docutils literal"><span class="pre"><span class="Identifier">context</span></span></tt>).
     
   </dd>
 </div>
 <div id="InteractionHandler">
-  <dt><pre><a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">discord</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">DiscordClient</span>    <span class="Comment">## The dimscord client used to call the REST API.</span>
-  <span class="Identifier">defaultGuildId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span> <span class="Comment">## If non-empty, `registerCommands()` targets this guild by default</span>
-                          <span class="Comment">## instead of the global scope.  Guild-scoped commands update instantly;</span>
-                          <span class="Comment">## global commands can take up to 1 hour to propagate.</span>
-  <span class="Identifier">registry</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#CommandRegistry"><span class="Identifier">CommandRegistry</span></a> <span class="Comment">## Internal command registry.  Prefer the DSL helpers (`addSlash`,</span>
-                             <span class="Comment">## `addUser`, `addButton`, …) to populate it.</span>
-  <span class="Identifier">slashOptionNames</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">]</span> <span class="Comment">## Known slash option names per command (normalised).  Populated</span>
-                                                       <span class="Comment">## automatically by `addSlash` and consumed by</span>
-                                                       <span class="Comment">## `addAutocompleteForOption` for validation.</span></pre></dt>
+  <dt><pre><a href="#InteractionHandler"><span class="Identifier">InteractionHandler</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">discord</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">DiscordClient</span>    <span class="Comment">## may be nil in tests</span>
+  <span class="Identifier">rest</span><span class="Operator">*</span><span class="Other">:</span> <a href="#RestBackend"><span class="Identifier">RestBackend</span></a>
+  <span class="Identifier">registry</span><span class="Operator">*</span><span class="Other">:</span> <a href="#Registry"><span class="Identifier">Registry</span></a>
+  <span class="Identifier">defaultGuildId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>    <span class="Comment">## guild for commands without `guild =`</span>
+  <span class="Identifier">applicationId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>     <span class="Comment">## resolved lazily; settable up front</span>
+  <span class="Identifier">onError</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ErrorHook"><span class="Identifier">ErrorHook</span></a> <span class="Comment">## called when a handler raises; default logs and sends an</span>
+                      <span class="Comment">## ephemeral error reply if nothing was sent yet. nil = re-raise.</span>
+  <span class="Identifier">onUnknown</span><span class="Operator">*</span><span class="Other">:</span> <a href="#UnknownHook"><span class="Identifier">UnknownHook</span></a>    <span class="Comment">## called for interactions with no registered handler. nil = ignore.</span></pre></dt>
   <dd>
     
-    <p>Top-level object that wires a <tt class="docutils literal"><span class="pre"><span class="Identifier">DiscordClient</span></span></tt> to a <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandRegistry</span></span></tt>.</p>
-<p>There should typically be <strong>one</strong> handler per bot process.  Create it with <tt class="docutils literal"><span class="pre"><span class="Identifier">newInteractionHandler</span></span></tt>, register commands via the DSL, sync them with <tt class="docutils literal"><span class="pre"><span class="Identifier">registerCommands</span></span></tt>, then pipe incoming interactions through <tt class="docutils literal"><span class="pre"><span class="Identifier">handleInteraction</span></span></tt>.</p>
-<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">discord</span> <span class="Operator">=</span> <span class="Identifier">newDiscordClient</span><span class="Punctuation">(</span><span class="StringLit">&quot;TOKEN&quot;</span><span class="Punctuation">)</span>
-<span class="Keyword">var</span> <span class="Identifier">handler</span> <span class="Operator">=</span> <span class="Identifier">newInteractionHandler</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">,</span> <span class="Identifier">defaultGuildId</span> <span class="Operator">=</span> <span class="StringLit">&quot;123456&quot;</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Pong!&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;pong&quot;</span><span class="Punctuation">)</span>
-
-<span class="Keyword">proc</span> <span class="Identifier">onReady</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">r</span><span class="Punctuation">:</span> <span class="Identifier">Ready</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">event</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">registerCommands</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-
-<span class="Keyword">proc</span> <span class="Identifier">interactionCreate</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">event</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">handleInteraction</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">)</span></pre>
+    
     
   </dd>
 </div>
-<div id="RegisteredCommand">
-  <dt><pre><a href="types.html#RegisteredCommand"><span class="Identifier">RegisteredCommand</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
-  <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#CommandKind"><span class="Identifier">CommandKind</span></a>         <span class="Comment">## What kind of interaction this command handles.</span>
-  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>              <span class="Comment">## Command or custom-id name (lowercased in registry).</span>
-  <span class="Identifier">optionName</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>        <span class="Comment">## Focused option name (autocomplete only; empty for fallback).</span>
-  <span class="Identifier">description</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>       <span class="Comment">## Description shown in the Discord UI (slash only).</span>
-  <span class="Identifier">guildId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>           <span class="Comment">## If non-empty, restrict sync to this guild.</span>
-  <span class="Identifier">callback</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a> <span class="Comment">## The handler to invoke at dispatch time.</span></pre></dt>
+<div id="Mentionable">
+  <dt><pre><a href="#Mentionable"><span class="Identifier">Mentionable</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MentionableKind"><span class="Identifier">MentionableKind</span></a>
+  <span class="Keyword">of</span> <span class="Identifier">mkUser</span><span class="Other">:</span>
+    <span class="Identifier">user</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">User</span>
+  <span class="Keyword">of</span> <span class="Identifier">mkRole</span><span class="Other">:</span>
+    <span class="Identifier">role</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Role</span></pre></dt>
   <dd>
     
-    <p>Value object stored in the registry for each registered command.</p>
-<p>You rarely construct this yourself — the DSL macros build it internally.  Fields are public for introspection.</p>
-
+    Value of an <tt class="docutils literal"><span class="pre"><span class="Identifier">acotMentionable</span></span></tt> slash option: either a user or a role.
+    
+  </dd>
+</div>
+<div id="MentionableKind">
+  <dt><pre><a href="#MentionableKind"><span class="Identifier">MentionableKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">mkUser</span><span class="Other">,</span> <span class="Identifier">mkRole</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="MessageCommand">
+  <dt><pre><a href="#MessageCommand"><span class="Identifier">MessageCommand</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">meta</span><span class="Operator">*</span><span class="Other">:</span> <a href="#CommandMeta"><span class="Identifier">CommandMeta</span></a>
+  <span class="Identifier">run</span><span class="Operator">*</span><span class="Other">:</span> <a href="#MessageRun"><span class="Identifier">MessageRun</span></a></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="MessageContext">
+  <dt><pre><a href="#MessageContext"><span class="Identifier">MessageContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="MessagePayload">
+  <dt><pre><a href="#MessagePayload"><span class="Identifier">MessagePayload</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">content</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Identifier">embeds</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Embed</span><span class="Other">]</span>
+  <span class="Identifier">components</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">MessageComponent</span><span class="Other">]</span>
+  <span class="Identifier">attachments</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">Attachment</span><span class="Other">]</span>
+  <span class="Identifier">files</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">DiscordFile</span><span class="Other">]</span>
+  <span class="Identifier">allowedMentions</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">AllowedMentions</span><span class="Other">]</span>
+  <span class="Identifier">flags</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">set</span><span class="Other">[</span><span class="Identifier">MessageFlags</span><span class="Other">]</span>
+  <span class="Identifier">tts</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span></pre></dt>
+  <dd>
+    
+    Normalized message content for followups and edits.
+    
+  </dd>
+</div>
+<div id="MessageRun">
+  <dt><pre><a href="#MessageRun"><span class="Identifier">MessageRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#MessageContext"><span class="Identifier">MessageContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ModalContext">
+  <dt><pre><a href="#ModalContext"><span class="Identifier">ModalContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a>
+  <span class="Identifier">captures</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ModalRun">
+  <dt><pre><a href="#ModalRun"><span class="Identifier">ModalRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="OptionSpec">
+  <dt><pre><a href="#OptionSpec"><span class="Identifier">OptionSpec</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">description</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">ApplicationCommandOptionType</span>
+  <span class="Identifier">required</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
+  <span class="Identifier">choices</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a><span class="Other">]</span>
+  <span class="Identifier">minValue</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">maxValue</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">float</span><span class="Other">]</span> <span class="Comment">## emitted as integers for acotInt</span>
+  <span class="Identifier">minLen</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">maxLen</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span>
+  <span class="Identifier">channelTypes</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">ChannelType</span><span class="Other">]</span>
+  <span class="Identifier">autocomplete</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
+  <span class="Identifier">nameLoc</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">descLoc</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Compile-time description of one slash-command option, produced by the <tt class="docutils literal"><span class="pre"><span class="Identifier">slash</span></span></tt> macro and serialized by <tt class="docutils literal"><span class="pre"><span class="Identifier">sync</span><span class="Operator">.</span><span class="Identifier">toCommandJson</span></span></tt>.
+    
+  </dd>
+</div>
+<div id="PatternSegment">
+  <dt><pre><a href="#PatternSegment"><span class="Identifier">PatternSegment</span></a> <span class="Other">=</span> <span class="Keyword">object</span>
+  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="#PatternSegmentKind"><span class="Identifier">PatternSegmentKind</span></a>
+  <span class="Keyword">of</span> <span class="Identifier">psLiteral</span><span class="Other">:</span>
+    <span class="Identifier">lit</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Keyword">of</span> <span class="Identifier">psCapture</span><span class="Other">:</span>
+    <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+    <span class="Identifier">capture</span><span class="Operator">*</span><span class="Other">:</span> <a href="#CaptureKind"><span class="Identifier">CaptureKind</span></a></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="PatternSegmentKind">
+  <dt><pre><a href="#PatternSegmentKind"><span class="Identifier">PatternSegmentKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">psLiteral</span><span class="Other">,</span> <span class="Identifier">psCapture</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="Registry">
+  <dt><pre><a href="#Registry"><span class="Identifier">Registry</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">slash</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="#SlashCommand"><span class="Identifier">SlashCommand</span></a><span class="Other">]</span>
+  <span class="Identifier">user</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="#UserCommand"><span class="Identifier">UserCommand</span></a><span class="Other">]</span>
+  <span class="Identifier">message</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="#MessageCommand"><span class="Identifier">MessageCommand</span></a><span class="Other">]</span>
+  <span class="Identifier">buttons</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ComponentTable"><span class="Identifier">ComponentTable</span></a><span class="Other">[</span><a href="#ComponentRun"><span class="Identifier">ComponentRun</span></a><span class="Other">]</span>
+  <span class="Identifier">selects</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ComponentTable"><span class="Identifier">ComponentTable</span></a><span class="Other">[</span><a href="#ComponentRun"><span class="Identifier">ComponentRun</span></a><span class="Other">]</span>
+  <span class="Identifier">modals</span><span class="Operator">*</span><span class="Other">:</span> <a href="#ComponentTable"><span class="Identifier">ComponentTable</span></a><span class="Other">[</span><a href="#ModalRun"><span class="Identifier">ModalRun</span></a><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="ResponseState">
+  <dt><pre><a href="#ResponseState"><span class="Identifier">ResponseState</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">rsNone</span><span class="Other">,</span>                   <span class="Comment">## nothing sent yet</span>
+  <span class="Identifier">rsDeferred</span><span class="Other">,</span>               <span class="Comment">## deferReply/deferUpdate sent; next reply edits/follows up</span>
+  <span class="Identifier">rsResponded</span>                <span class="Comment">## initial response sent; further replies become followups</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="RestBackend">
+  <dt><pre><a href="#RestBackend"><span class="Identifier">RestBackend</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">createResponse</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">interactionId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                         <span class="Identifier">kind</span><span class="Other">:</span> <span class="Identifier">InteractionResponseType</span><span class="Other">;</span>
+                         <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">InteractionCallbackDataMessage</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span>
+  <span class="Identifier">createAutocomplete</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">interactionId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">choices</span><span class="Other">:</span> <span class="Identifier">JsonNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+      <span class="Identifier">void</span><span class="Other">]</span>
+  <span class="Identifier">createModal</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">interactionId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                      <span class="Identifier">data</span><span class="Other">:</span> <span class="Identifier">InteractionCallbackDataModal</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span>
+  <span class="Identifier">createFollowup</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">payload</span><span class="Other">:</span> <a href="#MessagePayload"><span class="Identifier">MessagePayload</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+      <span class="Identifier">Message</span><span class="Other">]</span>
+  <span class="Identifier">editResponse</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">messageId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
+                       <span class="Identifier">payload</span><span class="Other">:</span> <a href="#MessagePayload"><span class="Identifier">MessagePayload</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span>
+  <span class="Identifier">getResponse</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">messageId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span>
+  <span class="Identifier">deleteResponse</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">messageId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span>
+  <span class="Identifier">getApplicationId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Identifier">getCommands</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">JsonNode</span><span class="Other">]</span>
+  <span class="Identifier">putCommands</span><span class="Operator">*</span><span class="Other">:</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">applicationId</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">payload</span><span class="Other">:</span> <span class="Identifier">JsonNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+      <span class="Identifier">JsonNode</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Every REST call dimslash makes goes through one of these closures. <tt class="docutils literal"><span class="pre"><span class="Identifier">rest</span><span class="Operator">.</span><span class="Identifier">newDimscordBackend</span></span></tt> wires them to dimscord; tests use a recording backend instead.
+    
+  </dd>
+</div>
+<div id="SlashCommand">
+  <dt><pre><a href="#SlashCommand"><span class="Identifier">SlashCommand</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">meta</span><span class="Operator">*</span><span class="Other">:</span> <a href="#CommandMeta"><span class="Identifier">CommandMeta</span></a>
+  <span class="Identifier">root</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SlashNode"><span class="Identifier">SlashNode</span></a>           <span class="Comment">## root.name is the command name</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="SlashContext">
+  <dt><pre><a href="#SlashContext"><span class="Identifier">SlashContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a>
+  <span class="Identifier">path</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span>         <span class="Comment">## group/subcommand names, if any</span>
+  <span class="Identifier">options</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">ApplicationCommandInteractionDataOption</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="SlashNode">
+  <dt><pre><a href="#SlashNode"><span class="Identifier">SlashNode</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">description</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">nameLoc</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">descLoc</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Table</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Identifier">string</span><span class="Other">]</span>
+  <span class="Keyword">case</span> <span class="Identifier">kind</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SlashNodeKind"><span class="Identifier">SlashNodeKind</span></a>
+  <span class="Keyword">of</span> <span class="Identifier">snLeaf</span><span class="Other">:</span>
+    <span class="Identifier">options</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="#OptionSpec"><span class="Identifier">OptionSpec</span></a><span class="Other">]</span>
+    <span class="Identifier">run</span><span class="Operator">*</span><span class="Other">:</span> <a href="#SlashRun"><span class="Identifier">SlashRun</span></a>
+    <span class="Identifier">autocompleters</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="#AutocompleteRun"><span class="Identifier">AutocompleteRun</span></a><span class="Other">]</span> <span class="Comment">## keyed by option name; &quot;&quot; is the whole-command fallback</span>
+  <span class="Keyword">of</span> <span class="Identifier">snGroup</span><span class="Other">:</span>
+    <span class="Identifier">children</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">OrderedTable</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <a href="#SlashNode"><span class="Identifier">SlashNode</span></a><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    A slash command is a tree: the root is either a leaf (plain command with options) or a group of subcommands/groups.
+    
+  </dd>
+</div>
+<div id="SlashNodeKind">
+  <dt><pre><a href="#SlashNodeKind"><span class="Identifier">SlashNodeKind</span></a> <span class="Other">=</span> <span class="Keyword">enum</span>
+  <span class="Identifier">snLeaf</span><span class="Other">,</span> <span class="Identifier">snGroup</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="SlashRun">
+  <dt><pre><a href="#SlashRun"><span class="Identifier">SlashRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#SlashContext"><span class="Identifier">SlashContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="UnknownHook">
+  <dt><pre><a href="#UnknownHook"><span class="Identifier">UnknownHook</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="UserCommand">
+  <dt><pre><a href="#UserCommand"><span class="Identifier">UserCommand</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">name</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">string</span>
+  <span class="Identifier">meta</span><span class="Operator">*</span><span class="Other">:</span> <a href="#CommandMeta"><span class="Identifier">CommandMeta</span></a>
+  <span class="Identifier">run</span><span class="Operator">*</span><span class="Other">:</span> <a href="#UserRun"><span class="Identifier">UserRun</span></a></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="UserContext">
+  <dt><pre><a href="#UserContext"><span class="Identifier">UserContext</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span> <span class="Keyword">of</span> <a href="#InteractionContext"><span class="Identifier">InteractionContext</span></a></pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="UserRun">
+  <dt><pre><a href="#UserRun"><span class="Identifier">UserRun</span></a> <span class="Other">=</span> <span class="Keyword">proc</span> <span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="#UserContext"><span class="Identifier">UserContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    
     
   </dd>
 </div>
@@ -281,69 +683,42 @@
 <div class="section" id="12">
   <h1><a class="toc-backref" href="#12">Procs</a></h1>
   <dl class="item">
-    <div id="ensureImplemented-procs-all">
-  <div id="ensureImplemented,CommandKind">
-  <dt><pre><span class="Keyword">proc</span> <a href="#ensureImplemented%2CCommandKind"><span class="Identifier">ensureImplemented</span></a><span class="Other">(</span><span class="Identifier">kind</span><span class="Other">:</span> <a href="types.html#CommandKind"><span class="Identifier">CommandKind</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Raises <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span><span class="Punctuation">(</span><span class="Identifier">hekNotImplemented</span><span class="Punctuation">)</span></span></tt> when <tt class="docutils literal"><span class="pre"><span class="Identifier">kind</span></span></tt> is not yet supported.</p>
-<p>Current release supports all <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandKind</span></span></tt> values, so this proc is a no-op and is kept for future compatibility.</p>
-
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Comment"># Implemented kinds — no error:</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckSlash</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckUser</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckMessage</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckButton</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckSelect</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckModal</span><span class="Punctuation">)</span>
-<span class="Identifier">ensureImplemented</span><span class="Punctuation">(</span><span class="Identifier">ckAutocomplete</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="newInvalidInteractionError-procs-all">
-  <div id="newInvalidInteractionError,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#newInvalidInteractionError%2Cstring"><span class="Identifier">newInvalidInteractionError</span></a><span class="Other">(</span><span class="Identifier">message</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <a href="types.html#HandlerError"><span class="Identifier">HandlerError</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Creates a <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span></span></tt> with <tt class="docutils literal"><span class="pre"><span class="Identifier">hekInvalidInteraction</span></span></tt>.
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">err</span> <span class="Operator">=</span> <span class="Identifier">newInvalidInteractionError</span><span class="Punctuation">(</span><span class="StringLit">&quot;missing option: name&quot;</span><span class="Punctuation">)</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">err</span><span class="Operator">.</span><span class="Identifier">kind</span> <span class="Operator">==</span> <span class="Identifier">hekInvalidInteraction</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="newNotFoundError-procs-all">
-  <div id="newNotFoundError,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#newNotFoundError%2Cstring"><span class="Identifier">newNotFoundError</span></a><span class="Other">(</span><span class="Identifier">message</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <a href="types.html#HandlerError"><span class="Identifier">HandlerError</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <div id="choice-procs-all">
+  <div id="choice,string,float">
+  <dt><pre><span class="Keyword">proc</span> <a href="#choice%2Cstring%2Cfloat"><span class="Identifier">choice</span></a><span class="Other">(</span><span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">float</span><span class="Other">)</span><span class="Other">:</span> <a href="#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Creates a <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span></span></tt> with <tt class="docutils literal"><span class="pre"><span class="Identifier">hekNotFound</span></span></tt>.
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">err</span> <span class="Operator">=</span> <span class="Identifier">newNotFoundError</span><span class="Punctuation">(</span><span class="StringLit">&quot;command not found: foo&quot;</span><span class="Punctuation">)</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">err</span><span class="Operator">.</span><span class="Identifier">kind</span> <span class="Operator">==</span> <span class="Identifier">hekNotFound</span></pre>
+    
+    
+  </dd>
+</div>
+<div id="choice,string,int">
+  <dt><pre><span class="Keyword">proc</span> <a href="#choice%2Cstring%2Cint"><span class="Identifier">choice</span></a><span class="Other">(</span><span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">int</span><span class="Other">)</span><span class="Other">:</span> <a href="#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+<div id="choice,string,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#choice%2Cstring%2Cstring"><span class="Identifier">choice</span></a><span class="Other">(</span><span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">value</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <a href="#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
     
   </dd>
 </div>
 
 </div>
-<div id="newNotImplementedError-procs-all">
-  <div id="newNotImplementedError,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#newNotImplementedError%2Cstring"><span class="Identifier">newNotImplementedError</span></a><span class="Other">(</span><span class="Identifier">message</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Keyword">ref</span> <a href="types.html#HandlerError"><span class="Identifier">HandlerError</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+<div id="newRegistry-procs-all">
+  <div id="newRegistry">
+  <dt><pre><span class="Keyword">proc</span> <a href="#newRegistry"><span class="Identifier">newRegistry</span></a><span class="Other">(</span><span class="Other">)</span><span class="Other">:</span> <a href="#Registry"><span class="Identifier">Registry</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Creates a <tt class="docutils literal"><span class="pre"><span class="Identifier">HandlerError</span></span></tt> with <tt class="docutils literal"><span class="pre"><span class="Identifier">hekNotImplemented</span></span></tt>.
-<p><strong class="examples_text">Example: cmd: -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">err</span> <span class="Operator">=</span> <span class="Identifier">newNotImplementedError</span><span class="Punctuation">(</span><span class="StringLit">&quot;buttons are not supported yet&quot;</span><span class="Punctuation">)</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">err</span><span class="Operator">.</span><span class="Identifier">kind</span> <span class="Operator">==</span> <span class="Identifier">hekNotImplemented</span>
-<span class="Identifier">doAssert</span> <span class="Identifier">err</span><span class="Operator">.</span><span class="Identifier">msg</span> <span class="Operator">==</span> <span class="StringLit">&quot;buttons are not supported yet&quot;</span></pre>
+    
     
   </dd>
 </div>
@@ -359,7 +734,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-18 16:20:45 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
       </div>
     </div>
   </div>

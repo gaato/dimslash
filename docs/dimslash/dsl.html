@@ -16,13 +16,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
 <!-- CSS -->
-<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.6">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css?v=2.2.10">
 
 <!-- JS -->
-<script type="text/javascript" src="../dochack.js?v=2.2.6"></script>
+<script type="text/javascript" src="../dochack.js?v=2.2.10"></script>
 </head>
 <body>
   <div class="document" id="documentId">
+    <input type="checkbox" id="nav-toggle" hidden>
+    <label for="nav-toggle" id="nav-burger">&#9776;</label>
+    <label for="nav-toggle" id="nav-overlay"></label>
     <div class="container">
       <h1 class="title">src/dimslash/dsl</h1>
       <div class="row">
@@ -51,94 +54,35 @@
       </select>
     </div>
     <ul class="simple simple-toc" id="toc-list">
-  <li><a class="reference" id="simple-command-no-typed-params_toc" href="#simple-command-no-typed-params">Simple command (no typed params)</a></li>
-<li><a class="reference" id="typed-parameters_toc" href="#typed-parameters">Typed parameters</a></li>
-<li><a class="reference" id="optional-parameters_toc" href="#optional-parameters">Optional parameters</a></li>
-<li><a class="reference" id="guildminusscoped-command_toc" href="#guildminusscoped-command">Guild-scoped command</a></li>
-<li><a class="reference" id="quick-reference_toc" href="#quick-reference">Quick reference</a></li>
-<li><a class="reference" id="lifecycle_toc" href="#lifecycle">Lifecycle</a></li>
-<li><a class="reference" id="minimal-bot_toc" href="#minimal-bot">Minimal bot</a></li>
-<li>
+  <li>
   <a class="reference reference-toplevel" href="#6" id="56">Imports</a>
-</li>
-<li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#12" id="62">Procs</a></summary>
-    <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">addAutocomplete
-  <li><a class="reference" href="#addAutocomplete%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring%2Cstring" title="addAutocomplete(handler: InteractionHandler; name: string;
-                callback: CommandHandlerProc; guildId = &quot;&quot;; optionName = &quot;&quot;)">addAutocomplete(handler: InteractionHandler; name: string;
-                callback: CommandHandlerProc; guildId = &quot;&quot;; optionName = &quot;&quot;)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addAutocompleteForOption
-  <li><a class="reference" href="#addAutocompleteForOption%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring" title="addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         callback: CommandHandlerProc; guildId = &quot;&quot;)">addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addButton
-  <li><a class="reference" href="#addButton%2CInteractionHandler%2Cstring%2CCommandHandlerProc" title="addButton(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)">addButton(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addMessage
-  <li><a class="reference" href="#addMessage%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring" title="addMessage(handler: InteractionHandler; name: string;
-           callback: CommandHandlerProc; guildId = &quot;&quot;)">addMessage(handler: InteractionHandler; name: string;
-           callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addModal
-  <li><a class="reference" href="#addModal%2CInteractionHandler%2Cstring%2CCommandHandlerProc" title="addModal(handler: InteractionHandler; customId: string;
-         callback: CommandHandlerProc)">addModal(handler: InteractionHandler; customId: string;
-         callback: CommandHandlerProc)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addSelect
-  <li><a class="reference" href="#addSelect%2CInteractionHandler%2Cstring%2CCommandHandlerProc" title="addSelect(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)">addSelect(handler: InteractionHandler; customId: string;
-          callback: CommandHandlerProc)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addSlashProc
-  <li><a class="reference" href="#addSlashProc%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring" title="addSlashProc(handler: InteractionHandler; name, description: string;
-             callback: CommandHandlerProc; guildId = &quot;&quot;)">addSlashProc(handler: InteractionHandler; name, description: string;
-             callback: CommandHandlerProc; guildId = &quot;&quot;)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addUser
-  <li><a class="reference" href="#addUser%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring" title="addUser(handler: InteractionHandler; name: string; callback: CommandHandlerProc;
-        guildId = &quot;&quot;)">addUser(handler: InteractionHandler; name: string; callback: CommandHandlerProc;
-        guildId = &quot;&quot;)</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">hasSlashOption
-  <li><a class="reference" href="#hasSlashOption%2CInteractionHandler%2Cstring%2Cstring" title="hasSlashOption(handler: InteractionHandler; commandName, optionName: string): bool">hasSlashOption(handler: InteractionHandler; commandName, optionName: string): bool</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">registerSlashOptionNames
-  <li><a class="reference" href="#registerSlashOptionNames%2CInteractionHandler%2Cstring%2CopenArray%5Bstring%5D" title="registerSlashOptionNames(handler: InteractionHandler; commandName: string;
-                         optionNames: openArray[string])">registerSlashOptionNames(handler: InteractionHandler; commandName: string;
-                         optionNames: openArray[string])</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">slashOptionNames
-  <li><a class="reference" href="#slashOptionNames%2CInteractionHandler%2Cstring" title="slashOptionNames(handler: InteractionHandler; commandName: string): seq[string]">slashOptionNames(handler: InteractionHandler; commandName: string): seq[string]</a></li>
-
-</ul>
-
-    </ul>
-  </details>
 </li>
 <li>
   <details open>
     <summary><a class="reference reference-toplevel" href="#17" id="67">Macros</a></summary>
     <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">addSlash
-  <li><a class="reference" href="#addSlash.m%2CInteractionHandler%2Cstring%2Cstring%2Cvarargs%5Buntyped%5D" title="addSlash(handler: InteractionHandler; name, description: string;
-         parameters: varargs[untyped]): untyped">addSlash(handler: InteractionHandler; name, description: string;
-         parameters: varargs[untyped]): untyped</a></li>
+      <ul class="simple nested-toc-section">button
+  <li><a class="reference" href="#button.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="button(handler: untyped; customId: static string; body: untyped): untyped">button(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">message
+  <li><a class="reference" href="#message.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="message(handler: untyped; name: static string; body: untyped): untyped">message(handler: untyped; name: static string; body: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">modal
+  <li><a class="reference" href="#modal.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="modal(handler: untyped; customId: static string; body: untyped): untyped">modal(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">select
+  <li><a class="reference" href="#select.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="select(handler: untyped; customId: static string; body: untyped): untyped">select(handler: untyped; customId: static string; body: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">slash
+  <li><a class="reference" href="#slash.m%2Cuntyped%2Cstaticstring%2Cstaticstring%2Cuntyped" title="slash(handler: untyped; name, description: static string; body: untyped): untyped">slash(handler: untyped; name, description: static string; body: untyped): untyped</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">user
+  <li><a class="reference" href="#user.m%2Cuntyped%2Cstaticstring%2Cuntyped" title="user(handler: untyped; name: static string; body: untyped): untyped">user(handler: untyped; name: static string; body: untyped): untyped</a></li>
 
 </ul>
 
@@ -146,70 +90,7 @@
   </details>
 </li>
 <li>
-  <details open>
-    <summary><a class="reference reference-toplevel" href="#18" id="68">Templates</a></summary>
-    <ul class="simple simple-toc-section">
-      <ul class="simple nested-toc-section">addAutocomplete
-  <li><a class="reference" href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C_2" title="addAutocomplete(handler: InteractionHandler; name, guildId: string;
-                body: untyped{nkStmtList})">addAutocomplete(handler: InteractionHandler; name, guildId: string;
-                body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C" title="addAutocomplete(handler: InteractionHandler; name, optionName, guildId: string;
-                body: untyped{nkStmtList})">addAutocomplete(handler: InteractionHandler; name, optionName, guildId: string;
-                body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C" title="addAutocomplete(handler: InteractionHandler; name, optionName: string;
-                body: untyped{nkStmtList})">addAutocomplete(handler: InteractionHandler; name, optionName: string;
-                body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2C" title="addAutocomplete(handler: InteractionHandler; name: string;
-                body: untyped{nkStmtList})">addAutocomplete(handler: InteractionHandler; name: string;
-                body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addAutocompleteForOption
-  <li><a class="reference" href="#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C" title="addAutocompleteForOption(handler: InteractionHandler;
-                         name, optionName, guildId: string;
-                         body: untyped{nkStmtList})">addAutocompleteForOption(handler: InteractionHandler;
-                         name, optionName, guildId: string;
-                         body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2C" title="addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         body: untyped{nkStmtList})">addAutocompleteForOption(handler: InteractionHandler; name, optionName: string;
-                         body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addButton
-  <li><a class="reference" href="#addButton.t%2CInteractionHandler%2Cstring%2C" title="addButton(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})">addButton(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addMessage
-  <li><a class="reference" href="#addMessage.t%2CInteractionHandler%2Cstring%2Cstring%2C" title="addMessage(handler: InteractionHandler; name, guildId: string;
-           body: untyped{nkStmtList})">addMessage(handler: InteractionHandler; name, guildId: string;
-           body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addMessage.t%2CInteractionHandler%2Cstring%2C" title="addMessage(handler: InteractionHandler; name: string; body: untyped{nkStmtList})">addMessage(handler: InteractionHandler; name: string; body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addModal
-  <li><a class="reference" href="#addModal.t%2CInteractionHandler%2Cstring%2C" title="addModal(handler: InteractionHandler; customId: string;
-         body: untyped{nkStmtList})">addModal(handler: InteractionHandler; customId: string;
-         body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addSelect
-  <li><a class="reference" href="#addSelect.t%2CInteractionHandler%2Cstring%2C" title="addSelect(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})">addSelect(handler: InteractionHandler; customId: string;
-          body: untyped{nkStmtList})</a></li>
-
-</ul>
-<ul class="simple nested-toc-section">addUser
-  <li><a class="reference" href="#addUser.t%2CInteractionHandler%2Cstring%2Cstring%2C" title="addUser(handler: InteractionHandler; name, guildId: string;
-        body: untyped{nkStmtList})">addUser(handler: InteractionHandler; name, guildId: string;
-        body: untyped{nkStmtList})</a></li>
-<li><a class="reference" href="#addUser.t%2CInteractionHandler%2Cstring%2C" title="addUser(handler: InteractionHandler; name: string; body: untyped{nkStmtList})">addUser(handler: InteractionHandler; name: string; body: untyped{nkStmtList})</a></li>
-
-</ul>
-
-    </ul>
-  </details>
+  <a class="reference reference-toplevel" href="#19" id="69">Exports</a>
 </li>
 
 </ul>
@@ -219,299 +100,104 @@
     
     <div id="tocRoot"></div>
     
-    <p class="module-desc"><p>DSL for declaratively registering interaction commands.</p>
-<p>This is the primary API surface of <strong>dimslash</strong>.  It provides template / macro wrappers that let you add commands with minimal boilerplate.</p>
+    <p class="module-desc">The declarative command DSL — dimslash's primary API surface.<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">slash</span><span class="Punctuation">(</span><span class="StringLit">&quot;roll&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Roll some dice&quot;</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
+  <span class="Comment">## number of sides</span>
+  <span class="Identifier">sides</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">min</span><span class="Punctuation">:</span> <span class="DecNumber">1</span><span class="Punctuation">,</span> <span class="Identifier">max</span><span class="Punctuation">:</span> <span class="FloatNumber">1000.</span><span class="Punctuation">}</span><span class="Punctuation">:</span> <span class="Identifier">int</span> <span class="Operator">=</span> <span class="DecNumber">6</span>
+  <span class="Comment">## how many dice</span>
+  <span class="Identifier">count</span><span class="Punctuation">:</span> <span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">int</span><span class="Punctuation">]</span>
+  <span class="Identifier">execute</span><span class="Punctuation">:</span>
+    <span class="Identifier">await</span> <span class="Identifier">ctx</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Operator">$</span><span class="Identifier">rollDice</span><span class="Punctuation">(</span><span class="Identifier">sides</span><span class="Punctuation">,</span> <span class="Identifier">count</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Punctuation">(</span><span class="DecNumber">1</span><span class="Punctuation">)</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
 
-<h1><a class="toc-backref" id="quick-reference" href="#quick-reference">Quick reference</a></h1><table border="1" class="docutils"><tr><th>Helper</th><th>Purpose</th></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addSlash</span></tt></td><td>Slash command with typed parameter extraction</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addSlashProc</span></tt></td><td>Slash command from a raw <tt class="docutils literal"><span class="pre">CommandHandlerProc</span></tt></td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addUser</span></tt></td><td>User context-menu command</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addMessage</span></tt></td><td>Message context-menu command</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addButton</span></tt></td><td>Button component handler</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addSelect</span></tt></td><td>Select-menu component handler</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addModal</span></tt></td><td>Modal submit handler</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addAutocomplete</span></tt></td><td>Autocomplete handler (fallback or option-scoped)</td></tr>
-<tr><td><tt class="docutils literal"><span class="pre">addAutocompleteForOption</span></tt></td><td>Autocomplete handler with option-name validation</td></tr>
-</table><p>Every <tt class="docutils literal"><span class="pre">add*</span></tt> helper comes in <strong>two flavours</strong>:</p>
-<ol class="simple"><li><strong>Proc overload</strong> — accepts a <tt class="docutils literal"><span class="pre">CommandHandlerProc</span></tt> directly.</li>
-<li><strong>Template overload</strong> — accepts a <tt class="docutils literal"><span class="pre">do:</span></tt> block that auto-injects <tt class="docutils literal"><span class="pre">s: Shard</span></tt> and <tt class="docutils literal"><span class="pre">i: Interaction</span></tt> into scope.</li>
-</ol>
-<p><tt class="docutils literal"><span class="pre">addSlash</span></tt> is a <strong>macro</strong> that additionally generates typed <tt class="docutils literal"><span class="pre">requireSlashArg</span></tt> / <tt class="docutils literal"><span class="pre">getSlashArg</span></tt> calls from the do-block parameters.</p>
+<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">slash</span><span class="Punctuation">(</span><span class="StringLit">&quot;admin&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Admin tools&quot;</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
+  <span class="Identifier">permissions</span> <span class="Operator">=</span> <span class="Punctuation">{</span><span class="Identifier">permManageGuild</span><span class="Punctuation">}</span>
+  <span class="Identifier">group</span> <span class="StringLit">&quot;user&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;User management&quot;</span><span class="Punctuation">:</span>
+    <span class="Identifier">sub</span> <span class="StringLit">&quot;ban&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Ban a user&quot;</span><span class="Punctuation">:</span>
+      <span class="Comment">## who to ban</span>
+      <span class="Identifier">target</span><span class="Punctuation">:</span> <span class="Identifier">User</span>
+      <span class="Identifier">execute</span><span class="Punctuation">:</span>
+        <span class="Identifier">await</span> <span class="Identifier">ctx</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">target</span><span class="Operator">.</span><span class="Identifier">username</span> <span class="Operator">&amp;</span> <span class="StringLit">&quot; banned&quot;</span><span class="Punctuation">,</span> <span class="Identifier">ephemeral</span> <span class="Operator">=</span> <span class="Identifier">true</span><span class="Punctuation">)</span>
 
-<h1><a class="toc-backref" id="lifecycle" href="#lifecycle">Lifecycle</a></h1><p>::</p>
-<ol class="simple"><li>Register  — handler.addSlash / addUser / addButton / …</li>
-<li>Sync      — handler.registerCommands()   (onReady)</li>
-<li>Dispatch  — handler.handleInteraction(s, i)</li>
-</ol>
-
-<h1><a class="toc-backref" id="minimal-bot" href="#minimal-bot">Minimal bot</a></h1><pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimscord</span><span class="Punctuation">,</span> <span class="Identifier">asyncdispatch</span><span class="Punctuation">,</span> <span class="Identifier">os</span>
-<span class="Keyword">import</span> <span class="Identifier">dimslash</span>
-
-<span class="Keyword">let</span> <span class="Identifier">discord</span> <span class="Operator">=</span> <span class="Identifier">newDiscordClient</span><span class="Punctuation">(</span><span class="Identifier">getEnv</span><span class="Punctuation">(</span><span class="StringLit">&quot;DISCORD_TOKEN&quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
-<span class="Keyword">var</span> <span class="Identifier">handler</span> <span class="Operator">=</span> <span class="Identifier">newInteractionHandler</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Replies with pong&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;pong&quot;</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;sum&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Adds two numbers&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">a</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">,</span> <span class="Identifier">b</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">$</span><span class="Punctuation">(</span><span class="Identifier">a</span> <span class="Operator">+</span> <span class="Identifier">b</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addUser</span><span class="Punctuation">(</span><span class="StringLit">&quot;userinfo&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;user: &quot;</span> <span class="Operator">&amp;</span> <span class="Identifier">i</span><span class="Operator">.</span><span class="Identifier">member</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Operator">.</span><span class="Identifier">user</span><span class="Operator">.</span><span class="Identifier">username</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addButton</span><span class="Punctuation">(</span><span class="StringLit">&quot;my_button&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Button clicked!&quot;</span><span class="Punctuation">)</span>
-
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocomplete</span><span class="Punctuation">(</span><span class="StringLit">&quot;sum&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;1&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;2&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;3&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span>
-
-<span class="Keyword">proc</span> <span class="Identifier">onReady</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">r</span><span class="Punctuation">:</span> <span class="Identifier">Ready</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">event</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">registerCommands</span><span class="Punctuation">(</span><span class="Punctuation">)</span>
-
-<span class="Keyword">proc</span> <span class="Identifier">interactionCreate</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">event</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
-  <span class="Keyword">discard</span> <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">handleInteraction</span><span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">)</span>
-
-<span class="Identifier">waitFor</span> <span class="Identifier">discord</span><span class="Operator">.</span><span class="Identifier">startSession</span><span class="Punctuation">(</span><span class="Identifier">gateway_intents</span> <span class="Operator">=</span> <span class="Punctuation">{</span><span class="Identifier">giGuilds</span><span class="Punctuation">}</span><span class="Punctuation">)</span></pre></p>
+<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">button</span><span class="Punctuation">(</span><span class="StringLit">&quot;page:{n:int}&quot;</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
+  <span class="Identifier">await</span> <span class="Identifier">ctx</span><span class="Operator">.</span><span class="Identifier">update</span><span class="Punctuation">(</span><span class="StringLit">&quot;page &quot;</span> <span class="Operator">&amp;</span> <span class="Operator">$</span><span class="Identifier">n</span><span class="Punctuation">)</span></pre><p>Inside a <tt class="docutils literal"><span class="pre"><span class="Identifier">slash</span></span></tt> block:</p>
+<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Keyword">Type</span></span></tt> declares an option; <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">T</span><span class="Punctuation">]</span></span></tt> makes it optional, a default (<tt class="docutils literal"><span class="pre"><span class="Operator">=</span> <span class="DecNumber">6</span></span></tt>) makes it optional on Discord but non-Option in Nim. The description comes from a <tt class="docutils literal"><span class="pre"><span class="Comment">## doc</span></span></tt> comment <strong>on the preceding line</strong> (same-line doc comments don't survive parsing) or a <tt class="docutils literal"><span class="pre"><span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">desc</span><span class="Punctuation">:</span> <span class="StringLit">&quot;…&quot;</span><span class="Operator">.</span><span class="Punctuation">}</span></span></tt> pragma.</li>
+<li>Per-option pragmas: <tt class="docutils literal"><span class="pre"><span class="Identifier">desc</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt> (wire-name override), <tt class="docutils literal"><span class="pre"><span class="Identifier">min</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">max</span></span></tt> (int/float), <tt class="docutils literal"><span class="pre"><span class="Identifier">minLen</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">maxLen</span></span></tt> (string), <tt class="docutils literal"><span class="pre"><span class="Identifier">choices</span></span></tt> (string/int/float), <tt class="docutils literal"><span class="pre"><span class="Identifier">channels</span></span></tt> (Channel), <tt class="docutils literal"><span class="pre"><span class="Identifier">nameLoc</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">descLoc</span></span></tt> (localization tables).</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">key</span> <span class="Operator">=</span> <span class="Identifier">value</span></span></tt> lines configure the command: <tt class="docutils literal"><span class="pre"><span class="Identifier">guild</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">permissions</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">nsfw</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">contexts</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">integrations</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">nameLocalizations</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">descriptionLocalizations</span></span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">execute</span><span class="Punctuation">:</span></span></tt> is the handler body; <tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">SlashContext</span></span></tt> and one variable per declared option are in scope.</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">group</span> <span class="StringLit">&quot;name&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;desc&quot;</span><span class="Punctuation">:</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Identifier">sub</span> <span class="StringLit">&quot;name&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;desc&quot;</span><span class="Punctuation">:</span></span></tt> nest subcommands (max depth: group → sub).</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">autocomplete</span> <span class="Operator">&lt;</span><span class="Identifier">option</span><span class="Operator">&gt;:</span></span></tt> attaches an autocomplete handler for one option (compile-time checked); <tt class="docutils literal"><span class="pre"><span class="Identifier">autocomplete</span><span class="Punctuation">:</span></span></tt> is the fallback for the whole (sub)command. <tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">AutocompleteContext</span></span></tt> is in scope.</li>
+</ul>
+<p>Everything the macros can check is checked at compile time: Discord name rules, duplicate/misordered options, group depth, choices vs autocomplete conflicts, and unknown pragma keys.</p>
+</p>
     <div class="section" id="6">
   <h1><a class="toc-backref" href="#6">Imports</a></h1>
   <dl class="item">
-    <a class="reference external" href="types.html">types</a>, <a class="reference external" href="registry.html">registry</a>, <a class="reference external" href="slashargs.html">slashargs</a>
-  </dl>
-</div>
-<div class="section" id="12">
-  <h1><a class="toc-backref" href="#12">Procs</a></h1>
-  <dl class="item">
-    <div id="addAutocomplete-procs-all">
-  <div id="addAutocomplete,InteractionHandler,string,CommandHandlerProc,string,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addAutocomplete%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring%2Cstring"><span class="Identifier">addAutocomplete</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                     <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">;</span> <span class="Identifier">guildId</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">optionName</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Registers an autocomplete handler for the slash command <tt class="docutils literal"><span class="pre"><span class="Identifier">name</span></span></tt>.<ul class="simple"><li><strong>Fallback handler</strong> (<tt class="docutils literal"><span class="pre">optionName</span></tt> is empty) — invoked whenever the user types in <em>any</em> option of the given command and no option-specific handler matches.</li>
-<li><strong>Option-specific handler</strong> (<tt class="docutils literal"><span class="pre">optionName</span></tt> provided) — invoked only when the focused option matches.</li>
-</ul>
-<p>Resolution order (see also <tt class="docutils literal"><span class="pre"><span class="Identifier">registry</span><span class="Operator">.</span><span class="Identifier">findAutocomplete</span></span></tt>):</p>
-<ol class="simple"><li>Exact match on <tt class="docutils literal"><span class="pre">name + optionName</span></tt>.</li>
-<li>Fallback match on <tt class="docutils literal"><span class="pre">name</span></tt> alone.</li>
-<li><tt class="docutils literal"><span class="pre">hekNotFound</span></tt> error.</li>
-</ol>
-
-    
-  </dd>
-</div>
-
-</div>
-<div id="addAutocompleteForOption-procs-all">
-  <div id="addAutocompleteForOption,InteractionHandler,string,string,CommandHandlerProc,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addAutocompleteForOption%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring"><span class="Identifier">addAutocompleteForOption</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span>
-                              <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                              <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">;</span> <span class="Identifier">guildId</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers an option-specific autocomplete handler with <strong>validation</strong>.</p>
-<p>Unlike <tt class="docutils literal"><span class="pre">addAutocomplete</span></tt> with an <tt class="docutils literal"><span class="pre">optionName</span></tt> argument, this proc verifies that <tt class="docutils literal"><span class="pre">optionName</span></tt> was declared in the <tt class="docutils literal"><span class="pre">addSlash</span></tt> do-block for <tt class="docutils literal"><span class="pre">name</span></tt>.  If the option is unknown a <tt class="docutils literal"><span class="pre">ValueError</span></tt> is raised at registration time, catching typos early.</p>
-<pre class="listing"><span class="Comment"># Register slash with typed params first:</span>
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Search items&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">query</span><span class="Punctuation">:</span> <span class="Identifier">string</span><span class="Punctuation">,</span> <span class="Identifier">category</span><span class="Punctuation">:</span> <span class="Identifier">string</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Searching...&quot;</span><span class="Punctuation">)</span>
-
-<span class="Comment"># Now add autocomplete for 'category':</span>
-<span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocompleteForOption</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;category&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;books&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;movies&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;music&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addButton-procs-all">
-  <div id="addButton,InteractionHandler,string,CommandHandlerProc">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addButton%2CInteractionHandler%2Cstring%2CCommandHandlerProc"><span class="Identifier">addButton</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-               <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a handler for a button component identified by <tt class="docutils literal"><span class="pre"><span class="Identifier">customId</span></span></tt>.</p>
-<p>When a user clicks a button whose <tt class="docutils literal"><span class="pre">custom_id</span></tt> matches, dimslash routes the <tt class="docutils literal"><span class="pre">itMessageComponent</span></tt> interaction to this handler.</p>
-<p><strong>Tip:</strong> if both a button and select handler share the same <tt class="docutils literal"><span class="pre">customId</span></tt>, the dispatcher tries button first.  See the dispatch module docs for the full fallback logic.</p>
-
-    
-  </dd>
-</div>
-
-</div>
-<div id="addMessage-procs-all">
-  <div id="addMessage,InteractionHandler,string,CommandHandlerProc,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addMessage%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring"><span class="Identifier">addMessage</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">;</span> <span class="Identifier">guildId</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a message context-menu command.</p>
-<p>Message commands appear under <strong>Apps &gt; name</strong> when right-clicking a message.</p>
-
-    
-  </dd>
-</div>
-
-</div>
-<div id="addModal-procs-all">
-  <div id="addModal,InteractionHandler,string,CommandHandlerProc">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addModal%2CInteractionHandler%2Cstring%2CCommandHandlerProc"><span class="Identifier">addModal</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-              <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a handler for a modal submit identified by <tt class="docutils literal"><span class="pre"><span class="Identifier">customId</span></span></tt>.</p>
-<p>When a user submits a modal whose <tt class="docutils literal"><span class="pre">custom_id</span></tt> matches, dimslash routes the <tt class="docutils literal"><span class="pre">itModalSubmit</span></tt> interaction here.  Use <tt class="docutils literal"><span class="pre"><span class="Identifier">componentargs</span><span class="Operator">.</span><span class="Identifier">modalValues</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Identifier">componentargs</span><span class="Operator">.</span><span class="Identifier">modalValue</span></span></tt> inside the handler to extract submitted text inputs.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addModal</span><span class="Punctuation">(</span><span class="StringLit">&quot;feedback_form&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">fields</span> <span class="Operator">=</span> <span class="Identifier">i</span><span class="Operator">.</span><span class="Identifier">modalValues</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Thanks for your feedback!&quot;</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addSelect-procs-all">
-  <div id="addSelect,InteractionHandler,string,CommandHandlerProc">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addSelect%2CInteractionHandler%2Cstring%2CCommandHandlerProc"><span class="Identifier">addSelect</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-               <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a handler for a select-menu component identified by <tt class="docutils literal"><span class="pre"><span class="Identifier">customId</span></span></tt>.</p>
-<p>Use <tt class="docutils literal"><span class="pre"><span class="Identifier">componentargs</span><span class="Operator">.</span><span class="Identifier">selectValues</span></span></tt> inside the handler to extract the user's selections.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSelect</span><span class="Punctuation">(</span><span class="StringLit">&quot;role_picker&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">values</span> <span class="Operator">=</span> <span class="Identifier">i</span><span class="Operator">.</span><span class="Identifier">selectValues</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;You picked: &quot;</span> <span class="Operator">&amp;</span> <span class="Identifier">values</span><span class="Operator">.</span><span class="Identifier">join</span><span class="Punctuation">(</span><span class="StringLit">&quot;, &quot;</span><span class="Punctuation">)</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addSlashProc-procs-all">
-  <div id="addSlashProc,InteractionHandler,string,string,CommandHandlerProc,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addSlashProc%2CInteractionHandler%2Cstring%2Cstring%2CCommandHandlerProc%2Cstring"><span class="Identifier">addSlashProc</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">description</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                  <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">;</span> <span class="Identifier">guildId</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a slash command from an explicit <tt class="docutils literal"><span class="pre"><span class="Identifier">CommandHandlerProc</span></span></tt>.</p>
-<p>You must supply a non-empty <tt class="docutils literal"><span class="pre"><span class="Identifier">description</span></span></tt> (Discord rejects empty ones for slash commands).  For the ergonomic do-block syntax use the <tt class="docutils literal"><span class="pre"><span class="Identifier">addSlash</span></span></tt> macro instead.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlashProc</span><span class="Punctuation">(</span><span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Pong!&quot;</span><span class="Punctuation">,</span>
-  <span class="Keyword">proc</span> <span class="Punctuation">(</span><span class="Identifier">s</span><span class="Punctuation">:</span> <span class="Identifier">Shard</span><span class="Punctuation">,</span> <span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span> <span class="Punctuation">{</span><span class="Operator">.</span><span class="Identifier">async</span><span class="Operator">.</span><span class="Punctuation">}</span> <span class="Operator">=</span>
-    <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;pong&quot;</span><span class="Punctuation">)</span>
-<span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addUser-procs-all">
-  <div id="addUser,InteractionHandler,string,CommandHandlerProc,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#addUser%2CInteractionHandler%2Cstring%2CCommandHandlerProc%2Cstring"><span class="Identifier">addUser</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-             <span class="Identifier">callback</span><span class="Other">:</span> <a href="types.html#CommandHandlerProc"><span class="Identifier">CommandHandlerProc</span></a><span class="Other">;</span> <span class="Identifier">guildId</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Registers a user context-menu command.</p>
-<p>User commands appear under <strong>Apps &gt; name</strong> when right-clicking a user. No description is shown in the Discord UI for context-menu commands.</p>
-<p>See the template overload below for the do-block syntax.</p>
-
-    
-  </dd>
-</div>
-
-</div>
-<div id="hasSlashOption-procs-all">
-  <div id="hasSlashOption,InteractionHandler,string,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#hasSlashOption%2CInteractionHandler%2Cstring%2Cstring"><span class="Identifier">hasSlashOption</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">commandName</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Returns <tt class="docutils literal"><span class="pre">true</span></tt> when <tt class="docutils literal"><span class="pre"><span class="Identifier">optionName</span></span></tt> is a known parameter of <tt class="docutils literal"><span class="pre"><span class="Identifier">commandName</span></span></tt>.  Both values are normalised before comparison.
-    
-  </dd>
-</div>
-
-</div>
-<div id="registerSlashOptionNames-procs-all">
-  <div id="registerSlashOptionNames,InteractionHandler,string,openArray[string]">
-  <dt><pre><span class="Keyword">proc</span> <a href="#registerSlashOptionNames%2CInteractionHandler%2Cstring%2CopenArray%5Bstring%5D"><span class="Identifier">registerSlashOptionNames</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">commandName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                              <span class="Identifier">optionNames</span><span class="Other">:</span> <span class="Identifier">openArray</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    <p>Stores the known slash option parameter names for <tt class="docutils literal"><span class="pre"><span class="Identifier">commandName</span></span></tt>.</p>
-<p>Called automatically by <tt class="docutils literal"><span class="pre"><span class="Identifier">addSlash</span></span></tt> after parsing the do-block formals. The stored names are used by <tt class="docutils literal"><span class="pre"><span class="Identifier">addAutocompleteForOption</span></span></tt> to validate that the option being linked actually exists in the slash definition.</p>
-<p>Names are normalised (lower-cased, underscores removed) before storage.</p>
-
-    
-  </dd>
-</div>
-
-</div>
-<div id="slashOptionNames-procs-all">
-  <div id="slashOptionNames,InteractionHandler,string">
-  <dt><pre><span class="Keyword">proc</span> <a href="#slashOptionNames%2CInteractionHandler%2Cstring"><span class="Identifier">slashOptionNames</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">commandName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span>
-    <span class="Identifier">string</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-  <dd>
-    
-    Returns the normalised option names registered for <tt class="docutils literal"><span class="pre"><span class="Identifier">commandName</span></span></tt>. Returns an empty seq when no names are recorded.
-    
-  </dd>
-</div>
-
-</div>
-
+    <a class="reference external" href="types.html">types</a>, <a class="reference external" href="registry.html">registry</a>, <a class="reference external" href="extract.html">extract</a>, <a class="reference external" href="context.html">context</a>, <a class="reference external" href="dispatch.html">dispatch</a>
   </dl>
 </div>
 <div class="section" id="17">
   <h1><a class="toc-backref" href="#17">Macros</a></h1>
   <dl class="item">
-    <div id="addSlash-macros-all">
-  <div id="addSlash.m,InteractionHandler,string,string,varargs[untyped]">
-  <dt><pre><span class="Keyword">macro</span> <a href="#addSlash.m%2CInteractionHandler%2Cstring%2Cstring%2Cvarargs%5Buntyped%5D"><span class="Identifier">addSlash</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">description</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-               <span class="Identifier">parameters</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">untyped</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+    <div id="button-macros-all">
+  <div id="button.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#button.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">button</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
   <dd>
     
-    <p>Registers a slash command with automatic typed parameter extraction.</p>
-<p>This is the recommended way to add slash commands.  The macro inspects the <tt class="docutils literal"><span class="pre"><span class="Keyword">do</span></span></tt> block's formal parameters and generates <tt class="docutils literal"><span class="pre"><span class="Identifier">requireSlashArg</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Identifier">getSlashArg</span></span></tt> calls at compile time.</p>
-<p><strong>Supported parameter types:</strong></p>
-<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">string</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">bool</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">float</span></span></tt> – required, extracted via <tt class="docutils literal"><span class="pre"><span class="Identifier">requireSlashArg</span></span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre"><span class="Identifier">User</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">Role</span></span></tt> – resolved objects, also required.</li>
-<li><tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">T</span><span class="Punctuation">]</span></span></tt> for any of the above – optional, extracted via <tt class="docutils literal"><span class="pre"><span class="Identifier">getSlashArg</span></span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre"><span class="Identifier">Interaction</span></span></tt> – bound to the raw interaction object (no extraction).</li>
-<li><tt class="docutils literal"><span class="pre"><span class="Identifier">Shard</span></span></tt> – bound to the gateway shard (no extraction).</li>
-</ul>
-<p><strong>Named parameters:</strong></p>
-<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">guildId</span> <span class="Operator">=</span> <span class="StringLit">&quot;...&quot;</span></span></tt> – restrict the command to a specific guild.</li>
-</ul>
+    Registers a button handler. <tt class="docutils literal"><span class="pre"><span class="Identifier">customId</span></span></tt> may contain <tt class="docutils literal"><span class="pre"><span class="Punctuation">{</span><span class="Identifier">name</span><span class="Punctuation">}</span></span></tt> / <tt class="docutils literal"><span class="pre"><span class="Punctuation">{</span><span class="Identifier">name</span><span class="Punctuation">:</span><span class="Identifier">int</span><span class="Punctuation">}</span></span></tt> captures, which become typed variables in the body (<tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">ComponentContext</span></span></tt> is in scope).
+    
+  </dd>
+</div>
 
-<h1><a class="toc-backref" id="simple-command-no-typed-params" href="#simple-command-no-typed-params">Simple command (no typed params)</a></h1><pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;ping&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Replies with pong&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;pong&quot;</span><span class="Punctuation">)</span></pre>
-<h1><a class="toc-backref" id="typed-parameters" href="#typed-parameters">Typed parameters</a></h1><pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;sum&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Adds two numbers&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">a</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">,</span> <span class="Identifier">b</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;sum = &quot;</span> <span class="Operator">&amp;</span> <span class="Operator">$</span><span class="Punctuation">(</span><span class="Identifier">a</span> <span class="Operator">+</span> <span class="Identifier">b</span><span class="Punctuation">)</span><span class="Punctuation">)</span></pre>
-<h1><a class="toc-backref" id="optional-parameters" href="#optional-parameters">Optional parameters</a></h1><pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;greet&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Greets someone&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">who</span> <span class="Operator">=</span> <span class="Keyword">if</span> <span class="Identifier">name</span><span class="Operator">.</span><span class="Identifier">isSome</span><span class="Punctuation">:</span> <span class="Identifier">name</span><span class="Operator">.</span><span class="Identifier">get</span> <span class="Keyword">else</span><span class="Punctuation">:</span> <span class="StringLit">&quot;world&quot;</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Hello, &quot;</span> <span class="Operator">&amp;</span> <span class="Identifier">who</span> <span class="Operator">&amp;</span> <span class="StringLit">&quot;!&quot;</span><span class="Punctuation">)</span></pre>
-<h1><a class="toc-backref" id="guildminusscoped-command" href="#guildminusscoped-command">Guild-scoped command</a></h1><pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;admin&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Admin only&quot;</span><span class="Punctuation">,</span> <span class="Identifier">guildId</span> <span class="Operator">=</span> <span class="StringLit">&quot;123456789&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;admin only&quot;</span><span class="Punctuation">)</span></pre>
-<p><strong class="examples_text">Example: cmd: -r:off -d:ssl</strong></p>
-<pre class="listing"><span class="Keyword">import</span> <span class="Identifier">dimscord</span><span class="Punctuation">,</span> <span class="Identifier">asyncdispatch</span><span class="Punctuation">,</span> <span class="Identifier">options</span>
-<span class="Keyword">import</span> <span class="Identifier">dimslash</span>
+</div>
+<div id="message-macros-all">
+  <div id="message.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#message.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">message</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Declares a message context-menu command. The block is the handler body (<tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">MessageContext</span></span></tt> is in scope), optionally preceded by <tt class="docutils literal"><span class="pre"><span class="Identifier">key</span> <span class="Operator">=</span> <span class="Identifier">value</span></span></tt> settings.
+    
+  </dd>
+</div>
 
-<span class="Keyword">let</span> <span class="Identifier">discord</span> <span class="Operator">=</span> <span class="Identifier">newDiscordClient</span><span class="Punctuation">(</span><span class="StringLit">&quot;TOKEN&quot;</span><span class="Punctuation">)</span>
-<span class="Keyword">var</span> <span class="Identifier">h</span> <span class="Operator">=</span> <span class="Identifier">newInteractionHandler</span><span class="Punctuation">(</span><span class="Identifier">discord</span><span class="Punctuation">)</span>
+</div>
+<div id="modal-macros-all">
+  <div id="modal.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#modal.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">modal</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Registers a modal-submit handler. Captures work like <tt class="docutils literal"><span class="pre"><span class="Identifier">button</span></span></tt>; <tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">ModalContext</span></span></tt> is in scope.
+    
+  </dd>
+</div>
 
-<span class="Comment"># Typed parameters:</span>
-<span class="Identifier">h</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;sum&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Adds two numbers&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">a</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">,</span> <span class="Identifier">b</span><span class="Punctuation">:</span> <span class="Identifier">int</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">h</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">$</span><span class="Punctuation">(</span><span class="Identifier">a</span> <span class="Operator">+</span> <span class="Identifier">b</span><span class="Punctuation">)</span><span class="Punctuation">)</span>
+</div>
+<div id="select-macros-all">
+  <div id="select.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#select.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">select</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Registers a select-menu handler (all five select kinds). Captures work like <tt class="docutils literal"><span class="pre"><span class="Identifier">button</span></span></tt>; <tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">ComponentContext</span></span></tt> is in scope.
+    
+  </dd>
+</div>
 
-<span class="Comment"># Optional parameter:</span>
-<span class="Identifier">h</span><span class="Operator">.</span><span class="Identifier">addSlash</span><span class="Punctuation">(</span><span class="StringLit">&quot;greet&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Greets someone&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span> <span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">:</span> <span class="Identifier">Interaction</span><span class="Punctuation">,</span> <span class="Identifier">name</span><span class="Punctuation">:</span> <span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span><span class="Punctuation">)</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">who</span> <span class="Operator">=</span> <span class="Keyword">if</span> <span class="Identifier">name</span><span class="Operator">.</span><span class="Identifier">isSome</span><span class="Punctuation">:</span> <span class="Identifier">name</span><span class="Operator">.</span><span class="Identifier">get</span> <span class="Keyword">else</span><span class="Punctuation">:</span> <span class="StringLit">&quot;world&quot;</span>
-  <span class="Identifier">await</span> <span class="Identifier">h</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Hello, &quot;</span> <span class="Operator">&amp;</span> <span class="Identifier">who</span> <span class="Operator">&amp;</span> <span class="StringLit">&quot;!&quot;</span><span class="Punctuation">)</span></pre>
+</div>
+<div id="slash-macros-all">
+  <div id="slash.m,untyped,staticstring,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#slash.m%2Cuntyped%2Cstaticstring%2Cstaticstring%2Cuntyped"><span class="Identifier">slash</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">description</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Declares and registers a slash command. See the module docs for the full block grammar.
+    
+  </dd>
+</div>
+
+</div>
+<div id="user-macros-all">
+  <div id="user.m,untyped,staticstring,untyped">
+  <dt><pre><span class="Keyword">macro</span> <a href="#user.m%2Cuntyped%2Cstaticstring%2Cuntyped"><span class="Identifier">user</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Keyword">static</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">untyped</span></pre></dt>
+  <dd>
+    
+    Declares a user context-menu command. The block is the handler body (<tt class="docutils literal"><span class="pre"><span class="Identifier">ctx</span><span class="Punctuation">:</span> <span class="Identifier">UserContext</span></span></tt> is in scope), optionally preceded by <tt class="docutils literal"><span class="pre"><span class="Identifier">key</span> <span class="Operator">=</span> <span class="Identifier">value</span></span></tt> settings.
     
   </dd>
 </div>
@@ -520,166 +206,10 @@
 
   </dl>
 </div>
-<div class="section" id="18">
-  <h1><a class="toc-backref" href="#18">Templates</a></h1>
+<div class="section" id="19">
+  <h1><a class="toc-backref" href="#19">Exports</a></h1>
   <dl class="item">
-    <div id="addAutocomplete-templates-all">
-  <div id="addAutocomplete.t,InteractionHandler,string,string,_2">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C_2"><span class="Identifier">addAutocomplete</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                         <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Guild-scoped fallback autocomplete handler variant.
-    
-  </dd>
-</div>
-<div id="addAutocomplete.t,InteractionHandler,string,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C"><span class="Identifier">addAutocomplete</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span>
-                         <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                         <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Guild-scoped option-specific autocomplete handler variant.
-    
-  </dd>
-</div>
-<div id="addAutocomplete.t,InteractionHandler,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2Cstring%2C"><span class="Identifier">addAutocomplete</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                         <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    <p>Registers an <strong>option-scoped</strong> autocomplete handler using a do-block.</p>
-<p>This handler is selected only when the focused option matches <tt class="docutils literal"><span class="pre"><span class="Identifier">optionName</span></span></tt>.  Falls back to the generic autocomplete handler if no option-specific match is found.</p>
-
-    
-  </dd>
-</div>
-<div id="addAutocomplete.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocomplete.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addAutocomplete</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                         <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    <p>Registers a <strong>fallback</strong> autocomplete handler using a do-block.</p>
-<p>Use <tt class="docutils literal"><span class="pre"><span class="Identifier">focusedOptionName</span></span></tt> and <tt class="docutils literal"><span class="pre"><span class="Identifier">focusedOptionValue</span></span></tt> inside the block to inspect what the user is typing, then call <tt class="docutils literal"><span class="pre"><span class="Identifier">suggest</span></span></tt> to reply.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addAutocomplete</span><span class="Punctuation">(</span><span class="StringLit">&quot;search&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">partial</span> <span class="Operator">=</span> <span class="Identifier">i</span><span class="Operator">.</span><span class="Identifier">focusedOptionValue</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">suggest</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="Operator">@</span><span class="Punctuation">[</span><span class="StringLit">&quot;apple&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;banana&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;cherry&quot;</span><span class="Punctuation">]</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addAutocompleteForOption-templates-all">
-  <div id="addAutocompleteForOption.t,InteractionHandler,string,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2Cstring%2C"><span class="Identifier">addAutocompleteForOption</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span>
-                                  <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                                  <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Guild-scoped option-specific autocomplete handler with validation.
-    
-  </dd>
-</div>
-<div id="addAutocompleteForOption.t,InteractionHandler,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addAutocompleteForOption.t%2CInteractionHandler%2Cstring%2Cstring%2C"><span class="Identifier">addAutocompleteForOption</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span>
-                                  <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">optionName</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                                  <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers an option-scoped autocomplete handler with slash-option validation.
-    
-  </dd>
-</div>
-
-</div>
-<div id="addButton-templates-all">
-  <div id="addButton.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addButton.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addButton</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                   <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    <p>Registers a button handler using a do-block.</p>
-<p><tt class="docutils literal"><span class="pre">s</span></tt> and <tt class="docutils literal"><span class="pre">i</span></tt> are injected automatically.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addButton</span><span class="Punctuation">(</span><span class="StringLit">&quot;confirm:delete&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;Deleted!&quot;</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addMessage-templates-all">
-  <div id="addMessage.t,InteractionHandler,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addMessage.t%2CInteractionHandler%2Cstring%2Cstring%2C"><span class="Identifier">addMessage</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                    <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers a guild-scoped message context-menu command using a do-block.
-    
-  </dd>
-</div>
-<div id="addMessage.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addMessage.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addMessage</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                    <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers a message context-menu command using a do-block.<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addMessage</span><span class="Punctuation">(</span><span class="StringLit">&quot;quote&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;You quoted a message!&quot;</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-<div id="addModal-templates-all">
-  <div id="addModal.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addModal.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addModal</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                  <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers a modal-submit handler using a do-block.
-    
-  </dd>
-</div>
-
-</div>
-<div id="addSelect-templates-all">
-  <div id="addSelect.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addSelect.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addSelect</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                   <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers a select-menu handler using a do-block.
-    
-  </dd>
-</div>
-
-</div>
-<div id="addUser-templates-all">
-  <div id="addUser.t,InteractionHandler,string,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addUser.t%2CInteractionHandler%2Cstring%2Cstring%2C"><span class="Identifier">addUser</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">,</span> <span class="Identifier">guildId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                 <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    Registers a guild-scoped user context-menu command using a do-block.<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addUser</span><span class="Punctuation">(</span><span class="StringLit">&quot;userinfo&quot;</span><span class="Punctuation">,</span> <span class="StringLit">&quot;123456789&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;guild-scoped user command&quot;</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-<div id="addUser.t,InteractionHandler,string,">
-  <dt><pre><span class="Keyword">template</span> <a href="#addUser.t%2CInteractionHandler%2Cstring%2C"><span class="Identifier">addUser</span></a><span class="Other">(</span><span class="Identifier">handler</span><span class="Other">:</span> <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a><span class="Other">;</span> <span class="Identifier">name</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span>
-                 <span class="Identifier">body</span><span class="Other">:</span> <span class="Identifier">untyped</span><span class="Other">{</span><span class="Identifier">nkStmtList</span><span class="Other">}</span><span class="Other">)</span></pre></dt>
-  <dd>
-    
-    <p>Registers a user context-menu command using a do-block.</p>
-<p>Inside the block, <tt class="docutils literal"><span class="pre"><span class="Identifier">s</span></span></tt> (Shard) and <tt class="docutils literal"><span class="pre"><span class="Identifier">i</span></span></tt> (Interaction) are implicitly available.</p>
-<pre class="listing"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">addUser</span><span class="Punctuation">(</span><span class="StringLit">&quot;userinfo&quot;</span><span class="Punctuation">)</span> <span class="Keyword">do</span><span class="Punctuation">:</span>
-  <span class="Keyword">let</span> <span class="Identifier">user</span> <span class="Operator">=</span> <span class="Identifier">i</span><span class="Operator">.</span><span class="Identifier">member</span><span class="Operator">.</span><span class="Identifier">get</span><span class="Operator">.</span><span class="Identifier">user</span>
-  <span class="Identifier">await</span> <span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">reply</span><span class="Punctuation">(</span><span class="Identifier">i</span><span class="Punctuation">,</span> <span class="StringLit">&quot;User: &quot;</span> <span class="Operator">&amp;</span> <span class="Identifier">user</span><span class="Operator">.</span><span class="Identifier">username</span><span class="Punctuation">)</span></pre>
-    
-  </dd>
-</div>
-
-</div>
-
+    <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a>, <a href="types.html#choice,string,string"><span class="Identifier">choice</span></a>, <a href="types.html#UserCommand"><span class="Identifier">UserCommand</span></a>, <a href="types.html#choice,string,float"><span class="Identifier">choice</span></a>, <a href="types.html#CustomIdPattern"><span class="Identifier">CustomIdPattern</span></a>, <a href="types.html#Mentionable"><span class="Identifier">Mentionable</span></a>, <a href="types.html#ChoiceValueKind"><span class="Identifier">ChoiceValueKind</span></a>, <a href="types.html#ErrorHook"><span class="Identifier">ErrorHook</span></a>, <a href="types.html#ResponseState"><span class="Identifier">ResponseState</span></a>, <a href="types.html#SlashNode"><span class="Identifier">SlashNode</span></a>, <a href="types.html#CaptureKind"><span class="Identifier">CaptureKind</span></a>, <a href="types.html#CommandMeta"><span class="Identifier">CommandMeta</span></a>, <a href="types.html#choice,string,int"><span class="Identifier">choice</span></a>, <a href="types.html#ModalRun"><span class="Identifier">ModalRun</span></a>, <a href="types.html#MessageContext"><span class="Identifier">MessageContext</span></a>, <a href="types.html#ComponentEntry"><span class="Identifier">ComponentEntry</span></a>, <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a>, <a href="types.html#OptionSpec"><span class="Identifier">OptionSpec</span></a>, <a href="types.html#ChoiceValue"><span class="Identifier">ChoiceValue</span></a>, <a href="types.html#MessageCommand"><span class="Identifier">MessageCommand</span></a>, <a href="types.html#PatternSegmentKind"><span class="Identifier">PatternSegmentKind</span></a>, <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a>, <a href="types.html#MentionableKind"><span class="Identifier">MentionableKind</span></a>, <a href="types.html#MessageRun"><span class="Identifier">MessageRun</span></a>, <a href="types.html#InteractionHandler"><span class="Identifier">InteractionHandler</span></a>, <a href="types.html#AutocompleteRun"><span class="Identifier">AutocompleteRun</span></a>, <a href="types.html#Registry"><span class="Identifier">Registry</span></a>, <a href="types.html#ComponentRun"><span class="Identifier">ComponentRun</span></a>, <a href="types.html#DimslashError"><span class="Identifier">DimslashError</span></a>, <a href="types.html#MessagePayload"><span class="Identifier">MessagePayload</span></a>, <a href="types.html#SlashContext"><span class="Identifier">SlashContext</span></a>, <a href="types.html#RestBackend"><span class="Identifier">RestBackend</span></a>, <a href="types.html#UserContext"><span class="Identifier">UserContext</span></a>, <a href="types.html#SlashCommand"><span class="Identifier">SlashCommand</span></a>, <a href="types.html#SlashRun"><span class="Identifier">SlashRun</span></a>, <a href="types.html#PatternSegment"><span class="Identifier">PatternSegment</span></a>, <a href="types.html#SlashNodeKind"><span class="Identifier">SlashNodeKind</span></a>, <a href="types.html#newRegistry"><span class="Identifier">newRegistry</span></a>, <a href="types.html#ChoiceSpec"><span class="Identifier">ChoiceSpec</span></a>, <a href="types.html#ComponentTable"><span class="Identifier">ComponentTable</span></a>, <a href="types.html#UserRun"><span class="Identifier">UserRun</span></a>, <a href="types.html#UnknownHook"><span class="Identifier">UnknownHook</span></a>, <a href="types.html#AutocompleteContext"><span class="Identifier">AutocompleteContext</span></a>, <a href="registry.html#lookup,ComponentTable[H],string"><span class="Identifier">lookup</span></a>, <a href="registry.html#addButtonHandler,InteractionHandler,string,ComponentRun"><span class="Identifier">addButtonHandler</span></a>, <a href="registry.html#addSlashCommand,InteractionHandler,SlashCommand"><span class="Identifier">addSlashCommand</span></a>, <a href="registry.html#addModalHandler,InteractionHandler,string,ModalRun"><span class="Identifier">addModalHandler</span></a>, <a href="registry.html#addSelectHandler,InteractionHandler,string,ComponentRun"><span class="Identifier">addSelectHandler</span></a>, <a href="registry.html#resolveLeaf,SlashCommand,seq[string]"><span class="Identifier">resolveLeaf</span></a>, <a href="registry.html#addMessageCommand,InteractionHandler,MessageCommand"><span class="Identifier">addMessageCommand</span></a>, <a href="registry.html#addUserCommand,InteractionHandler,UserCommand"><span class="Identifier">addUserCommand</span></a>, <a href="extract.html#LeafOptions"><span class="Identifier">LeafOptions</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[bool]"><span class="Identifier">opt</span></a>, <a href="extract.html#modalFields,seq[MessageComponent]"><span class="Identifier">modalFields</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[ResolvedChannel]"><span class="Identifier">opt</span></a>, <a href="extract.html#parseCustomIdPattern,string"><span class="Identifier">parseCustomIdPattern</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[Role]"><span class="Identifier">opt</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[Member]"><span class="Identifier">opt</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[string]"><span class="Identifier">opt</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[User]"><span class="Identifier">opt</span></a>, <a href="extract.html#stringValue,ApplicationCommandInteractionDataOption"><span class="Identifier">stringValue</span></a>, <a href="extract.html#hasCaptures,CustomIdPattern"><span class="Identifier">hasCaptures</span></a>, <a href="extract.html#matchCustomId,CustomIdPattern,string"><span class="Identifier">matchCustomId</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[Mentionable]"><span class="Identifier">opt</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[float]"><span class="Identifier">opt</span></a>, <a href="extract.html#focusedOption,LeafOptions"><span class="Identifier">focusedOption</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[int]"><span class="Identifier">opt</span></a>, <a href="extract.html#req,SlashContext,string,typedesc[T]"><span class="Identifier">req</span></a>, <a href="extract.html#literalPrefixLen,CustomIdPattern"><span class="Identifier">literalPrefixLen</span></a>, <a href="extract.html#targetMessage,Interaction"><span class="Identifier">targetMessage</span></a>, <a href="extract.html#opt,SlashContext,string,typedesc[Attachment]"><span class="Identifier">opt</span></a>, <a href="extract.html#leafOptions,ApplicationCommandInteractionData"><span class="Identifier">leafOptions</span></a>, <a href="extract.html#targetMember,Interaction"><span class="Identifier">targetMember</span></a>, <a href="extract.html#targetUser,Interaction"><span class="Identifier">targetUser</span></a>, <a href="extract.html#SelectKinds"><span class="Identifier">SelectKinds</span></a>, <a href="context.html#customId"><span class="Identifier">customId</span></a>, <a href="context.html#values,ComponentContext"><span class="Identifier">values</span></a>, <a href="context.html#user,InteractionContext"><span class="Identifier">user</span></a>, <a href="context.html#guildId,InteractionContext"><span class="Identifier">guildId</span></a>, <a href="context.html#followup,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]"><span class="Identifier">followup</span></a>, <a href="context.html#deferUpdate"><span class="Identifier">deferUpdate</span></a>, <a href="context.html#target,MessageContext"><span class="Identifier">target</span></a>, <a href="context.html#inGuild,InteractionContext"><span class="Identifier">inGuild</span></a>, <a href="context.html#selectedRoles,ComponentContext"><span class="Identifier">selectedRoles</span></a>, <a href="context.html#targetMember,UserContext"><span class="Identifier">targetMember</span></a>, <a href="context.html#delete,InteractionContext,string"><span class="Identifier">delete</span></a>, <a href="context.html#defaultOnError,InteractionContext,ref.Exception"><span class="Identifier">defaultOnError</span></a>, <a href="context.html#showModal,InteractionContext,string,string,seq[MessageComponent]"><span class="Identifier">showModal</span></a>, <a href="context.html#update,,string,seq[Embed],seq[MessageComponent],seq[Attachment]"><span class="Identifier">update</span></a>, <a href="context.html#target,UserContext"><span class="Identifier">target</span></a>, <a href="context.html#fields,ModalContext"><span class="Identifier">fields</span></a>, <a href="context.html#appPermissions,InteractionContext"><span class="Identifier">appPermissions</span></a>, <a href="context.html#suggest,AutocompleteContext,seq[string]"><span class="Identifier">suggest</span></a>, <a href="context.html#locale,InteractionContext"><span class="Identifier">locale</span></a>, <a href="context.html#message,ComponentContext"><span class="Identifier">message</span></a>, <a href="context.html#channelId,InteractionContext"><span class="Identifier">channelId</span></a>, <a href="context.html#newTextInput,string,string,string,string,int,int"><span class="Identifier">newTextInput</span></a>, <a href="context.html#selectedChannels,ComponentContext"><span class="Identifier">selectedChannels</span></a>, <a href="context.html#original,InteractionContext"><span class="Identifier">original</span></a>, <a href="context.html#member,InteractionContext"><span class="Identifier">member</span></a>, <a href="context.html#selectedUsers,ComponentContext"><span class="Identifier">selectedUsers</span></a>, <a href="context.html#reply,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]"><span class="Identifier">reply</span></a>, <a href="context.html#suggest,AutocompleteContext,openArray[]"><span class="Identifier">suggest</span></a>, <a href="context.html#deferReply,InteractionContext"><span class="Identifier">deferReply</span></a>, <a href="context.html#selectedMembers,ComponentContext"><span class="Identifier">selectedMembers</span></a>, <a href="context.html#field,ModalContext,string"><span class="Identifier">field</span></a>, <a href="context.html#suggest,AutocompleteContext,seq[ApplicationCommandOptionChoice]"><span class="Identifier">suggest</span></a>, <a href="context.html#suggest,AutocompleteContext,openArray[]_2"><span class="Identifier">suggest</span></a>, <a href="context.html#focusedValue,AutocompleteContext"><span class="Identifier">focusedValue</span></a>, <a href="context.html#suggest,AutocompleteContext,openArray[]_3"><span class="Identifier">suggest</span></a>, <a href="context.html#edit,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile],string"><span class="Identifier">edit</span></a>, <a href="dispatch.html#handleInteraction,InteractionHandler,Shard,Interaction"><span class="Identifier">handleInteraction</span></a>
   </dl>
 </div>
 
@@ -689,7 +219,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-02-18 16:20:53 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
       </div>
     </div>
   </div>
