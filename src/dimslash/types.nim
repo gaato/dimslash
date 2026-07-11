@@ -5,7 +5,7 @@
 ## passed to handlers, and the `RestBackend` seam that all REST traffic
 ## goes through (so tests can swap in a recording backend).
 
-import std/[asyncdispatch, json, options, tables]
+import std/[asyncdispatch, json, monotimes, options, tables]
 import dimscord
 
 type
@@ -13,6 +13,16 @@ type
     ## Raised on misuse of dimslash itself: duplicate registrations,
     ## responding twice to the same interaction, malformed custom_id
     ## patterns, and the like. Discord/network errors are dimscord's.
+
+  UserError* = object of CatchableError
+    ## An error whose message is meant for the invoking user. The default
+    ## `onError` hook replies with `msg` as an ephemeral message instead
+    ## of logging; raise it (or call `fail`) for expected refusals like
+    ## failed checks, cooldowns, or invalid input.
+
+  CooldownBucket* = enum
+    ## What a `cooldown = …` command setting is keyed on.
+    cbUser, cbGuild, cbChannel, cbGlobal
 
   MentionableKind* = enum
     mkUser, mkRole
@@ -158,6 +168,38 @@ type
     selects*: ComponentTable[ComponentRun]
     modals*: ComponentTable[ModalRun]
 
+  TextFieldSpec* = object
+    ## One text input of a `modalForm`, used to build the modal when it
+    ## is shown. `minLen`/`maxLen` of 0 mean "unset".
+    customId*, label*: string
+    style*: TextInputStyle
+    required*: bool
+    placeholder*, value*: string
+    minLen*, maxLen*: int
+
+  ModalForm* = ref object
+    ## A modal declared with the `modalForm` macro: the submit handler is
+    ## registered under `pattern`, and `context.showModal` builds the
+    ## dialog from `fields` (filling the pattern's captures).
+    pattern*: string
+    title*: string
+    fields*: seq[TextFieldSpec]
+
+  ComponentWaiter* = ref object
+    ## A one-shot pending `wait.waitForComponent` call. Dispatch checks
+    ## waiters before the registry and removes one as soon as it fires.
+    kinds*: set[MessageComponentType]
+    patterns*: seq[CustomIdPattern]
+    userId*: string                       ## "" = any user
+    messageId*: string                    ## "" = any message
+    future*: Future[ComponentContext]
+
+  ModalWaiter* = ref object
+    ## A one-shot pending `wait.waitForModal` call.
+    patterns*: seq[CustomIdPattern]
+    userId*: string                       ## "" = any user
+    future*: Future[ModalContext]
+
   MessagePayload* = object
     ## Normalized message content for followups and edits.
     content*: Option[string]
@@ -205,6 +247,17 @@ type
       ## ephemeral error reply if nothing was sent yet. nil = re-raise.
     onUnknown*: UnknownHook
       ## called for interactions with no registered handler. nil = ignore.
+    componentWaiters*: seq[ComponentWaiter]  ## pending `waitFor*` calls
+    modalWaiters*: seq[ModalWaiter]
+    cooldowns*: Table[string, MonoTime]
+      ## ready-again times for `cooldown = …` commands, keyed by
+      ## command path + bucket
+
+template fail*(msg: string) =
+  ## Aborts the current handler with a message shown to the invoking user
+  ## (ephemeral, via the default `onError` hook). Sugar for raising
+  ## `UserError`.
+  raise newException(UserError, msg)
 
 proc choice*(name: string, value: string): ChoiceSpec =
   ChoiceSpec(name: name, value: ChoiceValue(kind: cvString, strVal: value))

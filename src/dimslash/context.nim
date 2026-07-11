@@ -14,7 +14,7 @@
 ## All REST traffic goes through `handler.rest`, so everything here is
 ## testable against a recording backend.
 
-import std/[asyncdispatch, json, options, tables]
+import std/[asyncdispatch, json, monotimes, options, strutils, tables, times]
 import dimscord
 
 import ./types, ./extract
@@ -118,6 +118,42 @@ proc field*(ctx: ModalContext, customId: string): Option[string] =
   let all = ctx.fields
   if all.hasKey(customId):
     return some all[customId]
+
+proc optField*(ctx: ModalContext, customId: string): Option[string] =
+  ## Like `field`, but an empty (untouched optional) input becomes `none`.
+  let raw = ctx.field(customId)
+  if raw.isSome and raw.get.len > 0:
+    return raw
+
+proc fieldAsInt*(ctx: ModalContext, customId, label: string): int =
+  ## `field` parsed as an integer. Discord can't validate text inputs, so
+  ## a non-number raises `UserError` — a polite ephemeral message via the
+  ## default error hook. The `modalForm` macro generates these calls for
+  ## `int` fields.
+  let raw = ctx.field(customId).get("").strip()
+  try:
+    parseInt(raw)
+  except ValueError:
+    raise newException(UserError, "\"" & label & "\" must be a whole number.")
+
+proc optFieldAsInt*(ctx: ModalContext, customId, label: string): Option[int] =
+  if ctx.field(customId).get("").strip().len == 0:
+    return none int
+  some ctx.fieldAsInt(customId, label)
+
+proc fieldAsFloat*(ctx: ModalContext, customId, label: string): float =
+  ## `field` parsed as a number; raises `UserError` when it doesn't parse.
+  let raw = ctx.field(customId).get("").strip()
+  try:
+    parseFloat(raw)
+  except ValueError:
+    raise newException(UserError, "\"" & label & "\" must be a number.")
+
+proc optFieldAsFloat*(ctx: ModalContext,
+                      customId, label: string): Option[float] =
+  if ctx.field(customId).get("").strip().len == 0:
+    return none float
+  some ctx.fieldAsFloat(customId, label)
 
 proc focusedValue*(ctx: AutocompleteContext): string =
   ## The partial text the user has typed so far, as a string.
@@ -285,6 +321,20 @@ proc showModal*(ctx: InteractionContext; customId, title: string;
                                  components: components))
   ctx.state = rsResponded
 
+proc formComponents(form: ModalForm): seq[MessageComponent] =
+  for f in form.fields:
+    result.add newTextInput(f.customId, f.label, f.style, f.required,
+                            f.placeholder, f.value, f.minLen, f.maxLen)
+
+proc showModal*(ctx: InteractionContext; form: ModalForm;
+                captures: varargs[string, `$`]): Future[void] =
+  ## Opens a modal declared with the `modalForm` macro. `captures` fill
+  ## the form pattern's `{...}` captures in declaration order (they may
+  ## be any `$`-able values); a count or type mismatch raises
+  ## `DimslashError`.
+  let customId = fillPattern(parseCustomIdPattern(form.pattern), captures)
+  ctx.showModal(customId, form.title, form.formComponents)
+
 proc update*(ctx: ComponentContext | ModalContext; content = "";
              embeds: seq[Embed] = @[];
              components: seq[MessageComponent] = @[];
@@ -378,12 +428,46 @@ proc suggest*(ctx: AutocompleteContext,
     arr.add %*{"name": name, "value": value}
   ctx.suggestRaw(arr)
 
+# --- Cooldowns ----------------------------------------------------------------
+
+proc checkCooldown*(ctx: InteractionContext; path: string;
+                    seconds: float; bucket: CooldownBucket) =
+  ## Enforces one use per `seconds` per bucket, raising `UserError` with
+  ## the remaining time when the command is still cooling down. The
+  ## `slash`/`user`/`message` macros inject this for `cooldown = …`
+  ## settings; call it yourself for programmatic handlers.
+  let bucketKey =
+    case bucket
+    of cbUser: "u:" & ctx.user.id
+    of cbGuild: "g:" & ctx.guildId.get("@dm")
+    of cbChannel: "c:" & ctx.channelId
+    of cbGlobal: "*"
+  let key = path & "\31" & bucketKey
+  let now = getMonoTime()
+  let readyAt = ctx.handler.cooldowns.getOrDefault(key)
+  if readyAt > now:
+    let remaining = (readyAt - now).inMilliseconds.float / 1000.0
+    raise newException(UserError,
+      "This command is on cooldown — try again in " &
+      remaining.formatFloat(ffDecimal, 1) & "s.")
+  ctx.handler.cooldowns[key] =
+    now + initDuration(milliseconds = int(seconds * 1000))
+
 # --- Default error hook ------------------------------------------------------
 
 proc defaultOnError*(ctx: InteractionContext, e: ref Exception) {.async.} =
   ## Installed by `newInteractionHandler`: logs to stderr and, if nothing
   ## was sent yet, replies with a generic ephemeral error message.
+  ## `UserError` is special-cased: its message goes to the user as an
+  ## ephemeral reply (or followup) and nothing is logged.
   ## Set `handler.onError = nil` to let exceptions propagate instead.
+  if e of UserError:
+    if not (ctx of AutocompleteContext):
+      try:
+        await ctx.reply(e.msg, ephemeral = true)
+      except CatchableError:
+        discard
+    return
   stderr.writeLine "[dimslash] unhandled exception in handler: " & e.msg
   let trace = e.getStackTrace()
   if trace.len > 0:

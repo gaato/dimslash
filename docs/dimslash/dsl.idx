@@ -1,7 +1,8 @@
 nimTitle	dsl	dimslash/dsl.html	module src/dimslash/dsl		0
-nim	slash	dimslash/dsl.html#slash.m,untyped,staticstring,staticstring,untyped	macro slash(handler: untyped; name, description: static string; body: untyped): untyped		549
-nim	user	dimslash/dsl.html#user.m,untyped,staticstring,untyped	macro user(handler: untyped; name: static string; body: untyped): untyped		588
-nim	message	dimslash/dsl.html#message.m,untyped,staticstring,untyped	macro message(handler: untyped; name: static string; body: untyped): untyped		606
-nim	button	dimslash/dsl.html#button.m,untyped,staticstring,untyped	macro button(handler: untyped; customId: static string; body: untyped): untyped		648
-nim	select	dimslash/dsl.html#select.m,untyped,staticstring,untyped	macro select(handler: untyped; customId: static string; body: untyped): untyped		663
-nim	modal	dimslash/dsl.html#modal.m,untyped,staticstring,untyped	macro modal(handler: untyped; customId: static string; body: untyped): untyped		677
+nim	slash	dimslash/dsl.html#slash.m,untyped,staticstring,staticstring,untyped	macro slash(handler: untyped; name, description: static string; body: untyped): untyped		609
+nim	user	dimslash/dsl.html#user.m,untyped,staticstring,untyped	macro user(handler: untyped; name: static string; body: untyped): untyped		673
+nim	message	dimslash/dsl.html#message.m,untyped,staticstring,untyped	macro message(handler: untyped; name: static string; body: untyped): untyped		693
+nim	button	dimslash/dsl.html#button.m,untyped,staticstring,untyped	macro button(handler: untyped; customId: static string; body: untyped): untyped		767
+nim	select	dimslash/dsl.html#select.m,untyped,staticstring,untyped	macro select(handler: untyped; customId: static string; body: untyped): untyped		785
+nim	modal	dimslash/dsl.html#modal.m,untyped,staticstring,untyped	macro modal(handler: untyped; customId: static string; body: untyped): untyped		802
+nim	modalForm	dimslash/dsl.html#modalForm.m,untyped,staticstring,staticstring,untyped	macro modalForm(handler: untyped; pattern, title: static string; body: untyped): untyped		962

@@ -70,6 +70,12 @@
   <li><a class="reference" href="#channelId%2CInteractionContext" title="channelId(ctx: InteractionContext): string">channelId(ctx: InteractionContext): string</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">checkCooldown
+  <li><a class="reference" href="#checkCooldown%2CInteractionContext%2Cstring%2Cfloat%2CCooldownBucket" title="checkCooldown(ctx: InteractionContext; path: string; seconds: float;
+              bucket: CooldownBucket)">checkCooldown(ctx: InteractionContext; path: string; seconds: float;
+              bucket: CooldownBucket)</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">customId
   <li><a class="reference" href="#customId" title="customId(ctx: ComponentContext | ModalContext): string">customId(ctx: ComponentContext | ModalContext): string</a></li>
 
@@ -106,6 +112,14 @@
 </ul>
 <ul class="simple nested-toc-section">field
   <li><a class="reference" href="#field%2CModalContext%2Cstring" title="field(ctx: ModalContext; customId: string): Option[string]">field(ctx: ModalContext; customId: string): Option[string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">fieldAsFloat
+  <li><a class="reference" href="#fieldAsFloat%2CModalContext%2Cstring%2Cstring" title="fieldAsFloat(ctx: ModalContext; customId, label: string): float">fieldAsFloat(ctx: ModalContext; customId, label: string): float</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">fieldAsInt
+  <li><a class="reference" href="#fieldAsInt%2CModalContext%2Cstring%2Cstring" title="fieldAsInt(ctx: ModalContext; customId, label: string): int">fieldAsInt(ctx: ModalContext; customId, label: string): int</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">fields
@@ -154,6 +168,18 @@
              placeholder = &quot;&quot;; value = &quot;&quot;; minLen = 0; maxLen = 0): MessageComponent</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">optField
+  <li><a class="reference" href="#optField%2CModalContext%2Cstring" title="optField(ctx: ModalContext; customId: string): Option[string]">optField(ctx: ModalContext; customId: string): Option[string]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">optFieldAsFloat
+  <li><a class="reference" href="#optFieldAsFloat%2CModalContext%2Cstring%2Cstring" title="optFieldAsFloat(ctx: ModalContext; customId, label: string): Option[float]">optFieldAsFloat(ctx: ModalContext; customId, label: string): Option[float]</a></li>
+
+</ul>
+<ul class="simple nested-toc-section">optFieldAsInt
+  <li><a class="reference" href="#optFieldAsInt%2CModalContext%2Cstring%2Cstring" title="optFieldAsInt(ctx: ModalContext; customId, label: string): Option[int]">optFieldAsInt(ctx: ModalContext; customId, label: string): Option[int]</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">original
   <li><a class="reference" href="#original%2CInteractionContext" title="original(ctx: InteractionContext): Future[Message]">original(ctx: InteractionContext): Future[Message]</a></li>
 
@@ -190,6 +216,9 @@
   <li><a class="reference" href="#showModal%2CInteractionContext%2Cstring%2Cstring%2Cseq%5BMessageComponent%5D" title="showModal(ctx: InteractionContext; customId, title: string;
           components: seq[MessageComponent]): owned(Future[void])">showModal(ctx: InteractionContext; customId, title: string;
           components: seq[MessageComponent]): owned(Future[void])</a></li>
+<li><a class="reference" href="#showModal%2CInteractionContext%2CModalForm%2Cvarargs%5Bstring%2C%5D" title="showModal(ctx: InteractionContext; form: ModalForm;
+          captures: varargs[string, `$`]): Future[void]">showModal(ctx: InteractionContext; form: ModalForm;
+          captures: varargs[string, `$`]): Future[void]</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">suggest
@@ -287,6 +316,19 @@
 </div>
 
 </div>
+<div id="checkCooldown-procs-all">
+  <div id="checkCooldown,InteractionContext,string,float,CooldownBucket">
+  <dt><pre><span class="Keyword">proc</span> <a href="#checkCooldown%2CInteractionContext%2Cstring%2Cfloat%2CCooldownBucket"><span class="Identifier">checkCooldown</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">path</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">seconds</span><span class="Other">:</span> <span class="Identifier">float</span><span class="Other">;</span>
+                   <span class="Identifier">bucket</span><span class="Other">:</span> <a href="types.html#CooldownBucket"><span class="Identifier">CooldownBucket</span></a><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">UserError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">TimeEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Enforces one use per <tt class="docutils literal"><span class="pre"><span class="Identifier">seconds</span></span></tt> per bucket, raising <tt class="docutils literal"><span class="pre"><span class="Identifier">UserError</span></span></tt> with the remaining time when the command is still cooling down. The <tt class="docutils literal"><span class="pre"><span class="Identifier">slash</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">user</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">message</span></span></tt> macros inject this for <tt class="docutils literal"><span class="pre"><span class="Identifier">cooldown</span> <span class="Operator">=</span> <span class="Identifier">…</span></span></tt> settings; call it yourself for programmatic handlers.
+    
+  </dd>
+</div>
+
+</div>
 <div id="customId-procs-all">
   <div id="customId">
   <dt><pre><span class="Keyword">proc</span> <a href="#customId"><span class="Identifier">customId</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ComponentContext"><span class="Identifier">ComponentContext</span></a> <span class="Operator">|</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span></pre></dt>
@@ -305,7 +347,7 @@
                     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Installed by <tt class="docutils literal"><span class="pre"><span class="Identifier">newInteractionHandler</span></span></tt>: logs to stderr and, if nothing was sent yet, replies with a generic ephemeral error message. Set <tt class="docutils literal"><span class="pre"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">onError</span> <span class="Operator">=</span> <span class="Keyword">nil</span></span></tt> to let exceptions propagate instead.
+    Installed by <tt class="docutils literal"><span class="pre"><span class="Identifier">newInteractionHandler</span></span></tt>: logs to stderr and, if nothing was sent yet, replies with a generic ephemeral error message. <tt class="docutils literal"><span class="pre"><span class="Identifier">UserError</span></span></tt> is special-cased: its message goes to the user as an ephemeral reply (or followup) and nothing is logged. Set <tt class="docutils literal"><span class="pre"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">onError</span> <span class="Operator">=</span> <span class="Keyword">nil</span></span></tt> to let exceptions propagate instead.
     
   </dd>
 </div>
@@ -372,6 +414,30 @@
   <dd>
     
     One text-input value of the submitted modal.
+    
+  </dd>
+</div>
+
+</div>
+<div id="fieldAsFloat-procs-all">
+  <div id="fieldAsFloat,ModalContext,string,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#fieldAsFloat%2CModalContext%2Cstring%2Cstring"><span class="Identifier">fieldAsFloat</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">label</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">float</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">UserError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    <tt class="docutils literal"><span class="pre"><span class="Identifier">field</span></span></tt> parsed as a number; raises <tt class="docutils literal"><span class="pre"><span class="Identifier">UserError</span></span></tt> when it doesn't parse.
+    
+  </dd>
+</div>
+
+</div>
+<div id="fieldAsInt-procs-all">
+  <div id="fieldAsInt,ModalContext,string,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#fieldAsInt%2CModalContext%2Cstring%2Cstring"><span class="Identifier">fieldAsInt</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">label</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">int</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">UserError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    <tt class="docutils literal"><span class="pre"><span class="Identifier">field</span></span></tt> parsed as an integer. Discord can't validate text inputs, so a non-number raises <tt class="docutils literal"><span class="pre"><span class="Identifier">UserError</span></span></tt> — a polite ephemeral message via the default error hook. The <tt class="docutils literal"><span class="pre"><span class="Identifier">modalForm</span></span></tt> macro generates these calls for <tt class="docutils literal"><span class="pre"><span class="Identifier">int</span></span></tt> fields.
     
   </dd>
 </div>
@@ -490,6 +556,42 @@
 </div>
 
 </div>
+<div id="optField-procs-all">
+  <div id="optField,ModalContext,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#optField%2CModalContext%2Cstring"><span class="Identifier">optField</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Like <tt class="docutils literal"><span class="pre"><span class="Identifier">field</span></span></tt>, but an empty (untouched optional) input becomes <tt class="docutils literal"><span class="pre"><span class="Identifier">none</span></span></tt>.
+    
+  </dd>
+</div>
+
+</div>
+<div id="optFieldAsFloat-procs-all">
+  <div id="optFieldAsFloat,ModalContext,string,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#optFieldAsFloat%2CModalContext%2Cstring%2Cstring"><span class="Identifier">optFieldAsFloat</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">label</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">float</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">UserError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
+<div id="optFieldAsInt-procs-all">
+  <div id="optFieldAsInt,ModalContext,string,string">
+  <dt><pre><span class="Keyword">proc</span> <a href="#optFieldAsInt%2CModalContext%2Cstring%2Cstring"><span class="Identifier">optFieldAsInt</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#ModalContext"><span class="Identifier">ModalContext</span></a><span class="Other">;</span> <span class="Identifier">customId</span><span class="Other">,</span> <span class="Identifier">label</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">,</span> <span class="Identifier">UserError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    
+  </dd>
+</div>
+
+</div>
 <div id="original-procs-all">
   <div id="original,InteractionContext">
   <dt><pre><span class="Keyword">proc</span> <a href="#original%2CInteractionContext"><span class="Identifier">original</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Message</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
@@ -577,6 +679,17 @@
   <dd>
     
     Opens a modal as the initial response. Not allowed for modal-submit or autocomplete interactions (Discord rejects those).
+    
+  </dd>
+</div>
+<div id="showModal,InteractionContext,ModalForm,varargs[string,]">
+  <dt><pre><span class="Keyword">proc</span> <a href="#showModal%2CInteractionContext%2CModalForm%2Cvarargs%5Bstring%2C%5D"><span class="Identifier">showModal</span></a><span class="Other">(</span><span class="Identifier">ctx</span><span class="Other">:</span> <a href="types.html#InteractionContext"><span class="Identifier">InteractionContext</span></a><span class="Other">;</span> <span class="Identifier">form</span><span class="Other">:</span> <a href="types.html#ModalForm"><span class="Identifier">ModalForm</span></a><span class="Other">;</span>
+               <span class="Identifier">captures</span><span class="Other">:</span> <span class="Identifier">varargs</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">,</span> <span class="Other">`</span><span class="Operator">$</span><span class="Other">`</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">DimslashError</span><span class="Other">,</span> <span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Opens a modal declared with the <tt class="docutils literal"><span class="pre"><span class="Identifier">modalForm</span></span></tt> macro. <tt class="docutils literal"><span class="pre"><span class="Identifier">captures</span></span></tt> fill the form pattern's <tt class="docutils literal"><span class="pre"><span class="Punctuation">{</span><span class="Operator">...</span><span class="Punctuation">}</span></span></tt> captures in declaration order (they may be any <tt class="docutils literal"><span class="pre"><span class="Operator">$</span></span></tt>-able values); a count or type mismatch raises <tt class="docutils literal"><span class="pre"><span class="Identifier">DimslashError</span></span></tt>.
     
   </dd>
 </div>
@@ -717,7 +830,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-11 04:53:07 UTC</small>
       </div>
     </div>
   </div>

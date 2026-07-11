@@ -81,6 +81,10 @@
   <li><a class="reference" href="#resolveApplicationId%2CInteractionHandler" title="resolveApplicationId(handler: InteractionHandler): Future[string]">resolveApplicationId(handler: InteractionHandler): Future[string]</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">sameCommands
+  <li><a class="reference" href="#sameCommands%2CJsonNode%2CJsonNode" title="sameCommands(remote, local: JsonNode): bool">sameCommands(remote, local: JsonNode): bool</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">syncCommands
   <li><a class="reference" href="#syncCommands%2CInteractionHandler" title="syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]">syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]</a></li>
 
@@ -110,7 +114,7 @@
     <p class="module-desc"><p>Command synchronization with diffing.</p>
 <p><tt class="docutils literal"><span class="pre"><span class="Identifier">syncCommands</span></span></tt> groups registered commands by scope (global + each guild), fetches what Discord currently has, and only PUTs a scope when the payload actually differs — so restarting a bot no longer rewrites every command on every boot.</p>
 <p>dimslash builds the JSON itself (<tt class="docutils literal"><span class="pre"><span class="Identifier">toCommandJson</span></span></tt>): dimscord 1.8.0's serializer silently drops <tt class="docutils literal"><span class="pre"><span class="Identifier">min_value</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">max_value</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">min_length</span></span></tt>/ <tt class="docutils literal"><span class="pre"><span class="Identifier">max_length</span></span></tt>/<tt class="docutils literal"><span class="pre"><span class="Identifier">channel_types</span></span></tt>.</p>
-<p>Comparison happens on a canonical form (<tt class="docutils literal"><span class="pre"><span class="Identifier">canonicalize</span></span></tt>) that keeps a whitelist of writable fields, materializes Discord's defaults, and sorts commands — so server-added echo fields can never cause a spurious PUT.</p>
+<p>Comparison happens on a canonical form (<tt class="docutils literal"><span class="pre"><span class="Identifier">canonicalize</span></span></tt>) that keeps a whitelist of writable fields and sorts commands — so server-added echo fields can never cause a spurious PUT. Fields whose unset value is decided by the app's settings (<tt class="docutils literal"><span class="pre"><span class="Identifier">integration_types</span></span></tt>, <tt class="docutils literal"><span class="pre"><span class="Identifier">contexts</span></span></tt>) are only compared when the local command actually sets them (<tt class="docutils literal"><span class="pre"><span class="Identifier">sameCommands</span></span></tt>): Discord echoes the app-wide effective value there, which is not ours to fight.</p>
 <p>Caveat: only scopes that currently contain at least one registered command are synced. If you remove the <em>last</em> command of a guild (or global), clear that scope manually or with an empty bulk overwrite.</p>
 </p>
     <div class="section" id="6">
@@ -159,6 +163,18 @@
   <dd>
     
     Explicitly set <tt class="docutils literal"><span class="pre"><span class="Identifier">handler</span><span class="Operator">.</span><span class="Identifier">applicationId</span></span></tt> beats asking Discord; the result is cached either way.
+    
+  </dd>
+</div>
+
+</div>
+<div id="sameCommands-procs-all">
+  <div id="sameCommands,JsonNode,JsonNode">
+  <dt><pre><span class="Keyword">proc</span> <a href="#sameCommands%2CJsonNode%2CJsonNode"><span class="Identifier">sameCommands</span></a><span class="Other">(</span><span class="Identifier">remote</span><span class="Other">,</span> <span class="Identifier">local</span><span class="Other">:</span> <span class="Identifier">JsonNode</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">KeyError</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    Whether Discord's current commands (<tt class="docutils literal"><span class="pre"><span class="Identifier">remote</span></span></tt>) match the local payload. Both sides are canonicalized; app-default fields on the remote are ignored for commands that don't set them locally.
     
   </dd>
 </div>
@@ -230,7 +246,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-10 16:54:24 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-11 04:53:07 UTC</small>
       </div>
     </div>
   </div>

@@ -1,10 +1,11 @@
 nimTitle	sync	dimslash/sync.html	module src/dimslash/sync		0
-nim	SyncResult	dimslash/sync.html#SyncResult	object SyncResult		27
-nim	toOptionJson	dimslash/sync.html#toOptionJson,OptionSpec	proc toOptionJson(spec: OptionSpec): JsonNode		40
-nim	toCommandJson	dimslash/sync.html#toCommandJson,SlashCommand	proc toCommandJson(cmd: SlashCommand): JsonNode		127
-nim	toCommandJson	dimslash/sync.html#toCommandJson,UserCommand	proc toCommandJson(cmd: UserCommand): JsonNode		147
-nim	toCommandJson	dimslash/sync.html#toCommandJson,MessageCommand	proc toCommandJson(cmd: MessageCommand): JsonNode		151
-nim	canonicalize	dimslash/sync.html#canonicalize,JsonNode	proc canonicalize(commands: JsonNode): JsonNode		230
-nim	resolveApplicationId	dimslash/sync.html#resolveApplicationId,InteractionHandler	proc resolveApplicationId(handler: InteractionHandler): Future[string]		248
-nim	syncCommands	dimslash/sync.html#syncCommands,InteractionHandler	proc syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]		271
-nimgrp	tocommandjson	dimslash/sync.html#toCommandJson-procs-all	proc		127
+nim	SyncResult	dimslash/sync.html#SyncResult	object SyncResult		30
+nim	toOptionJson	dimslash/sync.html#toOptionJson,OptionSpec	proc toOptionJson(spec: OptionSpec): JsonNode		43
+nim	toCommandJson	dimslash/sync.html#toCommandJson,SlashCommand	proc toCommandJson(cmd: SlashCommand): JsonNode		130
+nim	toCommandJson	dimslash/sync.html#toCommandJson,UserCommand	proc toCommandJson(cmd: UserCommand): JsonNode		150
+nim	toCommandJson	dimslash/sync.html#toCommandJson,MessageCommand	proc toCommandJson(cmd: MessageCommand): JsonNode		154
+nim	canonicalize	dimslash/sync.html#canonicalize,JsonNode	proc canonicalize(commands: JsonNode): JsonNode		231
+nim	sameCommands	dimslash/sync.html#sameCommands,JsonNode,JsonNode	proc sameCommands(remote, local: JsonNode): bool		252
+nim	resolveApplicationId	dimslash/sync.html#resolveApplicationId,InteractionHandler	proc resolveApplicationId(handler: InteractionHandler): Future[string]		271
+nim	syncCommands	dimslash/sync.html#syncCommands,InteractionHandler	proc syncCommands(handler: InteractionHandler; force = false): Future[seq[SyncResult]]		294
+nimgrp	tocommandjson	dimslash/sync.html#toCommandJson-procs-all	proc		130

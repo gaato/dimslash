@@ -33,7 +33,15 @@
 ##   `channels` (Channel), `nameLoc`/`descLoc` (localization tables).
 ## - `key = value` lines configure the command: `guild`, `permissions`,
 ##   `nsfw`, `contexts`, `integrations`, `nameLocalizations`,
-##   `descriptionLocalizations`.
+##   `descriptionLocalizations`, `cooldown` (seconds, or
+##   `(seconds, cbUser|cbGuild|cbChannel|cbGlobal)`).
+## - `check <cond>, "message"` or a `check:` block guards execution; a
+##   failed check raises `UserError` (via `fail`), which the default
+##   error hook sends to the user as an ephemeral reply. Checks and
+##   cooldowns on a command/group also apply to every subcommand below
+##   (a nested `cooldown` overrides the inherited one). `check` is a
+##   reserved word inside these blocks — an option spelled "check" needs
+##   a different Nim name plus a `{.name: "check".}` pragma.
 ## - `execute:` is the handler body; `ctx: SlashContext` and one variable
 ##   per declared option are in scope.
 ## - `group "name", "desc":` / `sub "name", "desc":` nest subcommands
@@ -82,6 +90,8 @@ type
     autocompleters: seq[tuple[optionName: string, body: NimNode,
                               site: NimNode]]
     children: seq[NodeIR]
+    checks: seq[NimNode]       # run before execute; inherited by children
+    cooldown: NimNode          # seconds or (seconds, bucket); nil if absent
 
   MetaIR = ref object
     guild, permissions, nsfw, contexts, integrations: NimNode
@@ -263,6 +273,18 @@ proc parseGroupOrSub(stmt: NimNode, ir: NodeIR, isGroup: bool,
     error("sub \"" & child.name & "\" is missing an execute block", stmt)
   ir.children.add child
 
+proc parseCheckCommand(stmt: NimNode): NimNode =
+  ## `check <cond>[, "message"]` → `if not (<cond>): fail "message"`.
+  if stmt.len notin {2, 3}:
+    error("check takes a condition and an optional message: " &
+      "check ctx.inGuild, \"guild only\"", stmt)
+  let cond = stmt[1]
+  let msg = if stmt.len == 3: stmt[2]
+            else: newLit "You cannot use this command right now."
+  nnkIfStmt.newTree(nnkElifBranch.newTree(
+    nnkPrefix.newTree(ident"not", nnkPar.newTree(cond)),
+    newCall(bindSym"fail", msg)))
+
 proc parseSetting(stmt: NimNode, meta: MetaIR) =
   stmt[0].expectKind nnkIdent
   let value = stmt[1]
@@ -281,7 +303,7 @@ proc parseSetting(stmt: NimNode, meta: MetaIR) =
   else:
     error("unknown command setting: " & $stmt[0] & " (valid: guild, " &
       "permissions, nsfw, contexts, integrations, nameLocalizations, " &
-      "descriptionLocalizations)", stmt)
+      "descriptionLocalizations, cooldown)", stmt)
 
 proc parseNodeBody(body: NimNode, ir: NodeIR, meta: MetaIR, isRoot: bool,
                    inGroup: bool) =
@@ -305,6 +327,11 @@ proc parseNodeBody(body: NimNode, ir: NodeIR, meta: MetaIR, isRoot: bool,
         # `autocomplete:` — whole-command fallback
         stmt[1].expectKind nnkStmtList
         ir.autocompleters.add (optionName: "", body: stmt[1], site: stmt)
+      elif stmt[0].kind == nnkIdent and $stmt[0] == "check" and
+          stmt.len == 2 and stmt[1].kind == nnkStmtList:
+        # `check:` block — runs before execute, inherited by subcommands.
+        # ("check" is reserved; an option named check needs {.name.}.)
+        ir.checks.add stmt[1]
       else:
         if inGroup:
           error("groups can only contain sub blocks", stmt)
@@ -331,14 +358,22 @@ proc parseNodeBody(body: NimNode, ir: NodeIR, meta: MetaIR, isRoot: bool,
         stmt[2].expectKind nnkStmtList
         ir.autocompleters.add (optionName: $stmt[1], body: stmt[2],
                                site: stmt)
+      of "check":
+        ir.checks.add parseCheckCommand(stmt)
       else:
         error("unexpected statement in " &
           (if isRoot: "slash" else: "sub") & " block: " & stmt.repr, stmt)
     of nnkAsgn:
-      if not isRoot:
+      if stmt[0].kind == nnkIdent and $stmt[0] == "cooldown":
+        # allowed at any level: groups pass it down, subs override
+        if ir.cooldown != nil:
+          error("duplicate cooldown setting", stmt)
+        ir.cooldown = stmt[1]
+      elif not isRoot:
         error("command settings (key = value) are only allowed at the " &
-          "top level of a slash block", stmt)
-      parseSetting(stmt, meta)
+          "top level of a slash block (cooldown being the exception)", stmt)
+      else:
+        parseSetting(stmt, meta)
     else:
       error("unexpected statement in slash block: " & stmt.repr, stmt)
     pendingDoc = ""
@@ -444,8 +479,22 @@ proc genOptionSpec(o: OptIR): tuple[stmts, specVar: NimNode] =
       `spec`.descLoc = toTable(`loc`)
   result = (stmts, spec)
 
-proc genRun(ir: NodeIR): NimNode =
-  ## The leaf's run closure: one `let` per option, then the user body.
+proc genCooldown(path: string, spec: NimNode, ctxId: NimNode): NimNode =
+  ## `cooldown = 5` / `cooldown = (5, cbGuild)` → a `checkCooldown` call.
+  var (secondsE, bucketE) = (spec, bindSym"cbUser")
+  if spec.kind == nnkTupleConstr:
+    if spec.len != 2:
+      error("cooldown takes seconds or (seconds, bucket)", spec)
+    secondsE = spec[0]
+    bucketE = spec[1]
+  newCall(bindSym"checkCooldown", ctxId, newLit path,
+          newCall(ident"float", secondsE), bucketE)
+
+proc genRun(ir: NodeIR, checks: seq[NimNode], cooldown: NimNode,
+            path: string): NimNode =
+  ## The leaf's run closure: one `let` per option, then checks and the
+  ## cooldown gate (in that order — a failed check must not eat a
+  ## cooldown charge), then the user body.
   let ctxId = ident"ctx"
   let (optSym, reqSym) = (bindSym"opt", bindSym"req")
   var body = newStmtList()
@@ -462,6 +511,10 @@ proc genRun(ir: NodeIR): NimNode =
     else:
       body.add quote do:
         let `nimName` = `reqSym`(`ctxId`, `wire`, `typeE`)
+  for chk in checks:
+    body.add chk
+  if cooldown != nil:
+    body.add genCooldown(path, cooldown, ctxId)
   body.add ir.executeBody
   result = quote do:
     proc (`ctxId`: SlashContext): Future[void] {.async.} =
@@ -473,22 +526,29 @@ proc genAutocompleter(body: NimNode): NimNode =
     proc (`ctxId`: AutocompleteContext): Future[void] {.async.} =
       `body`
 
-proc genNode(ir: NodeIR): tuple[stmts, nodeVar: NimNode] =
+proc genNode(ir: NodeIR, inheritedChecks: seq[NimNode] = @[],
+             inheritedCooldown: NimNode = nil,
+             pathPrefix = ""): tuple[stmts, nodeVar: NimNode] =
   let node = genSym(nskVar, "node")
   let (name, desc) = (newLit ir.name, newLit ir.description)
+  let path = if pathPrefix.len == 0: ir.name
+             else: pathPrefix & "/" & ir.name
+  # checks accumulate down the tree; the nearest cooldown wins
+  let checks = inheritedChecks & ir.checks
+  let cooldown = if ir.cooldown != nil: ir.cooldown else: inheritedCooldown
   var stmts = newStmtList()
   if ir.children.len > 0:
     stmts.add quote do:
       var `node` = SlashNode(kind: snGroup, name: `name`,
                              description: `desc`)
     for child in ir.children:
-      let (childStmts, childVar) = genNode(child)
+      let (childStmts, childVar) = genNode(child, checks, cooldown, path)
       stmts.add childStmts
       let childName = newLit child.name
       stmts.add quote do:
         `node`.children[`childName`] = `childVar`
   else:
-    let runE = genRun(ir)
+    let runE = genRun(ir, checks, cooldown, path)
     stmts.add quote do:
       var `node` = SlashNode(kind: snLeaf, name: `name`,
                              description: `desc`, run: `runE`)
@@ -571,28 +631,54 @@ const settingKeys = ["guild", "permissions", "nsfw", "contexts",
                      "integrations", "nameLocalizations",
                      "descriptionLocalizations"]
 
-proc splitSettingsAndBody(body: NimNode, meta: MetaIR): NimNode =
-  ## Context-menu commands: leading `key = value` lines whose key is a
-  ## known setting are consumed as settings, everything else (including
-  ## ordinary assignments) is the handler body.
-  result = newStmtList()
+proc splitSettingsAndBody(body: NimNode, meta: MetaIR,
+                          cooldownPath: string):
+    tuple[prologue, run: NimNode] =
+  ## Context-menu commands: leading `key = value` settings, `check`
+  ## blocks/conditions, and a `cooldown = …` are consumed; everything
+  ## else (including ordinary assignments) is the handler body.
+  ## The returned prologue (checks, then the cooldown gate) is inserted
+  ## ahead of the body inside the generated handler.
+  result = (newStmtList(), newStmtList())
+  let ctxId = ident"ctx"
+  var checks = newStmtList()
+  var cooldown: NimNode = nil
   var inSettings = true
   for stmt in body:
-    if inSettings and stmt.kind == nnkAsgn and stmt[0].kind == nnkIdent and
-        $stmt[0] in settingKeys:
-      parseSetting(stmt, meta)
-    else:
-      inSettings = false
-      result.add stmt
+    if inSettings:
+      if stmt.kind == nnkAsgn and stmt[0].kind == nnkIdent:
+        if $stmt[0] == "cooldown":
+          if cooldown != nil:
+            error("duplicate cooldown setting", stmt)
+          cooldown = stmt[1]
+          continue
+        elif $stmt[0] in settingKeys:
+          parseSetting(stmt, meta)
+          continue
+      elif stmt.kind == nnkCall and stmt[0].kind == nnkIdent and
+          $stmt[0] == "check" and stmt.len == 2 and
+          stmt[1].kind == nnkStmtList:
+        checks.add stmt[1]
+        continue
+      elif stmt.kind == nnkCommand and stmt[0].kind == nnkIdent and
+          $stmt[0] == "check":
+        checks.add parseCheckCommand(stmt)
+        continue
+    inSettings = false
+    result.run.add stmt
+  result.prologue.add checks
+  if cooldown != nil:
+    result.prologue.add genCooldown(cooldownPath, cooldown, ctxId)
 
 macro user*(handler: untyped; name: static string; body: untyped): untyped =
   ## Declares a user context-menu command. The block is the handler body
   ## (`ctx: UserContext` is in scope), optionally preceded by
-  ## `key = value` settings.
+  ## `key = value` settings, `check` lines, and a `cooldown`.
   if name.len < 1 or name.len > 32:
     error("user command name must be 1..32 characters", body)
   var meta = MetaIR()
-  let runBody = splitSettingsAndBody(normalizeBody(body), meta)
+  let (prologue, runBody) = splitSettingsAndBody(normalizeBody(body), meta,
+                                                 "user:" & name)
   let (metaStmts, metaVar) = genMeta(meta)
   let ctxId = ident"ctx"
   let nameE = newLit name
@@ -601,17 +687,19 @@ macro user*(handler: untyped; name: static string; body: untyped): untyped =
       `metaStmts`
       addUserCommand(`handler`, UserCommand(name: `nameE`, meta: `metaVar`,
         run: proc (`ctxId`: UserContext): Future[void] {.async.} =
+          `prologue`
           `runBody`))
 
 macro message*(handler: untyped; name: static string;
                body: untyped): untyped =
   ## Declares a message context-menu command. The block is the handler
   ## body (`ctx: MessageContext` is in scope), optionally preceded by
-  ## `key = value` settings.
+  ## `key = value` settings, `check` lines, and a `cooldown`.
   if name.len < 1 or name.len > 32:
     error("message command name must be 1..32 characters", body)
   var meta = MetaIR()
-  let runBody = splitSettingsAndBody(normalizeBody(body), meta)
+  let (prologue, runBody) = splitSettingsAndBody(normalizeBody(body), meta,
+                                                 "message:" & name)
   let (metaStmts, metaVar) = genMeta(meta)
   let ctxId = ident"ctx"
   let nameE = newLit name
@@ -621,6 +709,7 @@ macro message*(handler: untyped; name: static string;
       addMessageCommand(`handler`, MessageCommand(name: `nameE`,
         meta: `metaVar`,
         run: proc (`ctxId`: MessageContext): Future[void] {.async.} =
+          `prologue`
           `runBody`))
 
 proc genCaptureLets(pattern: string, site: NimNode,
@@ -645,45 +734,310 @@ proc genCaptureLets(pattern: string, site: NimNode,
       result.add quote do:
         let `nameId` = `ctxId`.captures[`nameLit`]
 
+proc splitGuards(body: NimNode, cooldownPath: string,
+                 ctxId: NimNode): tuple[prologue, run: NimNode] =
+  ## Component/modal handlers: leading `check` lines and a `cooldown = …`
+  ## setting become a prologue that runs first (checks before the
+  ## cooldown gate). Pattern captures are already in scope for both.
+  result = (newStmtList(), newStmtList())
+  var cooldown: NimNode = nil
+  var inGuards = true
+  for stmt in body:
+    if inGuards:
+      if stmt.kind == nnkAsgn and stmt[0].kind == nnkIdent and
+          $stmt[0] == "cooldown":
+        if cooldown != nil:
+          error("duplicate cooldown setting", stmt)
+        cooldown = stmt[1]
+        continue
+      elif stmt.kind == nnkCall and stmt[0].kind == nnkIdent and
+          $stmt[0] == "check" and stmt.len == 2 and
+          stmt[1].kind == nnkStmtList:
+        result.prologue.add stmt[1]
+        continue
+      elif stmt.kind == nnkCommand and stmt[0].kind == nnkIdent and
+          $stmt[0] == "check":
+        result.prologue.add parseCheckCommand(stmt)
+        continue
+    inGuards = false
+    result.run.add stmt
+  if cooldown != nil:
+    result.prologue.add genCooldown(cooldownPath, cooldown, ctxId)
+
 macro button*(handler: untyped; customId: static string;
               body: untyped): untyped =
   ## Registers a button handler. `customId` may contain `{name}` /
   ## `{name:int}` captures, which become typed variables in the body
-  ## (`ctx: ComponentContext` is in scope).
+  ## (`ctx: ComponentContext` is in scope). Leading `check` lines and a
+  ## `cooldown = …` guard the handler like they do for commands.
   let ctxId = ident"ctx"
   let body = normalizeBody(body)
   let lets = genCaptureLets(customId, body, ctxId)
+  let (prologue, runBody) = splitGuards(body, "button:" & customId, ctxId)
   let idE = newLit customId
   result = quote do:
     addButtonHandler(`handler`, `idE`,
       proc (`ctxId`: ComponentContext): Future[void] {.async.} =
         `lets`
-        `body`)
+        `prologue`
+        `runBody`)
 
 macro select*(handler: untyped; customId: static string;
               body: untyped): untyped =
   ## Registers a select-menu handler (all five select kinds).
-  ## Captures work like `button`; `ctx: ComponentContext` is in scope.
+  ## Captures, `check` lines, and `cooldown` work like `button`;
+  ## `ctx: ComponentContext` is in scope.
   let ctxId = ident"ctx"
   let body = normalizeBody(body)
   let lets = genCaptureLets(customId, body, ctxId)
+  let (prologue, runBody) = splitGuards(body, "select:" & customId, ctxId)
   let idE = newLit customId
   result = quote do:
     addSelectHandler(`handler`, `idE`,
       proc (`ctxId`: ComponentContext): Future[void] {.async.} =
         `lets`
-        `body`)
+        `prologue`
+        `runBody`)
 
 macro modal*(handler: untyped; customId: static string;
              body: untyped): untyped =
-  ## Registers a modal-submit handler. Captures work like `button`;
-  ## `ctx: ModalContext` is in scope.
+  ## Registers a modal-submit handler. Captures, `check` lines, and
+  ## `cooldown` work like `button`; `ctx: ModalContext` is in scope.
   let ctxId = ident"ctx"
   let body = normalizeBody(body)
   let lets = genCaptureLets(customId, body, ctxId)
+  let (prologue, runBody) = splitGuards(body, "modal:" & customId, ctxId)
   let idE = newLit customId
   result = quote do:
     addModalHandler(`handler`, `idE`,
       proc (`ctxId`: ModalContext): Future[void] {.async.} =
         `lets`
-        `body`)
+        `prologue`
+        `runBody`)
+
+# --- modalForm ----------------------------------------------------------------
+
+type
+  FieldClass = enum
+    fcString, fcInt, fcFloat
+
+  FieldIR = ref object
+    node: NimNode
+    nimName: NimNode
+    customId: string
+    class: FieldClass
+    optional: bool
+    label: string
+    placeholder, value: NimNode  # exprs or nil
+    minLen, maxLen: NimNode
+    paragraph: bool
+
+proc parseFieldPragmas(f: FieldIR, pragma: NimNode) =
+  for entry in pragma:
+    if entry.kind == nnkIdent:
+      if $entry == "paragraph":
+        f.paragraph = true
+        continue
+      error("unknown field pragma: " & $entry & " (flags: paragraph)", entry)
+    if entry.kind != nnkExprColonExpr or entry[0].kind != nnkIdent:
+      error("field pragmas take the form key: value", entry)
+    let value = entry[1]
+    case $entry[0]
+    of "label":
+      value.expectKind nnkStrLit
+      f.label = value.strVal
+    of "name":
+      value.expectKind nnkStrLit
+      f.customId = value.strVal
+    of "placeholder": f.placeholder = value
+    of "value": f.value = value
+    of "minLen": f.minLen = value
+    of "maxLen": f.maxLen = value
+    else:
+      error("unknown field pragma: " & $entry[0] & " (valid: label, name, " &
+        "placeholder, value, minLen, maxLen, paragraph)", entry)
+
+proc parseFieldDecl(stmt: NimNode, pendingDoc: string): FieldIR =
+  ## Same declaration shape as slash options: `name: Type` with an
+  ## optional pragma list; the label comes from a preceding `## doc`
+  ## comment or the `label` pragma.
+  result = FieldIR(node: stmt, label: pendingDoc)
+  var head = stmt[0]
+  var pragma: NimNode = nil
+  if head.kind == nnkPragmaExpr:
+    pragma = head[1]
+    head = head[0]
+  head.expectKind nnkIdent
+  result.nimName = head
+  result.customId = $head
+
+  var typeExpr = stmt[1][0]
+  if typeExpr.kind == nnkAsgn:
+    error("modal fields cannot have defaults; use Option[T] for optional " &
+      "fields or the {.value: \"…\".} pragma for prefilled text", stmt)
+  if typeExpr.kind == nnkBracketExpr and typeExpr.len == 2 and
+      typeExpr[0].kind == nnkIdent and $typeExpr[0] == "Option":
+    result.optional = true
+    typeExpr = typeExpr[1]
+  if typeExpr.kind == nnkIdent:
+    case $typeExpr
+    of "string": result.class = fcString
+    of "int": result.class = fcInt
+    of "float": result.class = fcFloat
+    else:
+      error("modal fields must be string, int, or float (text inputs are " &
+        "text; numbers are parsed on submit): " & typeExpr.repr, stmt)
+  else:
+    error("unsupported modal field type: " & typeExpr.repr, stmt)
+
+  if pragma != nil:
+    result.parseFieldPragmas(pragma)
+  if result.label.len == 0:
+    warning("modal field \"" & result.customId & "\" has no label (add a " &
+      "## doc comment on the line above or a label pragma); using the " &
+      "field name", stmt)
+    result.label = result.customId
+  if result.label.len > 45:
+    error("modal field labels are limited to 45 characters (Discord)", stmt)
+
+proc parseFormBody(body: NimNode):
+    tuple[fields: seq[FieldIR], checks: seq[NimNode], submit: NimNode] =
+  var pendingDoc = ""
+  for stmt in body:
+    case stmt.kind
+    of nnkCommentStmt:
+      pendingDoc = stmt.strVal
+      continue
+    of nnkCall:
+      if stmt[0].kind == nnkIdent and $stmt[0] == "submit":
+        if result.submit != nil:
+          error("duplicate submit block", stmt)
+        stmt[1].expectKind nnkStmtList
+        result.submit = stmt[1]
+      elif stmt[0].kind == nnkIdent and $stmt[0] == "check" and
+          stmt.len == 2 and stmt[1].kind == nnkStmtList:
+        # runs after the fields are parsed, so field values are in scope
+        result.checks.add stmt[1]
+      else:
+        let field = parseFieldDecl(stmt, pendingDoc)
+        for existing in result.fields:
+          if existing.customId == field.customId:
+            error("duplicate field name: " & field.customId, stmt)
+        result.fields.add field
+    of nnkCommand:
+      if stmt[0].kind == nnkIdent and $stmt[0] == "check":
+        result.checks.add parseCheckCommand(stmt)
+      else:
+        error("unexpected statement in modalForm block: " & stmt.repr, stmt)
+    else:
+      error("unexpected statement in modalForm block: " & stmt.repr, stmt)
+    pendingDoc = ""
+  if result.submit == nil:
+    error("modalForm is missing a submit block", body)
+  if result.fields.len < 1 or result.fields.len > 5:
+    error("a modal needs 1..5 text inputs (Discord limit)", body)
+
+proc genFieldLet(f: FieldIR, ctxId: NimNode): NimNode =
+  let (nimName, cid, lbl) = (f.nimName, newLit f.customId, newLit f.label)
+  case f.class
+  of fcString:
+    if f.optional:
+      let sym = bindSym"optField"
+      quote do:
+        let `nimName` = `sym`(`ctxId`, `cid`)
+    else:
+      let sym = bindSym"field"
+      quote do:
+        let `nimName` = `sym`(`ctxId`, `cid`).get("")
+  of fcInt:
+    let sym = if f.optional: bindSym"optFieldAsInt" else: bindSym"fieldAsInt"
+    quote do:
+      let `nimName` = `sym`(`ctxId`, `cid`, `lbl`)
+  of fcFloat:
+    let sym = if f.optional: bindSym"optFieldAsFloat"
+              else: bindSym"fieldAsFloat"
+    quote do:
+      let `nimName` = `sym`(`ctxId`, `cid`, `lbl`)
+
+macro modalForm*(handler: untyped; pattern, title: static string;
+                 body: untyped): untyped =
+  ## Declares a modal with typed text inputs and its submit handler in
+  ## one block, registers the handler under `pattern`, and returns a
+  ## `ModalForm` — open it with `ctx.showModal(form, captureValues...)`.
+  ##
+  ## .. code-block:: nim
+  ##   let feedback = handler.modalForm("feedback:{topic}", "Feedback"):
+  ##     ## Subject
+  ##     subject {.maxLen: 100.}: string
+  ##     ## Details
+  ##     detail {.paragraph, placeholder: "Tell us more".}: Option[string]
+  ##     ## Rating (1-5)
+  ##     rating: int
+  ##     submit:
+  ##       await ctx.reply(topic & ": " & subject & " → " & $rating)
+  ##
+  ##   # elsewhere:
+  ##   await ctx.showModal(feedback, "bug")
+  ##
+  ## Field types are `string`/`int`/`float` (plus `Option[T]`); numbers
+  ## are parsed on submit and a bad value raises `UserError`, which the
+  ## default error hook turns into a polite ephemeral reply. An empty
+  ## optional input becomes `none`. In `submit`, `ctx: ModalContext`,
+  ## one typed variable per field, and the pattern captures are in scope.
+  if title.len < 1 or title.len > 45:
+    error("modal title must be 1..45 characters", body)
+  let body = normalizeBody(body)
+  let (fields, checks, submitBody) = parseFormBody(body)
+  let ctxId = ident"ctx"
+  let captureLets = genCaptureLets(pattern, body, ctxId)
+
+  # a field and a pattern capture with the same name would collide in
+  # the submit scope; catch it here with a better message
+  var parsed: CustomIdPattern
+  try:
+    parsed = parseCustomIdPattern(pattern)
+  except DimslashError as e:
+    error(e.msg, body)
+  for segment in parsed.segments:
+    if segment.kind != psCapture:
+      continue
+    for f in fields:
+      if $f.nimName == segment.name:
+        error("field \"" & $f.nimName & "\" collides with pattern " &
+          "capture {" & segment.name & "}", f.node)
+
+  let formSym = genSym(nskVar, "form")
+  var specAdds = newStmtList()
+  var fieldLets = newStmtList()
+  for f in fields:
+    let (cid, lbl) = (newLit f.customId, newLit f.label)
+    let styleE = if f.paragraph: bindSym"tisParagraph" else: bindSym"tisShort"
+    let requiredE = newLit(not f.optional)
+    let placeholderE = if f.placeholder != nil: f.placeholder else: newLit ""
+    let valueE = if f.value != nil: f.value else: newLit ""
+    let minE = if f.minLen != nil: newCall(ident"int", f.minLen)
+               else: newLit 0
+    let maxE = if f.maxLen != nil: newCall(ident"int", f.maxLen)
+               else: newLit 0
+    specAdds.add quote do:
+      `formSym`.fields.add TextFieldSpec(customId: `cid`, label: `lbl`,
+        style: `styleE`, required: `requiredE`, placeholder: `placeholderE`,
+        value: `valueE`, minLen: `minE`, maxLen: `maxE`)
+    fieldLets.add genFieldLet(f, ctxId)
+
+  var checkStmts = newStmtList()
+  for chk in checks:
+    checkStmts.add chk
+
+  let (patternE, titleE) = (newLit pattern, newLit title)
+  result = quote do:
+    block:
+      var `formSym` = ModalForm(pattern: `patternE`, title: `titleE`)
+      `specAdds`
+      addModalHandler(`handler`, `patternE`,
+        proc (`ctxId`: ModalContext): Future[void] {.async.} =
+          `captureLets`
+          `fieldLets`
+          `checkStmts`
+          `submitBody`)
+      `formSym`

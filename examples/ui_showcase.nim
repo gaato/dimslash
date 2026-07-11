@@ -8,6 +8,9 @@ let token = getEnv("DISCORD_TOKEN")
 let discord = newDiscordClient(token)
 let handler = newInteractionHandler(discord)
 
+# A pager built from registered pattern buttons: stateless, so it keeps
+# working across bot restarts. For a session-scoped pager in one call,
+# see `ctx.paginate` in examples/interactive_flows.nim.
 const pages = [
   "Page one: welcome!",
   "Page two: the middle.",

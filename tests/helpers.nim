@@ -34,9 +34,17 @@ proc newRecordingBackend*(rec: Recorder): RestBackend =
       "id": interactionId, "token": token, "choices": choices})
   result.createModal = proc (interactionId, token: string;
       data: InteractionCallbackDataModal): Future[void] {.async.} =
+    var inputs = newJArray()
+    for row in data.components:
+      for c in row.components:
+        inputs.add %*{"custom_id": c.custom_id.get(""),
+                      "label": c.label.get(""),
+                      "required": c.required.get(false),
+                      "style": int c.input_style.get(tisShort)}
     rec.calls.add ("createModal", %*{
       "id": interactionId, "token": token,
-      "custom_id": data.custom_id, "title": data.title})
+      "custom_id": data.custom_id, "title": data.title,
+      "inputs": inputs})
   result.createFollowup = proc (applicationId, token: string;
       payload: MessagePayload): Future[Message] {.async.} =
     rec.calls.add ("createFollowup", %*{

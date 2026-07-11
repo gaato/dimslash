@@ -10,9 +10,12 @@
 ## `max_length`/`channel_types`.
 ##
 ## Comparison happens on a canonical form (`canonicalize`) that keeps a
-## whitelist of writable fields, materializes Discord's defaults, and
-## sorts commands — so server-added echo fields can never cause a
-## spurious PUT.
+## whitelist of writable fields and sorts commands — so server-added echo
+## fields can never cause a spurious PUT. Fields whose unset value is
+## decided by the app's settings (`integration_types`, `contexts`) are
+## only compared when the local command actually sets them
+## (`sameCommands`): Discord echoes the app-wide effective value there,
+## which is not ours to fight.
 ##
 ## Caveat: only scopes that currently contain at least one registered
 ## command are synced. If you remove the *last* command of a guild (or
@@ -209,15 +212,13 @@ proc canonicalizeCommand(cmd: JsonNode): JsonNode =
       values.add c.getInt
     values.sort
     result["contexts"] = %values
-  # Discord defaults integration_types to [0] when unset
-  var integrations: seq[int] = @[0]
   let rawIntegrations = cmd{"integration_types"}
   if rawIntegrations != nil and rawIntegrations.kind == JArray:
-    integrations = @[]
+    var integrations: seq[int]
     for i in rawIntegrations:
       integrations.add i.getInt
     integrations.sort
-  result["integration_types"] = %integrations
+    result["integration_types"] = %integrations
   for key in ["name_localizations", "description_localizations"]:
     let loc = cmd{key}
     if loc != nil and loc.kind == JObject and loc.len > 0:
@@ -241,6 +242,28 @@ proc canonicalize*(commands: JsonNode): JsonNode =
   result = newJArray()
   for cmd in canonical:
     result.add cmd
+
+const appDefaultKeys = ["integration_types", "contexts"]
+  ## When a command doesn't set these, Discord echoes the app-wide
+  ## effective value (e.g. `integration_types: [0, 1]` for a bot with
+  ## user install enabled) — comparing them is only meaningful when the
+  ## local payload sends them.
+
+proc sameCommands*(remote, local: JsonNode): bool =
+  ## Whether Discord's current commands (`remote`) match the local
+  ## payload. Both sides are canonicalized; app-default fields on the
+  ## remote are ignored for commands that don't set them locally.
+  let (r, l) = (canonicalize(remote), canonicalize(local))
+  if r.len != l.len:
+    return false
+  for i in 0 ..< l.len:
+    var masked = r[i].copy
+    for key in appDefaultKeys:
+      if not l[i].hasKey(key) and masked.hasKey(key):
+        masked.delete(key)
+    if masked != l[i]:
+      return false
+  true
 
 # --- Sync ---------------------------------------------------------------------
 
@@ -277,7 +300,7 @@ proc syncCommands*(handler: InteractionHandler,
     var needsUpdate = force
     if not needsUpdate:
       let current = await handler.rest.getCommands(appId, scope)
-      needsUpdate = canonicalize(current) != canonicalize(payload)
+      needsUpdate = not sameCommands(current, payload)
     if needsUpdate:
       discard await handler.rest.putCommands(appId, scope, payload)
     result.add SyncResult(scope: scope, commandCount: payload.len,

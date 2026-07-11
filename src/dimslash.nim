@@ -29,9 +29,17 @@
 ## Module map:
 ##
 ## - `dsl <dimslash/dsl.html>`_ — the `slash`/`user`/`message`/`button`/
-##   `select`/`modal` declaration macros
+##   `select`/`modal`/`modalForm` declaration macros (with `check` lines
+##   and `cooldown` settings)
 ## - `context <dimslash/context.html>`_ — response helpers (`reply`,
-##   `deferReply`, `update`, `suggest`, …) and interaction accessors
+##   `deferReply`, `update`, `showModal`, `suggest`, …) and interaction
+##   accessors
+## - `wait <dimslash/wait.html>`_ — awaitable interactions
+##   (`waitForButton`, `waitForSelect`, `waitForModal`, `scopedId`)
+## - `flows <dimslash/flows.html>`_ — ready-made flows (`confirm`,
+##   `paginate`, `disableAll`)
+## - `builders <dimslash/builders.html>`_ — the `embed`/`row`/`rows`
+##   builder macros
 ## - `dispatch <dimslash/dispatch.html>`_ — `handleInteraction`
 ## - `sync <dimslash/sync.html>`_ — `syncCommands` with change detection
 ## - `types <dimslash/types.html>`_ — the data model
@@ -40,8 +48,10 @@
 ##   extraction (the DSL's building blocks)
 
 import std/[asyncdispatch, options, tables]
-import dimslash/[types, extract, registry, context, dispatch, dsl, rest, sync]
+import dimslash/[types, extract, registry, context, dispatch, dsl, rest,
+                 sync, wait, flows, builders]
 
-export types, extract, registry, context, dispatch, dsl, rest, sync
+export types, extract, registry, context, dispatch, dsl, rest, sync,
+       wait, flows, builders
 # the DSL is unusable without these, so spare every bot the imports
 export asyncdispatch, options, tables

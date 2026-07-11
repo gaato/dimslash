@@ -18,23 +18,31 @@ nim	selectedChannels	dimslash/context.html#selectedChannels,ComponentContext	pro
 nim	message	dimslash/context.html#message,ComponentContext	proc message(ctx: ComponentContext): Option[Message]		108
 nim	fields	dimslash/context.html#fields,ModalContext	proc fields(ctx: ModalContext): Table[string, string]		112
 nim	field	dimslash/context.html#field,ModalContext,string	proc field(ctx: ModalContext; customId: string): Option[string]		116
-nim	focusedValue	dimslash/context.html#focusedValue,AutocompleteContext	proc focusedValue(ctx: AutocompleteContext): string		122
-nim	followup	dimslash/context.html#followup,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]	proc followup(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n         components: seq[MessageComponent] = @[];\n         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[\n    Message]		178
-nim	edit	dimslash/context.html#edit,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile],string	proc edit(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n     components: seq[MessageComponent] = @[];\n     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n     allowedMentions = none AllowedMentions; messageId = "@original"): Future[\n    Message]		192
-nim	reply	dimslash/context.html#reply,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]	proc reply(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n      components: seq[MessageComponent] = @[];\n      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(\n    Future[void])		206
-nim	deferReply	dimslash/context.html#deferReply,InteractionContext	proc deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])		229
-nim	original	dimslash/context.html#original,InteractionContext	proc original(ctx: InteractionContext): Future[Message]		244
-nim	delete	dimslash/context.html#delete,InteractionContext,string	proc delete(ctx: InteractionContext; messageId = "@original"): Future[void]		249
-nim	newTextInput	dimslash/context.html#newTextInput,string,string,string,string,int,int	proc newTextInput(customId, label: string; style = tisShort; required = true;\n             placeholder = ""; value = ""; minLen = 0; maxLen = 0): MessageComponent		254
-nim	showModal	dimslash/context.html#showModal,InteractionContext,string,string,seq[MessageComponent]	proc showModal(ctx: InteractionContext; customId, title: string;\n          components: seq[MessageComponent]): owned(Future[void])		277
-nim	update	dimslash/context.html#update,,string,seq[Embed],seq[MessageComponent],seq[Attachment]	proc update(ctx: ComponentContext | ModalContext; content = "";\n       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];\n       attachments: seq[Attachment] = @[];\n       allowedMentions = none AllowedMentions): owned(Future[void])		292
-nim	deferUpdate	dimslash/context.html#deferUpdate	proc deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])		310
-nim	suggest	dimslash/context.html#suggest,AutocompleteContext,seq[ApplicationCommandOptionChoice]	proc suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[\n    void]		335
-nim	suggest	dimslash/context.html#suggest,AutocompleteContext,seq[string]	proc suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]		349
-nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[\n    void]		356
-nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]_2	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[\n    void]		364
-nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]_3	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[\n    void]		372
-nim	defaultOnError	dimslash/context.html#defaultOnError,InteractionContext,ref.Exception	proc defaultOnError(ctx: InteractionContext; e: ref Exception): owned(\n    Future[void])		383
-nimgrp	suggest	dimslash/context.html#suggest-procs-all	proc		335
+nim	optField	dimslash/context.html#optField,ModalContext,string	proc optField(ctx: ModalContext; customId: string): Option[string]		122
+nim	fieldAsInt	dimslash/context.html#fieldAsInt,ModalContext,string,string	proc fieldAsInt(ctx: ModalContext; customId, label: string): int		128
+nim	optFieldAsInt	dimslash/context.html#optFieldAsInt,ModalContext,string,string	proc optFieldAsInt(ctx: ModalContext; customId, label: string): Option[int]		139
+nim	fieldAsFloat	dimslash/context.html#fieldAsFloat,ModalContext,string,string	proc fieldAsFloat(ctx: ModalContext; customId, label: string): float		144
+nim	optFieldAsFloat	dimslash/context.html#optFieldAsFloat,ModalContext,string,string	proc optFieldAsFloat(ctx: ModalContext; customId, label: string): Option[float]		152
+nim	focusedValue	dimslash/context.html#focusedValue,AutocompleteContext	proc focusedValue(ctx: AutocompleteContext): string		158
+nim	followup	dimslash/context.html#followup,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]	proc followup(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n         components: seq[MessageComponent] = @[];\n         attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n         allowedMentions = none AllowedMentions; ephemeral = false; tts = false): Future[\n    Message]		214
+nim	edit	dimslash/context.html#edit,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile],string	proc edit(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n     components: seq[MessageComponent] = @[];\n     attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n     allowedMentions = none AllowedMentions; messageId = "@original"): Future[\n    Message]		228
+nim	reply	dimslash/context.html#reply,InteractionContext,string,seq[Embed],seq[MessageComponent],seq[Attachment],seq[DiscordFile]	proc reply(ctx: InteractionContext; content = ""; embeds: seq[Embed] = @[];\n      components: seq[MessageComponent] = @[];\n      attachments: seq[Attachment] = @[]; files: seq[DiscordFile] = @[];\n      allowedMentions = none AllowedMentions; ephemeral = false; tts = false): owned(\n    Future[void])		242
+nim	deferReply	dimslash/context.html#deferReply,InteractionContext	proc deferReply(ctx: InteractionContext; ephemeral = false): owned(Future[void])		265
+nim	original	dimslash/context.html#original,InteractionContext	proc original(ctx: InteractionContext): Future[Message]		280
+nim	delete	dimslash/context.html#delete,InteractionContext,string	proc delete(ctx: InteractionContext; messageId = "@original"): Future[void]		285
+nim	newTextInput	dimslash/context.html#newTextInput,string,string,string,string,int,int	proc newTextInput(customId, label: string; style = tisShort; required = true;\n             placeholder = ""; value = ""; minLen = 0; maxLen = 0): MessageComponent		290
+nim	showModal	dimslash/context.html#showModal,InteractionContext,string,string,seq[MessageComponent]	proc showModal(ctx: InteractionContext; customId, title: string;\n          components: seq[MessageComponent]): owned(Future[void])		313
+nim	showModal	dimslash/context.html#showModal,InteractionContext,ModalForm,varargs[string,]	proc showModal(ctx: InteractionContext; form: ModalForm;\n          captures: varargs[string, `$`]): Future[void]		329
+nim	update	dimslash/context.html#update,,string,seq[Embed],seq[MessageComponent],seq[Attachment]	proc update(ctx: ComponentContext | ModalContext; content = "";\n       embeds: seq[Embed] = @[]; components: seq[MessageComponent] = @[];\n       attachments: seq[Attachment] = @[];\n       allowedMentions = none AllowedMentions): owned(Future[void])		342
+nim	deferUpdate	dimslash/context.html#deferUpdate	proc deferUpdate(ctx: ComponentContext | ModalContext): owned(Future[void])		360
+nim	suggest	dimslash/context.html#suggest,AutocompleteContext,seq[ApplicationCommandOptionChoice]	proc suggest(ctx: AutocompleteContext; choices: seq[ApplicationCommandOptionChoice]): Future[\n    void]		385
+nim	suggest	dimslash/context.html#suggest,AutocompleteContext,seq[string]	proc suggest(ctx: AutocompleteContext; choices: seq[string]): Future[void]		399
+nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, string)]): Future[\n    void]		406
+nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]_2	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, int)]): Future[\n    void]		414
+nim	suggest	dimslash/context.html#suggest,AutocompleteContext,openArray[]_3	proc suggest(ctx: AutocompleteContext; choices: openArray[(string, float)]): Future[\n    void]		422
+nim	checkCooldown	dimslash/context.html#checkCooldown,InteractionContext,string,float,CooldownBucket	proc checkCooldown(ctx: InteractionContext; path: string; seconds: float;\n              bucket: CooldownBucket)		433
+nim	defaultOnError	dimslash/context.html#defaultOnError,InteractionContext,ref.Exception	proc defaultOnError(ctx: InteractionContext; e: ref Exception): owned(\n    Future[void])		458
+nimgrp	suggest	dimslash/context.html#suggest-procs-all	proc		385
+nimgrp	showmodal	dimslash/context.html#showModal-procs-all	proc		312
 nimgrp	target	dimslash/context.html#target-procs-all	proc		52
 heading	Response flow	dimslash/context.html#response-flow	 Response flow		0

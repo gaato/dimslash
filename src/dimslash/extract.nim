@@ -254,6 +254,30 @@ proc isInteger(s: string): bool =
       return false
   true
 
+proc fillPattern*(pattern: CustomIdPattern,
+                  args: openArray[string]): string =
+  ## Materializes a pattern into a concrete custom_id by substituting the
+  ## captures with `args` in order. Raises `DimslashError` on an argument
+  ## count mismatch or a non-integer value for an `int` capture.
+  var i = 0
+  for seg in pattern.segments:
+    case seg.kind
+    of psLiteral:
+      result.add seg.lit
+    of psCapture:
+      if i >= args.len:
+        raise newException(DimslashError,
+          "missing value for capture {" & seg.name & "} in pattern: " &
+          pattern.raw)
+      if seg.capture == capInt and not args[i].isInteger:
+        raise newException(DimslashError,
+          "capture {" & seg.name & ":int} needs an integer, got: " & args[i])
+      result.add args[i]
+      inc i
+  if i < args.len:
+    raise newException(DimslashError,
+      "too many capture values for pattern: " & pattern.raw)
+
 proc matchCustomId*(pattern: CustomIdPattern,
                     id: string): Option[Table[string, string]] =
   ## Matches an incoming custom_id against a pattern. Captures are

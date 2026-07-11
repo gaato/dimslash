@@ -22,5 +22,6 @@ nim	modalFields	dimslash/extract.html#modalFields,seq[MessageComponent]	proc mod
 nim	parseCustomIdPattern	dimslash/extract.html#parseCustomIdPattern,string	proc parseCustomIdPattern(raw: string): CustomIdPattern		185
 nim	hasCaptures	dimslash/extract.html#hasCaptures,CustomIdPattern	proc hasCaptures(pattern: CustomIdPattern): bool		235
 nim	literalPrefixLen	dimslash/extract.html#literalPrefixLen,CustomIdPattern	proc literalPrefixLen(pattern: CustomIdPattern): int		240
-nim	matchCustomId	dimslash/extract.html#matchCustomId,CustomIdPattern,string	proc matchCustomId(pattern: CustomIdPattern; id: string): Option[\n    Table[string, string]]		257
+nim	fillPattern	dimslash/extract.html#fillPattern,CustomIdPattern,openArray[string]	proc fillPattern(pattern: CustomIdPattern; args: openArray[string]): string		257
+nim	matchCustomId	dimslash/extract.html#matchCustomId,CustomIdPattern,string	proc matchCustomId(pattern: CustomIdPattern; id: string): Option[\n    Table[string, string]]		281
 nimgrp	opt	dimslash/extract.html#opt-procs-all	proc		38

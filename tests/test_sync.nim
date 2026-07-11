@@ -121,6 +121,30 @@ suite "canonicalize":
     let b = %*[{"name": "a", "type": 1, "description": "x"}]
     check canonicalize(a) == canonicalize(b)
 
+suite "sameCommands":
+  test "app-default integration_types/contexts on the echo are ignored":
+    # a user-installable app echoes integration_types [0, 1] and effective
+    # contexts even when the command never set them (found in real E2E)
+    let handler = newTestHandler(newRecorder())
+    handler.slash("plain", "No install settings"):
+      execute: discard ctx
+    let local = newJArray()
+    local.add toCommandJson(handler.registry.slash["plain"])
+    let echoed = copy(local)
+    echoed[0]["integration_types"] = %[0, 1]
+    echoed[0]["contexts"] = %[0, 1, 2]
+    check sameCommands(echoed, local)
+
+  test "explicitly set integrations still compare":
+    let handler = kitchenHandler(newRecorder())   # sets [0, 1]
+    let local = newJArray()
+    local.add toCommandJson(handler.registry.slash["kitchen"])
+    let echoed = copy(local)
+    echoed[0]["integration_types"] = %[0]
+    check not sameCommands(echoed, local)
+    echoed[0]["integration_types"] = %[1, 0]      # order-insensitive
+    check sameCommands(echoed, local)
+
 suite "syncCommands":
   test "no PUT when Discord already matches":
     let rec = newRecorder()

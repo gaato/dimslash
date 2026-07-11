@@ -19,7 +19,7 @@
 import std/[asyncdispatch, options, tables]
 import dimscord
 
-import ./types, ./extract, ./registry
+import ./types, ./extract, ./registry, ./wait
 
 proc invoke[T](handler: InteractionHandler, ctx: T,
                run: proc (ctx: T): Future[void]): Future[void] {.async.} =
@@ -86,6 +86,8 @@ proc handleInteraction*(handler: InteractionHandler, s: Shard,
     if data.component_type != mctButton and
         data.component_type notin SelectKinds:
       return await handler.unknown(s, i)
+    if handler.tryCompleteComponentWaiter(s, i):
+      return true
     let found =
       if data.component_type == mctButton:
         handler.registry.buttons.lookup(data.custom_id)
@@ -101,6 +103,8 @@ proc handleInteraction*(handler: InteractionHandler, s: Shard,
   of itModalSubmit:
     if data.interaction_type != idtModalSubmit:
       return await handler.unknown(s, i)
+    if handler.tryCompleteModalWaiter(s, i):
+      return true
     let found = handler.registry.modals.lookup(data.custom_id)
     if found.isNone:
       return await handler.unknown(s, i)
