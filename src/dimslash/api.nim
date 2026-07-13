@@ -2082,6 +2082,8 @@ proc requiredOption*[T](ctx: SlashCommandContext; name: string): T =
   ## Supported targets are scalar primitives, DimSlash resolved models,
   ## enums, integer ranges, and distinct string/int types. Missing, malformed,
   ## unresolved, or out-of-range data raises `InvalidInteractionError`.
+  when T is range:
+    result = low(T)
   let value = ctx.optionJson(name)
   if value.isNone:
     invalidOption(name)
@@ -2180,13 +2182,13 @@ proc requiredModalField*[T](ctx: ModalContext; name: string;
     return value.get
   elif T is int:
     let displayName = if label.len > 0: label else: name
-    try: return parseInt(value.get.strip)
+    try: return parseInt(strutils.strip(value.get))
     except ValueError:
       raise userRejection("\"" & displayName &
         "\" must be a whole number.")
   elif T is float:
     let displayName = if label.len > 0: label else: name
-    try: return parseFloat(value.get.strip)
+    try: return parseFloat(strutils.strip(value.get))
     except ValueError:
       raise userRejection("\"" & displayName & "\" must be a number.")
   else:
@@ -2198,7 +2200,7 @@ proc optionalModalField*[T](ctx: ModalContext; name: string;
   ## Missing and whitespace-only input return none; malformed numeric text is a
   ## `UserRejectionError` suitable for the default ephemeral error policy.
   let value = ctx.field(name)
-  if value.isNone or value.get.strip.len == 0: return none(T)
+  if value.isNone or strutils.strip(value.get).len == 0: return none(T)
   some(requiredModalField[T](ctx, name, label))
 
 proc parsePattern(value: string): Pattern =
@@ -2591,7 +2593,7 @@ proc validateSlashName(value, subject: string) =
         subject & " is not a valid Discord command name: " & value)
 
 proc validateContextCommandName(value: string) =
-  if value.runeLen notin 1 .. 32 or value.strip.len == 0:
+  if value.runeLen notin 1 .. 32 or strutils.strip(value).len == 0:
     raise newException(RouteDefinitionError,
       "context command name must contain 1..32 visible characters")
   for character in value.runes:
