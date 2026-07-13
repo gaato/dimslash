@@ -7,4 +7,6 @@ examples/*
 !examples/*.nim
 tests/*
 !tests/*.nim
+!tests/config.nims
+src/*.out
 .mcp.json

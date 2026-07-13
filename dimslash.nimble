@@ -2,7 +2,7 @@
 
 version       = "0.1.0"
 author        = "Gakuto Furuya"
-description   = "Declarative interaction command DSL for Dimscord"
+description   = "Typed Discord interactions for Nim"
 license       = "BlueOak-1.0.0"
 srcDir        = "src"
 

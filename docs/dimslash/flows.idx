@@ -1,4 +1,0 @@
-nimTitle	flows	dimslash/flows.html	module src/dimslash/flows		0
-nim	disableAll	dimslash/flows.html#disableAll,seq[MessageComponent]	proc disableAll(components: seq[MessageComponent]): seq[MessageComponent]		21
-nim	confirm	dimslash/flows.html#confirm,InteractionContext,string,string,string,float	proc confirm(ctx: InteractionContext; prompt: string; yesLabel = "Yes";\n        noLabel = "No"; timeout = 60.0; ephemeral = true): Future[bool]		57
-nim	paginate	dimslash/flows.html#paginate,InteractionContext,seq[Embed],float	proc paginate(ctx: InteractionContext; pages: seq[Embed]; timeout = 120.0;\n         ephemeral = false): owned(Future[void])		88

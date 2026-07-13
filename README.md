@@ -1,397 +1,218 @@
 # dimslash
 
 [![CI](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/ci.yml?branch=main&label=CI)](https://github.com/gaato/dimslash/actions/workflows/ci.yml)
-[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/pages-on-tag.yml?label=Docs%20Deploy)](https://github.com/gaato/dimslash/actions/workflows/pages-on-tag.yml)
 [![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
 [![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
 
-A declarative, macro-powered interaction handler for
-[dimscord](https://github.com/krisppurg/dimscord). Slash commands (with
-full option metadata), context-menu commands, buttons, selects, modals,
-and autocomplete — validated at compile time, synced with change
-detection. On top of that: awaitable components (`waitForButton`),
-ready-made confirm/paginate flows, checks & cooldowns, typed modal
-forms, classic component builders, and Components V2 layouts.
+A typed Discord interaction framework for Nim, backed by
+[dimscord](https://github.com/krisppurg/dimscord).
 
-> **日本語版**: [README.ja.md](README.ja.md)
+The current API deliberately separates three things:
 
-## Installation
+- `DiscordApp`: an immutable route definition
+- `AppBinding`: one running gateway connection and its lifecycle
+- request-scoped `Context` objects: interaction data and response state
 
-```bash
-nimble install dimslash
-```
+See [README.ja.md](README.ja.md) for Japanese.
 
 ## Quick start
 
 ```nim
-import dimslash, std/random
+import dimslash
 
-let bot = newBot("TOKEN")
+let app = newDiscordApp(proc(routes: var Routes) =
+  routes.slash("greet", "Greets somebody",
+    proc(ctx: SlashCommandContext;
+         name {.description: "Who to greet".}: string;
+         count {.min: 1, max: 5.}: int = 1) {.async.} =
+      discard await ctx.respond((name & "! ").repeat(count)))
+)
 
-bot.slash("roll", "Roll a die"):
-  ## number of sides
-  sides {.min: 2, max: 1000.}: int = 6
-  execute:
-    await ctx.reply("You rolled a " & $rand(1 .. sides))
-
-waitFor bot.start()
+let binding = app.bindGateway("TOKEN")
+waitFor binding.start()
 ```
 
-The `## doc` comment becomes the option description in the Discord UI,
-`min`/`max` become real constraints, and the default makes the option
-optional on Discord while `sides` stays a plain `int` in your code. `start`
-wires READY/interaction events and performs one diff-aware command sync. Use
-`bot.install()` followed by dimscord's `bot.discord.startSession(...)` when
-you need its full gateway, cache, or sharding options.
+The route factory runs once. Handler signatures are the source of both the
+Discord command schema and runtime option decoding. Services can be captured
+normally by the factory closure.
 
-## The slash block
+## Explicit responses
+
+DimSlash does not guess whether a call means an initial response, an edit, or
+a followup:
 
 ```nim
-handler.slash("order", "Order from the menu"):
-  guild = "GUILD_ID"                 # optional command settings
-  permissions = {permManageGuild}
-  ## what to order
-  item {.choices: {"Coffee": "coffee", "Tea": "tea"}.}: string
-  ## how many
-  amount {.min: 1, max: 10.}: int = 1
-  ## note for the kitchen
-  note {.maxLen: 100.}: Option[string]
-  execute:
-    await ctx.reply($amount & "x " & item, ephemeral = true)
+routes.slash("work", "Does some work",
+  proc(ctx: SlashCommandContext) {.async.} =
+    await ctx.deferReply(ephemeral = true)
+    let original = await ctx.editOriginal("done")
+    let notification = await ctx.followup("more details")
+    echo original.id, " ", notification.id)
 ```
 
-**Option types**: `string`, `int`, `float`, `bool`, `User`, `Member`,
-`Role`, `Channel`, `Mentionable`, `Attachment`, plus caller-defined Nim
-`enum`, integer `range`, and `distinct string` / `distinct int` types. Any
-can be wrapped in `Option[T]` or have a default value (optional on Discord,
-non-`Option` in Nim).
+Message-producing operations consistently return `Future[Message]`:
+`respond`, `update`, `editOriginal`, `editFollowup`, `followup`, and
+`original`. ACK-only
+operations such as `deferReply`, `deferUpdate`, autocomplete completion, and
+opening a modal return `Future[void]`.
 
-**Option pragmas**: `desc`, `name` (wire-name override), `min`/`max`,
-`minLen`/`maxLen`, `choices`, `channels`, `nameLoc`/`descLoc`.
-
-**Command settings** (`key = value` lines): `guild`, `permissions`,
-`nsfw`, `contexts`, `integrations`, `nameLocalizations`,
-`descriptionLocalizations`, `cooldown` — plus `check` guard lines (see
-below).
-
-Everything is validated at compile time: Discord's name rules, option
-ordering (required before optional), duplicate names, choice limits,
-group depth, autocomplete targets. A typo'd pragma or a misordered
-option is a compile error, not a 400 at runtime.
-
-### Derive commands from Nim types
-
-```nim
-type
-  Flavor = enum
-    vanilla
-    chocolate = "Dark chocolate" # Discord label; wire value is "chocolate"
-  Servings = range[1 .. 12]
-  CustomerId = distinct string
-
-handler.slash("dessert", "Build a dessert"):
-  ## flavor
-  flavor: Flavor                  # choices are generated automatically
-  ## number of servings
-  servings: Servings              # min_value=1, max_value=12
-  ## customer
-  customer: CustomerId            # handler keeps the domain type
-  execute:
-    await ctx.reply($flavor & " for " & $servings)
-```
-
-The command schema and decoder come from the same type, so an enum/range
-change cannot leave registration JSON and handler parsing out of sync.
-
-## Subcommands
-
-```nim
-handler.slash("admin", "Admin tools"):
-  permissions = {permManageGuild}
-  group "member", "Member management":
-    sub "warn", "Warn a member":
-      ## who to warn
-      target: User
-      execute:
-        await ctx.reply(target.username & " warned", ephemeral = true)
-  sub "audit", "Show the audit log":
-    execute:
-      await ctx.reply("...")
-```
-
-## Autocomplete
-
-```nim
-handler.slash("search", "Search the docs"):
-  ## search query
-  query: string
-  autocomplete query:                 # compile-time checked option link
-    await ctx.suggest(allDocs.filterIt(ctx.focusedValue in it))
-  execute:
-    await ctx.reply("Results for " & query)
-```
-
-The option is automatically flagged `autocomplete: true` when synced, so
-Discord actually fires the interaction.
+An initial network failure whose acceptance is uncertain moves the context to
+`OutcomeUnknown`. Further response mutations are then rejected instead of
+risking a duplicate acknowledgement. DimSlash never auto-defers or retries an
+interaction response.
 
 ## Components and modals
 
-custom_ids can carry typed captures — `{name}` (string) and `{name:int}`
-— which become variables in the handler body:
+```nim
+let app = newDiscordApp(proc(routes: var Routes) =
+  routes.button("page:{number:int}",
+    proc(ctx: ComponentContext) {.async.} =
+      discard await ctx.update("page " & $ctx.captureInt("number")))
+
+  routes.select("language",
+    proc(ctx: ComponentContext) {.async.} =
+      discard await ctx.update("selected: " & ctx.values.join(", ")))
+
+  routes.modal("report:{number:int}",
+    proc(ctx: ModalContext;
+         reason {.description: "Reason".}: string;
+         score {.description: "Score".}: Option[int]) {.async.} =
+      discard await ctx.respond(reason & ":" & $score.get(0)))
+)
+```
+
+Classic action rows, Components V2 layouts, and modal inputs are separate
+types. A Components V2 original message cannot be edited back into classic
+content.
+
+Open a modal only from a context that Discord permits:
 
 ```nim
-handler.button("page:{n:int}"):
-  await ctx.update(pages[n], components = pager(n))
-
-handler.select("role_picker"):
-  await ctx.reply("You chose: " & ctx.values.join(", "))
-
-handler.modal("feedback:{topic}"):
-  await ctx.reply("Thanks for the " & topic & " feedback: " &
-                  ctx.field("subject").get("(none)"))
-
-handler.user("User info"):            # context-menu commands
-  await ctx.reply("That's " & ctx.target.username, ephemeral = true)
-
-handler.message("Quote"):
-  await ctx.reply("> " & ctx.target.content)
+await ctx.showModal(modalDialog("report:7", "Report",
+  textInput("reason", "Reason", style = ParagraphText,
+    description = "Explain what happened"),
+  textInput("score", "Score", required = false)))
 ```
 
-## Typed modal forms
+Modal payloads use Discord's current `Label` components. A modal submission
+also exposes `source`: command-origin modals may send a new response, while a
+component-origin modal may additionally call `update` or `deferUpdate` on its
+source message.
 
-`modalForm` declares a modal's inputs and its submit handler in one
-block and returns a form you can open from any handler:
+## Checks, cooldowns, and short-lived flows
+
+Checks are async closures attached to immutable routes. Live cooldown buckets
+belong to the binding, and a rejected check never consumes a cooldown:
 
 ```nim
-let feedback = handler.modalForm("feedback:{topic}", "Send feedback"):
-  ## Subject
-  subject {.maxLen: 100.}: string
-  ## Rating (1-5)
-  rating {.placeholder: "5".}: int
-  ## Anything else?
-  detail {.paragraph.}: Option[string]
-  check rating in 1 .. 5, "The rating has to be between 1 and 5."
-  submit:
-    await ctx.reply(topic & ": " & subject & " → " & $rating,
-                    ephemeral = true)
+routes.checkSlash("admin/ban",
+  proc(ctx: SlashCommandContext): Future[CheckDecision] {.async.} =
+    if ctx.inGuild: return allow()
+    return deny("server only"))
 
-# elsewhere — capture values fill the pattern in order:
-await ctx.showModal(feedback, "bug")
+routes.cooldownSlash("admin/ban", cooldownRule(5_000, UserCooldown))
 ```
 
-Text inputs are always text on the wire, so `int`/`float` fields are
-parsed on submit — a bad value becomes a polite ephemeral reply
-(`UserError`), not a crash. `Option[T]` fields are optional on Discord
-and `none` when left empty. Field pragmas: `label`, `name`,
-`placeholder`, `value`, `minLen`/`maxLen`, `paragraph`.
-
-## Awaitable components
-
-Instead of registering a handler, you can wait for the interaction
-right where you are:
+Collectors are intentionally separate from persistent routes. They are
+one-shot, user-filtered by default when started from a context, and are closed
+when the binding stops:
 
 ```nim
-handler.slash("quiz", "Answer a quick question"):
-  execute:
-    let two = ctx.scopedId("quiz:2")    # custom_id unique to this invocation
-    let four = ctx.scopedId("quiz:4")
-    await ctx.reply("What is 2 + 2?", components = buttonsFor(two, four))
-    let press = await ctx.waitForButton([two, four], timeout = 30)
-    if press.isNone:
-      await ctx.reply("Too slow!", ephemeral = true)
-    else:
-      await press.get.update("You pressed " & press.get.customId)
+if await ctx.confirm("Continue?"):
+  discard await ctx.followup("confirmed")
+
+let press = await ctx.waitForButton("page:{number:int}", timeoutMs = 30_000)
 ```
 
-`waitForButton` / `waitForSelect` / `waitForModal` register a one-shot
-waiter that is checked before the registry and removed once it fires;
-they return `none` on timeout. The `ctx` variants only accept the
-invoking user by default (pass `user = ""` for anyone; `message = …`
-filters by host message). Responding to the returned context is your
-job. Patterns work like everywhere else — `waitForButton("page:{n:int}")`
-puts `n` in `press.get.captures`.
+`paginate` provides the corresponding embed paginator. A pending collector
+wins before a persistent component or modal route.
 
-## Ready-made flows
+## Message models
+
+Classic messages support owned embeds, action rows, selects, allowed mentions,
+and in-memory uploads. Components V2 provides text displays, sections, media
+galleries, file displays, separators, containers, and action rows:
 
 ```nim
-if await ctx.confirm("Really delete **everything**?"):
-  await ctx.reply("Done.", ephemeral = true)   # auto-followup
+var body = classicMessage("report")
+body.files = @[uploadedFile("report.txt", reportContents, "Daily report")]
+discard await ctx.respond(body.messageBody)
 
-await ctx.paginate(guideEmbeds)   # ◀ 1 / 5 ▶
+discard await ctx.respond(componentsV2(@[
+  textDisplay("# Release"),
+  container([v2ActionRow(button("Install", "install"))])
+]).messageBody)
 ```
 
-`confirm` sends yes/no buttons and returns `true` only for yes (`false`
-on timeout); `paginate` serves page flips to the invoker and disables
-its controls when the timeout passes. Both build on the waiters, edit
-their own messages, and respect the reply state machine (they follow up
-if you already responded). `disableAll(components)` is exported for
-flows of your own. Interaction tokens live 15 minutes — keep timeouts
-below that.
+Message edits are replacements: omitted classic content and attachments are
+explicitly cleared. Once an original message becomes Components V2, it cannot
+be converted back to classic content. `launchActivity` is an initial response
+and returns an owned `ActivityInstance`.
 
-## Checks, cooldowns & user-facing errors
+## Autocomplete and context menus
 
 ```nim
-handler.slash("daily", "Claim your daily reward"):
-  check ctx.inGuild, "This only works in a server."
-  cooldown = (86_400, cbUser)
-  execute:
-    if alreadyClaimed(ctx.user.id):
-      fail "You already claimed today. Greedy!"
-    await ctx.reply("Here you go!")
+routes.autocomplete("search", "query",
+  proc(ctx: AutocompleteContext) {.async.} =
+    await ctx.complete([
+      choice("Nim", "nim"),
+      choice("Rust", "rust")
+    ]))
+
+routes.userCommand("Inspect user",
+  proc(ctx: UserCommandContext) {.async.} =
+    discard await ctx.respond(ctx.target.username, ephemeral = true))
+
+routes.messageCommand("Quote",
+  proc(ctx: MessageCommandContext) {.async.} =
+    discard await ctx.respond("> " & ctx.target.content))
 ```
 
-- `check <cond>, "message"` (or a `check:` block) runs before `execute`
-  and can see the declared options. On a command with subcommands it is
-  inherited by every leaf.
-- `cooldown = seconds` or `(seconds, cbUser|cbGuild|cbChannel|cbGlobal)`
-  refuses reuse within the window (after the checks, so a failed check
-  doesn't burn the cooldown). Works on `slash`/`user`/`message` and on
-  `button`/`select`/`modal` blocks too.
-- `fail "message"` raises `UserError` anywhere in a handler; the default
-  error hook sends the message as an ephemeral reply instead of logging.
+## Lifecycle and command scopes
 
-## Embed & component builders
+Binding options are ordinary constructor arguments; there is no mandatory
+configuration object:
 
 ```nim
-let card = embed:
-  title "Vote: " & motion
-  description "You have 60 seconds."
-  color 0x5865F2
-  field "Ayes", "12", inline = true
-  footer "one vote each"
-
-let comps = rows:
-  row:
-    button "Aye", "vote:aye", style = bsSuccess
-    button "Nay", "vote:nay", style = bsDanger
-  row:
-    select "vote:menu", placeholder = "Or pick here":
-      option "Aye", "yes", desc = "For the motion"
-      option "Nay", "no"
-
-await ctx.reply(embeds = @[card], components = comps)
+let binding = app.bindGateway("TOKEN", managedScopes = @[
+  globalScope(),
+  guildScope(GuildId("123"))
+], gatewayIntents = {Guilds, GuildMessages},
+   messageContentIntent = false)
 ```
 
-Named arguments pass straight through to dimscord's builders, entity
-selects (`userSelect`, `roleSelect`, `mentionableSelect`,
-`channelSelect`) are included, and Discord's layout rules (a select
-menu owns its row) are enforced at compile time.
+Every listed scope is authoritative and bulk-overwritten, including with an
+empty command list. Unlisted scopes are untouched.
 
-### Components V2 layouts
+`requestStop` and `requestDetach` are non-blocking signals. `stop` and
+`detach` stop accepting new interactions and wait without a timeout for all
+active handlers to finish; `detach` then restores the previous dimscord event
+callbacks.
 
-`layout` builds a `MessageLayout`. Its response overload accepts no
-`content` or `embeds`, and sets `IS_COMPONENTS_V2` for you.
+## Error handling
 
-```nim
-let release = layout:
-  text "# Version 2.0"
-  section:
-    text "The new build is ready."
-    thumbnail "https://example.com/icon.png", desc = "App icon"
-  gallery:
-    media "https://example.com/screenshot.png", desc = "New editor"
-  separator spacing = 2
-  container accent = 0x5865F2:
-    text "Choose an action"
-    row:
-      button "Install", "release:install", style = bsSuccess
-      linkButton "Notes", "https://example.com/releases/2.0"
+Handlers may raise `UserRejectionError` (or `userRejection(message)`) for an
+expected refusal. The default error handler turns it into an ephemeral
+response. Other `CatchableError`s receive a generic ephemeral response;
+autocomplete receives an empty choice list. `Defect`s are intentionally not
+caught.
 
-await ctx.reply(release, ephemeral = true)
+If a handler returns while its response is still `Pending`, DimSlash raises
+`MissingInitialResponseError` through the same error policy. Silent completion
+is therefore never accidental.
+
+## Raw interaction boundary
+
+The gateway binding consumes the raw `INTERACTION_CREATE` JSON from
+dimscord's `on_dispatch` event. DimSlash-owned `Interaction`, `Message`,
+`User`, and ID types form the public model; dimscord's parsed interaction
+objects are not part of the public contract.
+
+## Development
+
+```fish
+nimble test
+nim c -d:ssl -d:release --path:src src/dimslash.nim
 ```
 
-The macro checks Section, Gallery, Container, Action Row, attachment URL,
-color, spacing, and the 40-component message limit. Literal mistakes stop
-compilation; values computed at runtime raise `ValueError` while building
-the layout. `reply`, `followup`, `edit`, and `update` accept a
-`MessageLayout`.
-
-Discord rejects file uploads on Components V2 webhook followups. Upload an
-`Attachment` with the initial `reply`, or defer first and use `reply`/`edit`
-so dimslash sends a message edit. V2 overloads also leave `content`, `embeds`,
-and TTS out of the request by construction.
-
-`newTextInput` and `modalForm` wrap text inputs in Discord's `Label`
-component. Discord deprecated modal Action Rows that contain Text Inputs.
-
-#### dimscord compatibility
-
-dimslash supports the Components V2 message types represented by dimscord
-1.8.0 (Section through Container) and Label-based text modals. Discord also
-documents Radio Group, Checkbox Group, and Checkbox as component types 21–23,
-but dimscord 1.8.0 cannot preserve those values while parsing an interaction.
-dimslash will expose them after the upstream inbound model can carry them.
-See the current [Discord component reference](https://docs.discord.com/developers/components/reference).
-
-## The context object
-
-Every handler receives `ctx` with typed accessors (`ctx.user`,
-`ctx.member`, `ctx.guildId`, `ctx.target`, `ctx.values`, `ctx.fields`,
-…) and state-aware response helpers:
-
-| Helper | What it does |
-| --- | --- |
-| `reply(...)` | initial response → placeholder edit → followup, automatically |
-| `reply(layout)` | Components V2 response with the required flag |
-| `deferReply(ephemeral)` | "thinking…" placeholder |
-| `followup(...)` / `edit(...)` / `delete()` / `original()` | followup & @original management |
-| `update(...)` / `deferUpdate()` | edit the message a component sits on |
-| `showModal(form, captures...)` / `showModal(id, title, components)` | open a `modalForm` or a hand-built modal |
-| `suggest(choices)` | autocomplete suggestions (strings, pairs, ints, floats) |
-| `confirm(...)` / `paginate(...)` / `waitFor*` | the flows and waiters described above |
-
-All content-bearing helpers accept `content`, `embeds`, `components`,
-`attachments`, `files`, `allowedMentions`, `ephemeral`, `tts`.
-
-Handler exceptions go to `handler.onError` (default: log + ephemeral
-error reply; set to `nil` to re-raise), unregistered interactions to
-`handler.onUnknown`.
-
-## Command sync with diffing
-
-`start()` runs this sync once when the first READY event arrives.
-`syncCommands()` remains available when you want explicit control. It fetches what Discord has per scope (global and each
-guild), compares it against your registered commands, and only PUTs when
-something changed. Use
-`syncCommands(force = true)` to overwrite unconditionally.
-
-```nim
-proc onReady(s: Shard, r: Ready) {.event(discord).} =
-  for scope in await handler.syncCommands():
-    echo scope.scope, ": ", scope.commandCount,
-      " commands, updated=", scope.updated
-```
-
-## Migrating from 0.0.x
-
-0.1.0 is a full rewrite with a new API:
-
-| 0.0.x | 0.1.0 |
-| --- | --- |
-| `addSlash("x", "d") do (i: Interaction, a: int): ...` | `slash("x", "d"): ## desc` + `a: int` + `execute:` |
-| `handler.reply(i, "text")` | `ctx.reply("text")` |
-| `addUser` / `addMessage` | `user` / `message` blocks (`ctx.target`) |
-| `addButton` / `addSelect` / `addModal` | `button` / `select` / `modal` blocks with `{capture}` patterns |
-| `addAutocomplete(...)` / `addAutocompleteForOption` | `autocomplete <option>:` inside the slash block |
-| `selectValues(i)` / `modalValue(i, id)` | `ctx.values` / `ctx.field(id)` |
-| `registerCommands()` | `syncCommands()` (now with option metadata + diffing) |
-| `handler.deferResponse(i)` / `followup` | `ctx.deferReply()` / `ctx.followup(...)` |
-
-Notably, 0.0.x never sent option metadata to Discord at all — typed
-arguments didn't show up in the Discord UI. 0.1.0 fixes that.
-
-## Examples
-
-- Minimal setup: [examples/basic_interactions.nim](examples/basic_interactions.nim)
-- Every option type: [examples/typed_slash_args.nim](examples/typed_slash_args.nim)
-- Subcommands, patterns & modals: [examples/advanced_workflow.nim](examples/advanced_workflow.nim)
-- Buttons, selects & embeds: [examples/ui_showcase.nim](examples/ui_showcase.nim)
-- Flows, waiters, modal forms & builders: [examples/interactive_flows.nim](examples/interactive_flows.nim)
-
-## Generating API docs
-
-```bash
-nimble docs
-```
-
-Output: [docs/dimslash.html](docs/dimslash.html)
+Requires Nim 2.0.6 or newer.

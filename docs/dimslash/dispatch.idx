@@ -1,2 +1,0 @@
-nimTitle	dispatch	dimslash/dispatch.html	module src/dimslash/dispatch		0
-nim	handleInteraction	dimslash/dispatch.html#handleInteraction,InteractionHandler,Shard,Interaction	proc handleInteraction(handler: InteractionHandler; s: Shard; i: Interaction): Future[\n    bool]		44

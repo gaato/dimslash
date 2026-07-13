@@ -1,29 +1,19 @@
-## Minimal setup: a slash command, a user command, and a message command.
+import std/os
 
-import std/[asyncdispatch, os]
-import dimscord
 import dimslash
 
-let token = getEnv("DISCORD_TOKEN")
-let bot = newBot(token)
+let app = newDiscordApp(proc(routes: var Routes) =
+  routes.slash("ping", "Replies with pong",
+    proc(ctx: SlashCommandContext) {.async.} =
+      discard await ctx.respond("pong"))
 
-bot.slash("ping", "Replies with pong"):
-  execute:
-    await ctx.reply("pong")
+  routes.userCommand("Inspect user",
+    proc(ctx: UserCommandContext) {.async.} =
+      discard await ctx.respond(ctx.target.username, ephemeral = true))
 
-bot.slash("greet", "Greets someone"):
-  ## who to greet
-  who: User
-  ## greet privately?
-  quiet: Option[bool]
-  execute:
-    await ctx.reply("Hello, " & who.username & "!",
-                    ephemeral = quiet.get(false))
+  routes.messageCommand("Quote",
+    proc(ctx: MessageCommandContext) {.async.} =
+      discard await ctx.respond("> " & ctx.target.content))
+)
 
-bot.user("User info"):
-  await ctx.reply("That's " & ctx.target.username, ephemeral = true)
-
-bot.message("Quote"):
-  await ctx.reply("> " & ctx.target.content)
-
-waitFor bot.start()
+waitFor app.bindGateway(getEnv("DISCORD_TOKEN")).start()

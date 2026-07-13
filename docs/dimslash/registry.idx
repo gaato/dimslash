@@ -1,9 +1,0 @@
-nimTitle	registry	dimslash/registry.html	module src/dimslash/registry		0
-nim	addSlashCommand	dimslash/registry.html#addSlashCommand,InteractionHandler,SlashCommand	proc addSlashCommand(handler: InteractionHandler; cmd: SlashCommand)		10
-nim	addUserCommand	dimslash/registry.html#addUserCommand,InteractionHandler,UserCommand	proc addUserCommand(handler: InteractionHandler; cmd: UserCommand)		16
-nim	addMessageCommand	dimslash/registry.html#addMessageCommand,InteractionHandler,MessageCommand	proc addMessageCommand(handler: InteractionHandler; cmd: MessageCommand)		21
-nim	addButtonHandler	dimslash/registry.html#addButtonHandler,InteractionHandler,string,ComponentRun	proc addButtonHandler(handler: InteractionHandler; customId: string;\n                 run: ComponentRun)		43
-nim	addSelectHandler	dimslash/registry.html#addSelectHandler,InteractionHandler,string,ComponentRun	proc addSelectHandler(handler: InteractionHandler; customId: string;\n                 run: ComponentRun)		47
-nim	addModalHandler	dimslash/registry.html#addModalHandler,InteractionHandler,string,ModalRun	proc addModalHandler(handler: InteractionHandler; customId: string; run: ModalRun)		51
-nim	lookup	dimslash/registry.html#lookup,ComponentTable[H],string	proc lookup[H](table: ComponentTable[H]; customId: string): Option[\n    tuple[handler: H, captures: Table[string, string]]]		55
-nim	resolveLeaf	dimslash/registry.html#resolveLeaf,SlashCommand,seq[string]	proc resolveLeaf(cmd: SlashCommand; path: seq[string]): Option[SlashNode]		65

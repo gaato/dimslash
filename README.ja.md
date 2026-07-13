@@ -1,321 +1,182 @@
 # dimslash
 
-[![CI](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/ci.yml?branch=main&label=CI)](https://github.com/gaato/dimslash/actions/workflows/ci.yml)
-[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/pages-on-tag.yml?label=Docs%20Deploy)](https://github.com/gaato/dimslash/actions/workflows/pages-on-tag.yml)
-[![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
-[![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
+Nim向けの型付きDiscordインタラクションフレームワークです。通信層には
+[dimscord](https://github.com/krisppurg/dimscord)を使います。
 
-[dimscord](https://github.com/krisppurg/dimscord) 向けの、マクロによる宣言的インタラクションハンドラです。スラッシュコマンド(オプションメタデータ完全対応)、コンテキストメニュー、ボタン、セレクト、モーダル、オートコンプリートを、コンパイル時検証つきで書けます。コマンド同期は差分検知つきです。await できるコンポーネント(`waitForButton`)、confirm / paginate フロー、チェック&クールダウン、型付きモーダルフォーム、従来コンポーネントのビルダー、Components V2 layout も使えます。
+新APIでは責務を三つに分けています。
 
-> **English**: [README.md](README.md)
+- `DiscordApp`: 一度だけ構築される変更不能なルート定義
+- `AppBinding`: gateway接続とライフサイクル
+- 各種`Context`: リクエスト単位のデータと応答状態
 
-## インストール
-
-```bash
-nimble install dimslash
-```
-
-## 最短セットアップ
+## 最小例
 
 ```nim
-import dimslash, std/random
+import dimslash
 
-let bot = newBot("TOKEN")
+let app = newDiscordApp(proc(routes: var Routes) =
+  routes.slash("greet", "Greets somebody",
+    proc(ctx: SlashCommandContext;
+         name {.description: "Who to greet".}: string;
+         count {.min: 1, max: 5.}: int = 1) {.async.} =
+      discard await ctx.respond((name & "! ").repeat(count)))
+)
 
-bot.slash("roll", "サイコロを振る"):
-  ## 面の数
-  sides {.min: 2, max: 1000.}: int = 6
-  execute:
-    await ctx.reply($rand(1 .. sides) & " が出ました")
-
-waitFor bot.start()
+waitFor app.bindGateway("TOKEN").start()
 ```
 
-`## doc` コメントがそのまま Discord UI のオプション説明になり、`min`/`max` は実際の入力制約として同期されます。デフォルト値をつけると Discord 上では省略可能に、Nim 側では素の `int` のまま扱えます。`start` は READY / interaction event を配線し、差分つき command sync をプロセス内で一度だけ行います。gateway・cache・sharding の全オプションが必要なら、`bot.install()` の後に dimscord の `bot.discord.startSession(...)` を直接呼べます。
+ハンドラの引数がコマンド登録用schemaと実行時decodeの正本です。サービスは
+route factoryのclosureへ普通にcaptureできます。
 
-## slash ブロック
+## 明示的な応答API
+
+`reply`が状態に応じて別の操作へ化ける設計はやめました。
 
 ```nim
-handler.slash("order", "メニューから注文する"):
-  guild = "GUILD_ID"                 # コマンド設定(任意)
-  permissions = {permManageGuild}
-  ## 注文する品
-  item {.choices: {"コーヒー": "coffee", "紅茶": "tea"}.}: string
-  ## 個数
-  amount {.min: 1, max: 10.}: int = 1
-  ## 厨房へのメモ
-  note {.maxLen: 100.}: Option[string]
-  execute:
-    await ctx.reply($amount & "x " & item, ephemeral = true)
+await ctx.deferReply(ephemeral = true)
+let original = await ctx.editOriginal("done")
+let later = await ctx.followup("more details")
 ```
 
-**オプション型**: `string` / `int` / `float` / `bool` / `User` / `Member` / `Role` / `Channel` / `Mentionable` / `Attachment` に加え、利用側で定義した `enum`、整数 `range`、`distinct string` / `distinct int`。いずれも `Option[T]` かデフォルト値つき(Discord 上は省略可・Nim 上は非 Option)にできます。
+メッセージを生成・更新・取得する`respond`、`update`、`editOriginal`、
+`editFollowup`、`followup`、`original`はすべて`Future[Message]`を返します。ACKだけを行う
+`deferReply`、`deferUpdate`、modal表示、autocomplete完了は`Future[void]`
+です。
 
-**オプションプラグマ**: `desc`、`name`(送信名の上書き)、`min`/`max`、`minLen`/`maxLen`、`choices`、`channels`、`nameLoc`/`descLoc`。
+初回応答がDiscordへ届いたか判断できない通信障害では`OutcomeUnknown`へ移り、
+それ以降の変更操作を止めます。自動deferと自動retryはしません。
 
-**コマンド設定**(`key = value` 行): `guild`、`permissions`、`nsfw`、`contexts`、`integrations`、`nameLocalizations`、`descriptionLocalizations`、`cooldown`。加えて `check` ガード行(後述)。
-
-名前の小文字規則、required→optional の順序、重複、choices の上限、グループの深さ、autocomplete の対象——チェックできるものはすべてコンパイル時に検証されます。実行時の 400 ではなくコンパイルエラーになります。
-
-### Nim の型からコマンドを導出
+## component、modal、autocomplete
 
 ```nim
-type
-  Flavor = enum
-    vanilla
-    chocolate = "ダークチョコ" # Discord 表示名。wire 値は "chocolate"
-  Servings = range[1 .. 12]
-  CustomerId = distinct string
+routes.button("page:{number:int}",
+  proc(ctx: ComponentContext) {.async.} =
+    discard await ctx.update("page " & $ctx.captureInt("number")))
 
-handler.slash("dessert", "デザートを作る"):
-  ## 味
-  flavor: Flavor                  # choices を自動生成
-  ## 人数
-  servings: Servings              # min_value=1, max_value=12
-  ## 顧客
-  customer: CustomerId            # handler 内でも domain 型のまま
-  execute:
-    await ctx.reply($flavor & " x " & $servings)
+routes.modal("report:{number:int}",
+  proc(ctx: ModalContext;
+       reason {.description: "Reason".}: string;
+       score {.description: "Score".}: Option[int]) {.async.} =
+    discard await ctx.respond(reason & ":" & $score.get(0)))
+
+routes.autocomplete("search", "query",
+  proc(ctx: AutocompleteContext) {.async.} =
+    await ctx.complete([choice("Nim", "nim")]))
 ```
 
-登録 JSON と decoder が同じ型から作られるため、enum / range を変更して片方だけ古いまま残ることがありません。
+Classic action row、Components V2、modal inputは別の型です。V2へ移行した
+original messageをclassic contentへ戻す編集も型と状態の境界で拒否します。
 
-## サブコマンド
+modalを開けるのはDiscordが許可する`SlashCommandContext`と
+`ComponentContext`だけです。
 
 ```nim
-handler.slash("admin", "管理コマンド"):
-  permissions = {permManageGuild}
-  group "member", "メンバー管理":
-    sub "warn", "警告する":
-      ## 対象
-      target: User
-      execute:
-        await ctx.reply(target.username & " に警告しました", ephemeral = true)
-  sub "audit", "監査ログを見る":
-    execute:
-      await ctx.reply("...")
+await ctx.showModal(modalDialog("report:7", "Report",
+  textInput("reason", "Reason", style = ParagraphText,
+    description = "Explain what happened"),
+  textInput("score", "Score", required = false)))
 ```
 
-## オートコンプリート
+modalは現行Discord仕様の`Label` componentとして送ります。submit側の`source`で
+command起点とcomponent起点を区別し、component起点だけが元messageへの`update`と
+`deferUpdate`を使えます。
+
+## check、cooldown、短命flow
+
+checkは変更不能なrouteへ付けるasync closureです。生きたcooldown bucketは
+`AppBinding`が所有し、checkで拒否された呼び出しはcooldownを消費しません。
 
 ```nim
-handler.slash("search", "ドキュメントを検索"):
-  ## 検索語
-  query: string
-  autocomplete query:                 # オプションとの対応はコンパイル時に検証
-    await ctx.suggest(allDocs.filterIt(ctx.focusedValue in it))
-  execute:
-    await ctx.reply(query & " の検索結果")
+routes.checkSlash("admin/ban",
+  proc(ctx: SlashCommandContext): Future[CheckDecision] {.async.} =
+    if ctx.inGuild: return allow()
+    return deny("server only"))
+
+routes.cooldownSlash("admin/ban", cooldownRule(5_000, UserCooldown))
 ```
 
-同期時にオプションへ `autocomplete: true` が自動で付くので、Discord が確実にイベントを送ってきます。
-
-## コンポーネントとモーダル
-
-custom_id には型つきキャプチャ(`{name}` は string、`{name:int}` は int)を書けて、ハンドラ本文でそのまま変数になります:
+短命collectorは永続routeと分離しています。Contextから開始した場合は既定で
+呼び出したuserだけを受け付け、binding停止時には待機を解除します。
 
 ```nim
-handler.button("page:{n:int}"):
-  await ctx.update(pages[n], components = pager(n))
+if await ctx.confirm("Continue?"):
+  discard await ctx.followup("confirmed")
 
-handler.select("role_picker"):
-  await ctx.reply("選択: " & ctx.values.join(", "))
-
-handler.modal("feedback:{topic}"):
-  await ctx.reply(topic & " についてのご意見ありがとうございます: " &
-                  ctx.field("subject").get("(なし)"))
-
-handler.user("ユーザー情報"):          # コンテキストメニュー
-  await ctx.reply(ctx.target.username & " です", ephemeral = true)
-
-handler.message("引用"):
-  await ctx.reply("> " & ctx.target.content)
+let press = await ctx.waitForButton("page:{number:int}", timeoutMs = 30_000)
 ```
 
-## 型付きモーダルフォーム
+embed paginatorには`paginate`を使います。待機中collectorは同じIDへ登録された
+永続component/modal routeより先に処理されます。
 
-`modalForm` はモーダルの入力欄と submit ハンドラを1ブロックで宣言し、どのハンドラからでも開けるフォームを返します:
+## message model
+
+Classic messageは所有embed、action row、select、allowed mentions、メモリ上のuploadを
+扱います。Components V2にはtext display、section、media gallery、file、separator、
+container、action rowがあります。
 
 ```nim
-let feedback = handler.modalForm("feedback:{topic}", "フィードバック"):
-  ## 件名
-  subject {.maxLen: 100.}: string
-  ## 評価 (1-5)
-  rating {.placeholder: "5".}: int
-  ## 詳細
-  detail {.paragraph.}: Option[string]
-  check rating in 1 .. 5, "評価は 1〜5 でお願いします。"
-  submit:
-    await ctx.reply(topic & ": " & subject & " → " & $rating,
-                    ephemeral = true)
+var body = classicMessage("report")
+body.files = @[uploadedFile("report.txt", reportContents, "Daily report")]
+discard await ctx.respond(body.messageBody)
 
-# 別の場所から(キャプチャは宣言順に埋まる):
-await ctx.showModal(feedback, "bug")
+discard await ctx.respond(componentsV2(@[
+  textDisplay("# Release"),
+  container([v2ActionRow(button("Install", "install"))])
+]).messageBody)
 ```
 
-テキスト入力はワイヤ上では常に文字列なので、`int`/`float` フィールドは submit 時にパースされます——不正な値はクラッシュではなく丁寧な ephemeral 返信(`UserError`)になります。`Option[T]` は Discord 上で任意入力になり、未入力は `none`。フィールドプラグマ: `label`、`name`、`placeholder`、`value`、`minLen`/`maxLen`、`paragraph`。
+message editは置換です。省略したclassic contentとattachmentも明示的に消します。
+original messageをComponents V2へ移行した後はclassicへ戻せません。
+`launchActivity`は初回応答として実行し、所有`ActivityInstance`を返します。
 
-## await できるコンポーネント
-
-ハンドラを登録する代わりに、その場でインタラクションを待てます:
+## Context menu
 
 ```nim
-handler.slash("quiz", "クイズに答える"):
-  execute:
-    let two = ctx.scopedId("quiz:2")    # この実行に固有の custom_id
-    let four = ctx.scopedId("quiz:4")
-    await ctx.reply("2 + 2 は?", components = buttonsFor(two, four))
-    let press = await ctx.waitForButton([two, four], timeout = 30)
-    if press.isNone:
-      await ctx.reply("時間切れ!", ephemeral = true)
-    else:
-      await press.get.update("押したのは " & press.get.customId)
+routes.userCommand("Inspect user",
+  proc(ctx: UserCommandContext) {.async.} =
+    discard await ctx.respond(ctx.target.username, ephemeral = true))
+
+routes.messageCommand("Quote",
+  proc(ctx: MessageCommandContext) {.async.} =
+    discard await ctx.respond("> " & ctx.target.content))
 ```
 
-`waitForButton` / `waitForSelect` / `waitForModal` はレジストリより先にチェックされる一回きりの waiter を登録し、発火した時点で外れます。タイムアウトでは `none` が返ります。`ctx` 版はデフォルトで呼び出したユーザーだけを受け付けます(誰でも良ければ `user = ""`、`message = …` でメッセージ絞り込み)。返ってきたコンテキストへの応答は呼び出し側の仕事です。パターンも他と同じで、`waitForButton("page:{n:int}")` なら `press.get.captures` に `n` が入ります。
+## 初期化と管理scope
 
-## 出来合いのフロー
+必須のconfig objectは置かず、実行時設定を`bindGateway`へ直接渡します。
 
 ```nim
-if await ctx.confirm("本当に**全部**消しますか?"):
-  await ctx.reply("消しました。", ephemeral = true)   # 自動で followup
-
-await ctx.paginate(guideEmbeds)   # ◀ 1 / 5 ▶
+let binding = app.bindGateway("TOKEN", managedScopes = @[
+  globalScope(),
+  guildScope(GuildId("123"))
+], gatewayIntents = {Guilds, GuildMessages},
+   messageContentIntent = false)
 ```
 
-`confirm` は Yes/No ボタンを出して待ち、Yes のときだけ `true`(タイムアウトは `false`)。`paginate` は呼び出したユーザーにページ送りを提供し、タイムアウトでボタンを無効化します。どちらも waiter の上に作られていて、自前のメッセージを編集し、応答状態機械を尊重します(応答済みなら followup として送る)。自作フロー向けに `disableAll(components)` も公開しています。インタラクショントークンの寿命は15分なので、タイムアウトはそれ未満に。
+指定したscopeは空配列を含めてbulk overwriteする正本です。指定しなかったscope
+には触れません。
 
-## チェック・クールダウン・ユーザー向けエラー
+`requestStop`と`requestDetach`は待たない通知です。`stop`と`detach`は新しい
+interactionの受付を止め、実行中handlerがすべて終わるまでtimeoutなしで待ちます。
 
-```nim
-handler.slash("daily", "デイリー報酬を受け取る"):
-  check ctx.inGuild, "サーバー内でのみ使えます。"
-  cooldown = (86_400, cbUser)
-  execute:
-    if alreadyClaimed(ctx.user.id):
-      fail "今日はもう受け取りましたよね?"
-    await ctx.reply("どうぞ!")
+## エラー
+
+想定内の拒否には`UserRejectionError`または`userRejection(message)`を使います。
+既定policyはephemeral responseへ変換します。それ以外の`CatchableError`には一般的
+な文面、autocompleteには空の候補を返します。`Defect`は意図的にcatchしません。
+
+応答せずにhandlerが終了した場合は`MissingInitialResponseError`として同じpolicyへ
+渡します。silent終了は明示的な選択ではありません。
+
+## 境界
+
+gateway bindingはdimscordの`on_dispatch`から`INTERACTION_CREATE`の生JSONを
+受け取ります。公開modelはDimSlash所有の`Interaction`、`Message`、`User`と用途別
+ID型です。dimscordのinteraction型は公開contractへ漏らしません。
+
+## 開発
+
+```fish
+nimble test
+nim c -d:ssl -d:release --path:src src/dimslash.nim
 ```
-
-- `check <条件>, "メッセージ"`(または `check:` ブロック)は `execute` の前に走り、宣言済みオプションを参照できます。サブコマンドを持つコマンドに書けば全 leaf に継承されます。
-- `cooldown = 秒数` または `(秒数, cbUser|cbGuild|cbChannel|cbGlobal)` は時間内の再使用を拒否します(チェックの後に効くので、チェック失敗でクールダウンは消費されません)。`slash`/`user`/`message` に加え、`button`/`select`/`modal` ブロックでも使えます。
-- `fail "メッセージ"` はハンドラ内のどこでも `UserError` を投げられます。デフォルトのエラーフックはログではなく、そのメッセージを ephemeral で返信します。
-
-## embed / コンポーネントビルダー
-
-```nim
-let card = embed:
-  title "投票: " & motion
-  description "60秒以内にどうぞ。"
-  color 0x5865F2
-  field "賛成", "12", inline = true
-  footer "1人1票"
-
-let comps = rows:
-  row:
-    button "賛成", "vote:aye", style = bsSuccess
-    button "反対", "vote:nay", style = bsDanger
-  row:
-    select "vote:menu", placeholder = "こちらからでも":
-      option "賛成", "yes", desc = "動議に賛成"
-      option "反対", "no"
-
-await ctx.reply(embeds = @[card], components = comps)
-```
-
-名前付き引数は dimscord のビルダーへそのまま渡ります。エンティティセレクト(`userSelect`、`roleSelect`、`mentionableSelect`、`channelSelect`)にも対応し、Discord のレイアウト規則(セレクトは1行を占有)はコンパイル時に検証されます。
-
-### Components V2 layout
-
-`layout` は `MessageLayout` を作ります。専用の応答 overload には `content` と `embeds` がなく、`IS_COMPONENTS_V2` flag は dimslash が設定します。
-
-```nim
-let release = layout:
-  text "# Version 2.0"
-  section:
-    text "新しいビルドを公開しました。"
-    thumbnail "https://example.com/icon.png", desc = "アプリアイコン"
-  gallery:
-    media "https://example.com/screenshot.png", desc = "新しいエディタ"
-  separator spacing = 2
-  container accent = 0x5865F2:
-    text "操作を選んでください"
-    row:
-      button "インストール", "release:install", style = bsSuccess
-      linkButton "変更点", "https://example.com/releases/2.0"
-
-await ctx.reply(release, ephemeral = true)
-```
-
-マクロは Section、Gallery、Container、Action Row、添付 URL、色、spacing、1メッセージ40 components の上限を検査します。リテラルの誤りはコンパイル時に、実行時に決まる不正値は layout 構築時の `ValueError` になります。`reply`、`followup`、`edit`、`update` が `MessageLayout` を受け取ります。
-
-Discord は Components V2 の webhook followup へのファイル添付を拒否します。初回 `reply` で `Attachment` を渡すか、先に defer してから `reply` / `edit` でメッセージを編集してください。V2 用 overload は `content`、`embeds`、TTS を引数に持たず、送信 JSON にも含めません。
-
-`newTextInput` と `modalForm` は Text Input を Discord の `Label` で包みます。Discord は Text Input を含む modal Action Row を非推奨にしました。
-
-#### dimscord との互換境界
-
-dimslash が扱う Components V2 は、dimscord 1.8.0 が表現できる message component (Section から Container) と Label text modal です。Discord は Radio Group、Checkbox Group、Checkbox (type 21–23) も定義しています。dimscord 1.8.0 は interaction の parse 時に回答値を保持できないため、upstream の受信 model が対応した後に dimslash 側へ追加します。現行仕様は [Discord component reference](https://docs.discord.com/developers/components/reference) を参照してください。
-
-## コンテキストオブジェクト
-
-すべてのハンドラは `ctx` を受け取ります。型つきアクセサ(`ctx.user`、`ctx.member`、`ctx.guildId`、`ctx.target`、`ctx.values`、`ctx.fields` など)と、応答状態を追跡するヘルパーがあります:
-
-| ヘルパー | 動作 |
-| --- | --- |
-| `reply(...)` | 初回応答 → defer 後はプレースホルダ編集 → 以降は自動で followup |
-| `reply(layout)` | 必須 flag つきの Components V2 応答 |
-| `deferReply(ephemeral)` | 「考え中…」プレースホルダ |
-| `followup(...)` / `edit(...)` / `delete()` / `original()` | followup と @original の管理 |
-| `update(...)` / `deferUpdate()` | コンポーネントが付いたメッセージ自体を編集 |
-| `showModal(form, captures...)` / `showModal(id, title, components)` | `modalForm` または手組みのモーダルを開く |
-| `suggest(choices)` | オートコンプリート候補(string / ペア / int / float) |
-| `confirm(...)` / `paginate(...)` / `waitFor*` | 上述のフローと waiter |
-
-content 系ヘルパーは共通で `content`、`embeds`、`components`、`attachments`、`files`、`allowedMentions`、`ephemeral`、`tts` を受け付けます。
-
-ハンドラ内の例外は `handler.onError`(デフォルト: ログ + 未応答なら ephemeral なエラー返信。`nil` にすると再送出)へ、未登録のインタラクションは `handler.onUnknown` へ流れます。
-
-## 差分検知つきコマンド同期
-
-`start()` は最初の READY でこの同期を一度だけ実行します。明示的に制御したい場合は `syncCommands()` を直接呼べます。スコープ(グローバル+各ギルド)ごとに Discord の現状を取得して登録内容と比較し、変更があったときだけ PUT します。`syncCommands(force = true)` で無条件上書きです。
-
-```nim
-proc onReady(s: Shard, r: Ready) {.event(discord).} =
-  for scope in await handler.syncCommands():
-    echo scope.scope, ": ", scope.commandCount,
-      " commands, updated=", scope.updated
-```
-
-## 0.0.x からの移行
-
-0.1.0 は API を刷新した全面書き直しです:
-
-| 0.0.x | 0.1.0 |
-| --- | --- |
-| `addSlash("x", "d") do (i: Interaction, a: int): ...` | `slash("x", "d"):` + `## 説明` + `a: int` + `execute:` |
-| `handler.reply(i, "text")` | `ctx.reply("text")` |
-| `addUser` / `addMessage` | `user` / `message` ブロック(`ctx.target`) |
-| `addButton` / `addSelect` / `addModal` | `button` / `select` / `modal` ブロック+`{capture}` パターン |
-| `addAutocomplete(...)` / `addAutocompleteForOption` | slash ブロック内の `autocomplete <option>:` |
-| `selectValues(i)` / `modalValue(i, id)` | `ctx.values` / `ctx.field(id)` |
-| `registerCommands()` | `syncCommands()`(オプションメタデータ送信+差分検知) |
-| `handler.deferResponse(i)` / `followup` | `ctx.deferReply()` / `ctx.followup(...)` |
-
-なお 0.0.x はオプションのメタデータを Discord に一切送っておらず、型つき引数が Discord UI に表示されないバグがありました。0.1.0 で修正されています。
-
-## サンプル
-
-- 最小構成: [examples/basic_interactions.nim](examples/basic_interactions.nim)
-- 全オプション型: [examples/typed_slash_args.nim](examples/typed_slash_args.nim)
-- サブコマンド・パターン・モーダル: [examples/advanced_workflow.nim](examples/advanced_workflow.nim)
-- ボタン・セレクト・embed: [examples/ui_showcase.nim](examples/ui_showcase.nim)
-- フロー・waiter・モーダルフォーム・ビルダー: [examples/interactive_flows.nim](examples/interactive_flows.nim)
-
-## API ドキュメント生成
-
-```bash
-nimble docs
-```
-
-出力: [docs/dimslash.html](docs/dimslash.html)

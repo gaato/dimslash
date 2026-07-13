@@ -1,4 +1,0 @@
-nimTitle	builders	dimslash/builders.html	module src/dimslash/builders		0
-nim	embed	dimslash/builders.html#embed.m,untyped	macro embed(body: untyped): Embed		111
-nim	row	dimslash/builders.html#row.m,untyped	macro row(body: untyped): MessageComponent		234
-nim	rows	dimslash/builders.html#rows.m,untyped	macro rows(body: untyped): seq[MessageComponent]		240

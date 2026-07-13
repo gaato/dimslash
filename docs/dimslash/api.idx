@@ -1,0 +1,445 @@
+nimTitle	api	dimslash/api.html	module src/dimslash/api		0
+nim	ApplicationId	dimslash/api.html#ApplicationId	type ApplicationId		13
+nim	InteractionId	dimslash/api.html#InteractionId	type InteractionId		14
+nim	MessageId	dimslash/api.html#MessageId	type MessageId		15
+nim	UserId	dimslash/api.html#UserId	type UserId		16
+nim	GuildId	dimslash/api.html#GuildId	type GuildId		17
+nim	ChannelId	dimslash/api.html#ChannelId	type ChannelId		18
+nim	RoleId	dimslash/api.html#RoleId	type RoleId		19
+nim	AttachmentId	dimslash/api.html#AttachmentId	type AttachmentId		20
+nim	Permissions	dimslash/api.html#Permissions	type Permissions		21
+nim	DimSlashError	dimslash/api.html#DimSlashError	object DimSlashError		23
+nim	RouteDefinitionError	dimslash/api.html#RouteDefinitionError	object RouteDefinitionError		24
+nim	InvalidInteractionError	dimslash/api.html#InvalidInteractionError	object InvalidInteractionError		25
+nim	InvalidResponseStateError	dimslash/api.html#InvalidResponseStateError	object InvalidResponseStateError		26
+nim	ResponseOutcomeUnknownError	dimslash/api.html#ResponseOutcomeUnknownError	object ResponseOutcomeUnknownError		27
+nim	MissingInitialResponseError	dimslash/api.html#MissingInitialResponseError	object MissingInitialResponseError		28
+nim	UserRejectionError	dimslash/api.html#UserRejectionError	object UserRejectionError		29
+nim	User	dimslash/api.html#User	object User		32
+nim	Member	dimslash/api.html#Member	object Member		36
+nim	Role	dimslash/api.html#Role	object Role		41
+nim	ResolvedChannel	dimslash/api.html#ResolvedChannel	object ResolvedChannel		45
+nim	Attachment	dimslash/api.html#Attachment	object Attachment		49
+nim	Message	dimslash/api.html#Message	object Message		54
+nim	ActivityInstance	dimslash/api.html#ActivityInstance	object ActivityInstance		59
+nim	MentionableUser	dimslash/api.html#MentionableUser	MentionableKind.MentionableUser		62
+nim	MentionableRole	dimslash/api.html#MentionableRole	MentionableKind.MentionableRole		62
+nim	MentionableKind	dimslash/api.html#MentionableKind	enum MentionableKind		62
+nim	Mentionable	dimslash/api.html#Mentionable	object Mentionable		66
+nim	EmbedMedia	dimslash/api.html#EmbedMedia	object EmbedMedia		73
+nim	EmbedAuthor	dimslash/api.html#EmbedAuthor	object EmbedAuthor		76
+nim	EmbedFooter	dimslash/api.html#EmbedFooter	object EmbedFooter		81
+nim	EmbedField	dimslash/api.html#EmbedField	object EmbedField		85
+nim	Embed	dimslash/api.html#Embed	object Embed		90
+nim	AllowedMentions	dimslash/api.html#AllowedMentions	object AllowedMentions		102
+nim	UploadedFile	dimslash/api.html#UploadedFile	object UploadedFile		110
+nim	Primary	dimslash/api.html#Primary	ButtonStyle.Primary		115
+nim	Secondary	dimslash/api.html#Secondary	ButtonStyle.Secondary		115
+nim	Success	dimslash/api.html#Success	ButtonStyle.Success		115
+nim	Danger	dimslash/api.html#Danger	ButtonStyle.Danger		115
+nim	Link	dimslash/api.html#Link	ButtonStyle.Link		115
+nim	ButtonStyle	dimslash/api.html#ButtonStyle	enum ButtonStyle		115
+nim	Button	dimslash/api.html#Button	object Button		122
+nim	SelectOption	dimslash/api.html#SelectOption	object SelectOption		129
+nim	StringSelect	dimslash/api.html#StringSelect	SelectMenuKind.StringSelect		135
+nim	UserSelect	dimslash/api.html#UserSelect	SelectMenuKind.UserSelect		135
+nim	RoleSelect	dimslash/api.html#RoleSelect	SelectMenuKind.RoleSelect		135
+nim	MentionableSelect	dimslash/api.html#MentionableSelect	SelectMenuKind.MentionableSelect		135
+nim	ChannelSelect	dimslash/api.html#ChannelSelect	SelectMenuKind.ChannelSelect		135
+nim	SelectMenuKind	dimslash/api.html#SelectMenuKind	enum SelectMenuKind		135
+nim	SelectMenu	dimslash/api.html#SelectMenu	object SelectMenu		142
+nim	ClassicButton	dimslash/api.html#ClassicButton	ClassicComponentKind.ClassicButton		152
+nim	ClassicSelect	dimslash/api.html#ClassicSelect	ClassicComponentKind.ClassicSelect		152
+nim	ClassicComponentKind	dimslash/api.html#ClassicComponentKind	enum ClassicComponentKind		152
+nim	ClassicComponent	dimslash/api.html#ClassicComponent	object ClassicComponent		156
+nim	ClassicActionRow	dimslash/api.html#ClassicActionRow	object ClassicActionRow		163
+nim	ClassicMessage	dimslash/api.html#ClassicMessage	object ClassicMessage		166
+nim	TextDisplay	dimslash/api.html#TextDisplay	V2ComponentKind.TextDisplay		175
+nim	V2ActionRow	dimslash/api.html#V2ActionRow	V2ComponentKind.V2ActionRow		175
+nim	Section	dimslash/api.html#Section	V2ComponentKind.Section		175
+nim	MediaGallery	dimslash/api.html#MediaGallery	V2ComponentKind.MediaGallery		175
+nim	FileDisplay	dimslash/api.html#FileDisplay	V2ComponentKind.FileDisplay		175
+nim	Separator	dimslash/api.html#Separator	V2ComponentKind.Separator		175
+nim	Container	dimslash/api.html#Container	V2ComponentKind.Container		175
+nim	V2ComponentKind	dimslash/api.html#V2ComponentKind	enum V2ComponentKind		175
+nim	MediaItem	dimslash/api.html#MediaItem	object MediaItem		184
+nim	AccessoryButton	dimslash/api.html#AccessoryButton	SectionAccessoryKind.AccessoryButton		189
+nim	AccessoryThumbnail	dimslash/api.html#AccessoryThumbnail	SectionAccessoryKind.AccessoryThumbnail		189
+nim	SectionAccessoryKind	dimslash/api.html#SectionAccessoryKind	enum SectionAccessoryKind		189
+nim	SectionAccessory	dimslash/api.html#SectionAccessory	object SectionAccessory		193
+nim	V2Component	dimslash/api.html#V2Component	type V2Component		200
+nim	V2Message	dimslash/api.html#V2Message	object V2Message		221
+nim	ClassicBody	dimslash/api.html#ClassicBody	MessageBodyKind.ClassicBody		227
+nim	ComponentsV2Body	dimslash/api.html#ComponentsV2Body	MessageBodyKind.ComponentsV2Body		227
+nim	MessageBodyKind	dimslash/api.html#MessageBodyKind	enum MessageBodyKind		227
+nim	MessageBody	dimslash/api.html#MessageBody	object MessageBody		231
+nim	SlashCommand	dimslash/api.html#SlashCommand	InteractionKind.SlashCommand		238
+nim	UserCommand	dimslash/api.html#UserCommand	InteractionKind.UserCommand		238
+nim	MessageCommand	dimslash/api.html#MessageCommand	InteractionKind.MessageCommand		238
+nim	Autocomplete	dimslash/api.html#Autocomplete	InteractionKind.Autocomplete		238
+nim	MessageComponent	dimslash/api.html#MessageComponent	InteractionKind.MessageComponent		238
+nim	ModalSubmit	dimslash/api.html#ModalSubmit	InteractionKind.ModalSubmit		238
+nim	InteractionKind	dimslash/api.html#InteractionKind	enum InteractionKind		238
+nim	Interaction	dimslash/api.html#Interaction	object Interaction		246
+nim	Pending	dimslash/api.html#Pending	ResponseState.Pending		261
+nim	DeferredReply	dimslash/api.html#DeferredReply	ResponseState.DeferredReply		261
+nim	DeferredUpdate	dimslash/api.html#DeferredUpdate	ResponseState.DeferredUpdate		261
+nim	Responded	dimslash/api.html#Responded	ResponseState.Responded		261
+nim	OutcomeUnknown	dimslash/api.html#OutcomeUnknown	ResponseState.OutcomeUnknown		261
+nim	ResponseState	dimslash/api.html#ResponseState	enum ResponseState		261
+nim	ResponseRejectedError	dimslash/api.html#ResponseRejectedError	object ResponseRejectedError		276
+nim	InteractionContext	dimslash/api.html#InteractionContext	type InteractionContext		309
+nim	SlashCommandContext	dimslash/api.html#SlashCommandContext	type SlashCommandContext		314
+nim	UserCommandContext	dimslash/api.html#UserCommandContext	type UserCommandContext		320
+nim	MessageCommandContext	dimslash/api.html#MessageCommandContext	type MessageCommandContext		324
+nim	ComponentContext	dimslash/api.html#ComponentContext	type ComponentContext		327
+nim	CommandModalSource	dimslash/api.html#CommandModalSource	ModalSourceKind.CommandModalSource		333
+nim	ComponentModalSource	dimslash/api.html#ComponentModalSource	ModalSourceKind.ComponentModalSource		333
+nim	ModalSourceKind	dimslash/api.html#ModalSourceKind	enum ModalSourceKind		333
+nim	ModalSource	dimslash/api.html#ModalSource	object ModalSource		337
+nim	ModalContext	dimslash/api.html#ModalContext	type ModalContext		341
+nim	ShortText	dimslash/api.html#ShortText	TextInputStyle.ShortText		348
+nim	ParagraphText	dimslash/api.html#ParagraphText	TextInputStyle.ParagraphText		348
+nim	TextInputStyle	dimslash/api.html#TextInputStyle	enum TextInputStyle		348
+nim	ModalInput	dimslash/api.html#ModalInput	object ModalInput		352
+nim	Modal	dimslash/api.html#Modal	object Modal		363
+nim	Choice	dimslash/api.html#Choice	object Choice		368
+nim	AutocompleteContext	dimslash/api.html#AutocompleteContext	type AutocompleteContext		372
+nim	Reraise	dimslash/api.html#Reraise	ErrorActionKind.Reraise		379
+nim	Ignore	dimslash/api.html#Ignore	ErrorActionKind.Ignore		379
+nim	RespondEphemeral	dimslash/api.html#RespondEphemeral	ErrorActionKind.RespondEphemeral		379
+nim	CompleteAutocomplete	dimslash/api.html#CompleteAutocomplete	ErrorActionKind.CompleteAutocomplete		379
+nim	ErrorActionKind	dimslash/api.html#ErrorActionKind	enum ErrorActionKind		379
+nim	ErrorAction	dimslash/api.html#ErrorAction	object ErrorAction		385
+nim	ErrorHandler	dimslash/api.html#ErrorHandler	type ErrorHandler		392
+nim	CheckPassed	dimslash/api.html#CheckPassed	CheckDecisionKind.CheckPassed		395
+nim	CheckRejected	dimslash/api.html#CheckRejected	CheckDecisionKind.CheckRejected		395
+nim	CheckDecisionKind	dimslash/api.html#CheckDecisionKind	enum CheckDecisionKind		395
+nim	CheckDecision	dimslash/api.html#CheckDecision	object CheckDecision		399
+nim	SlashCheck	dimslash/api.html#SlashCheck	type SlashCheck		407
+nim	UserCommandCheck	dimslash/api.html#UserCommandCheck	type UserCommandCheck		408
+nim	MessageCommandCheck	dimslash/api.html#MessageCommandCheck	type MessageCommandCheck		409
+nim	ComponentCheck	dimslash/api.html#ComponentCheck	type ComponentCheck		411
+nim	ModalCheck	dimslash/api.html#ModalCheck	type ModalCheck		412
+nim	GlobalCooldown	dimslash/api.html#GlobalCooldown	CooldownScope.GlobalCooldown		414
+nim	UserCooldown	dimslash/api.html#UserCooldown	CooldownScope.UserCooldown		414
+nim	GuildCooldown	dimslash/api.html#GuildCooldown	CooldownScope.GuildCooldown		414
+nim	CooldownScope	dimslash/api.html#CooldownScope	enum CooldownScope		414
+nim	CooldownRule	dimslash/api.html#CooldownRule	object CooldownRule		419
+nim	StringOption	dimslash/api.html#StringOption	OptionKind.StringOption		423
+nim	IntegerOption	dimslash/api.html#IntegerOption	OptionKind.IntegerOption		423
+nim	BooleanOption	dimslash/api.html#BooleanOption	OptionKind.BooleanOption		423
+nim	UserOption	dimslash/api.html#UserOption	OptionKind.UserOption		423
+nim	ChannelOption	dimslash/api.html#ChannelOption	OptionKind.ChannelOption		423
+nim	RoleOption	dimslash/api.html#RoleOption	OptionKind.RoleOption		423
+nim	MentionableOption	dimslash/api.html#MentionableOption	OptionKind.MentionableOption		423
+nim	NumberOption	dimslash/api.html#NumberOption	OptionKind.NumberOption		423
+nim	AttachmentOption	dimslash/api.html#AttachmentOption	OptionKind.AttachmentOption		423
+nim	OptionKind	dimslash/api.html#OptionKind	enum OptionKind		423
+nim	GuildText	dimslash/api.html#GuildText	ChannelKind.GuildText		434
+nim	DirectMessage	dimslash/api.html#DirectMessage	ChannelKind.DirectMessage		434
+nim	GuildVoice	dimslash/api.html#GuildVoice	ChannelKind.GuildVoice		434
+nim	GroupDirectMessage	dimslash/api.html#GroupDirectMessage	ChannelKind.GroupDirectMessage		434
+nim	GuildCategory	dimslash/api.html#GuildCategory	ChannelKind.GuildCategory		434
+nim	GuildAnnouncement	dimslash/api.html#GuildAnnouncement	ChannelKind.GuildAnnouncement		434
+nim	AnnouncementThread	dimslash/api.html#AnnouncementThread	ChannelKind.AnnouncementThread		434
+nim	PublicThread	dimslash/api.html#PublicThread	ChannelKind.PublicThread		434
+nim	PrivateThread	dimslash/api.html#PrivateThread	ChannelKind.PrivateThread		434
+nim	GuildStageVoice	dimslash/api.html#GuildStageVoice	ChannelKind.GuildStageVoice		434
+nim	GuildDirectory	dimslash/api.html#GuildDirectory	ChannelKind.GuildDirectory		434
+nim	GuildForum	dimslash/api.html#GuildForum	ChannelKind.GuildForum		434
+nim	GuildMedia	dimslash/api.html#GuildMedia	ChannelKind.GuildMedia		434
+nim	ChannelKind	dimslash/api.html#ChannelKind	enum ChannelKind		434
+nim	GuildContext	dimslash/api.html#GuildContext	InteractionContextKind.GuildContext		449
+nim	BotDirectMessageContext	dimslash/api.html#BotDirectMessageContext	InteractionContextKind.BotDirectMessageContext		449
+nim	PrivateChannelContext	dimslash/api.html#PrivateChannelContext	InteractionContextKind.PrivateChannelContext		449
+nim	InteractionContextKind	dimslash/api.html#InteractionContextKind	enum InteractionContextKind		449
+nim	GuildInstall	dimslash/api.html#GuildInstall	IntegrationKind.GuildInstall		454
+nim	UserInstall	dimslash/api.html#UserInstall	IntegrationKind.UserInstall		454
+nim	IntegrationKind	dimslash/api.html#IntegrationKind	enum IntegrationKind		454
+nim	Guilds	dimslash/api.html#Guilds	GatewayIntent.Guilds		458
+nim	GuildMembers	dimslash/api.html#GuildMembers	GatewayIntent.GuildMembers		458
+nim	GuildModeration	dimslash/api.html#GuildModeration	GatewayIntent.GuildModeration		458
+nim	GuildEmojisAndStickers	dimslash/api.html#GuildEmojisAndStickers	GatewayIntent.GuildEmojisAndStickers		458
+nim	GuildIntegrations	dimslash/api.html#GuildIntegrations	GatewayIntent.GuildIntegrations		458
+nim	GuildWebhooks	dimslash/api.html#GuildWebhooks	GatewayIntent.GuildWebhooks		458
+nim	GuildInvites	dimslash/api.html#GuildInvites	GatewayIntent.GuildInvites		458
+nim	GuildVoiceStates	dimslash/api.html#GuildVoiceStates	GatewayIntent.GuildVoiceStates		458
+nim	GuildPresences	dimslash/api.html#GuildPresences	GatewayIntent.GuildPresences		458
+nim	GuildMessages	dimslash/api.html#GuildMessages	GatewayIntent.GuildMessages		458
+nim	GuildMessageReactions	dimslash/api.html#GuildMessageReactions	GatewayIntent.GuildMessageReactions		458
+nim	GuildMessageTyping	dimslash/api.html#GuildMessageTyping	GatewayIntent.GuildMessageTyping		458
+nim	DirectMessages	dimslash/api.html#DirectMessages	GatewayIntent.DirectMessages		458
+nim	DirectMessageReactions	dimslash/api.html#DirectMessageReactions	GatewayIntent.DirectMessageReactions		458
+nim	DirectMessageTyping	dimslash/api.html#DirectMessageTyping	GatewayIntent.DirectMessageTyping		458
+nim	MessageContent	dimslash/api.html#MessageContent	GatewayIntent.MessageContent		458
+nim	GuildScheduledEvents	dimslash/api.html#GuildScheduledEvents	GatewayIntent.GuildScheduledEvents		458
+nim	AutoModerationConfiguration	dimslash/api.html#AutoModerationConfiguration	GatewayIntent.AutoModerationConfiguration		458
+nim	AutoModerationExecution	dimslash/api.html#AutoModerationExecution	GatewayIntent.AutoModerationExecution		458
+nim	GuildMessagePolls	dimslash/api.html#GuildMessagePolls	GatewayIntent.GuildMessagePolls		458
+nim	DirectMessagePolls	dimslash/api.html#DirectMessagePolls	GatewayIntent.DirectMessagePolls		458
+nim	GatewayIntent	dimslash/api.html#GatewayIntent	enum GatewayIntent		458
+nim	CommandOption	dimslash/api.html#CommandOption	object CommandOption		489
+nim	ButtonInteraction	dimslash/api.html#ButtonInteraction	ComponentInteractionKind.ButtonInteraction		557
+nim	SelectInteraction	dimslash/api.html#SelectInteraction	ComponentInteractionKind.SelectInteraction		557
+nim	ComponentInteractionKind	dimslash/api.html#ComponentInteractionKind	enum ComponentInteractionKind		557
+nim	Routes	dimslash/api.html#Routes	object Routes		573
+nim	RouteFactory	dimslash/api.html#RouteFactory	type RouteFactory		580
+nim	DiscordApp	dimslash/api.html#DiscordApp	object DiscordApp		582
+nim	AppBinding	dimslash/api.html#AppBinding	type AppBinding		586
+nim	GlobalCommands	dimslash/api.html#GlobalCommands	CommandScopeKind.GlobalCommands		610
+nim	GuildCommands	dimslash/api.html#GuildCommands	CommandScopeKind.GuildCommands		610
+nim	CommandScopeKind	dimslash/api.html#CommandScopeKind	enum CommandScopeKind		610
+nim	CommandScope	dimslash/api.html#CommandScope	object CommandScope		614
+nim	SyncResult	dimslash/api.html#SyncResult	object SyncResult		621
+nim	description	dimslash/api.html#description.t,staticstring	template description(value: static string)		627
+nim	desc	dimslash/api.html#desc.t,staticstring	template desc(value: static string)		628
+nim	min	dimslash/api.html#min.t,untyped	template min(value: untyped)		629
+nim	max	dimslash/api.html#max.t,untyped	template max(value: untyped)		630
+nim	minLength	dimslash/api.html#minLength.t,staticint	template minLength(value: static int)		631
+nim	maxLength	dimslash/api.html#maxLength.t,staticint	template maxLength(value: static int)		632
+nim	minLen	dimslash/api.html#minLen.t,staticint	template minLen(value: static int)		633
+nim	maxLen	dimslash/api.html#maxLen.t,staticint	template maxLen(value: static int)		634
+nim	name	dimslash/api.html#name.t,staticstring	template name(value: static string)		635
+nim	choices	dimslash/api.html#choices.t,untyped	template choices(value: untyped)		636
+nim	channels	dimslash/api.html#channels.t,untyped	template channels(value: untyped)		637
+nim	nameLoc	dimslash/api.html#nameLoc.t,untyped	template nameLoc(value: untyped)		638
+nim	descLoc	dimslash/api.html#descLoc.t,untyped	template descLoc(value: untyped)		639
+nim	`$`	dimslash/api.html#$	proc `$`(value: ApplicationId | InteractionId | MessageId | UserId | GuildId |\n    ChannelId |\n    RoleId |\n    AttachmentId): string		641
+nim	toUint64	dimslash/api.html#toUint64,Permissions	proc toUint64(value: Permissions): uint64		645
+nim	containsAll	dimslash/api.html#containsAll,Permissions,Permissions	proc containsAll(value, required: Permissions): bool		647
+nim	`==`	dimslash/api.html#==,ApplicationId,ApplicationId	proc `==`(left, right: ApplicationId): bool		650
+nim	`==`	dimslash/api.html#==,InteractionId,InteractionId	proc `==`(left, right: InteractionId): bool		651
+nim	`==`	dimslash/api.html#==,MessageId,MessageId	proc `==`(left, right: MessageId): bool		652
+nim	`==`	dimslash/api.html#==,UserId,UserId	proc `==`(left, right: UserId): bool		653
+nim	`==`	dimslash/api.html#==,GuildId,GuildId	proc `==`(left, right: GuildId): bool		654
+nim	`==`	dimslash/api.html#==,ChannelId,ChannelId	proc `==`(left, right: ChannelId): bool		655
+nim	`==`	dimslash/api.html#==,RoleId,RoleId	proc `==`(left, right: RoleId): bool		656
+nim	`==`	dimslash/api.html#==,AttachmentId,AttachmentId	proc `==`(left, right: AttachmentId): bool		657
+nim	hash	dimslash/api.html#hash,ApplicationId	proc hash(value: ApplicationId): Hash		658
+nim	hash	dimslash/api.html#hash,InteractionId	proc hash(value: InteractionId): Hash		659
+nim	hash	dimslash/api.html#hash,MessageId	proc hash(value: MessageId): Hash		660
+nim	hash	dimslash/api.html#hash,UserId	proc hash(value: UserId): Hash		661
+nim	hash	dimslash/api.html#hash,GuildId	proc hash(value: GuildId): Hash		662
+nim	hash	dimslash/api.html#hash,ChannelId	proc hash(value: ChannelId): Hash		663
+nim	hash	dimslash/api.html#hash,RoleId	proc hash(value: RoleId): Hash		664
+nim	hash	dimslash/api.html#hash,AttachmentId	proc hash(value: AttachmentId): Hash		665
+nim	id	dimslash/api.html#id,User	proc id(value: User): UserId		667
+nim	username	dimslash/api.html#username,User	proc username(value: User): string		668
+nim	user	dimslash/api.html#user,Member	proc user(value: Member): User		669
+nim	nickname	dimslash/api.html#nickname,Member	proc nickname(value: Member): Option[string]		670
+nim	permissions	dimslash/api.html#permissions,Member	proc permissions(value: Member): Option[Permissions]		671
+nim	id	dimslash/api.html#id,Role	proc id(value: Role): RoleId		672
+nim	name	dimslash/api.html#name,Role	proc name(value: Role): string		673
+nim	id	dimslash/api.html#id,ResolvedChannel	proc id(value: ResolvedChannel): ChannelId		674
+nim	name	dimslash/api.html#name,ResolvedChannel	proc name(value: ResolvedChannel): Option[string]		675
+nim	id	dimslash/api.html#id,Attachment	proc id(value: Attachment): AttachmentId		676
+nim	filename	dimslash/api.html#filename,Attachment	proc filename(value: Attachment): string		677
+nim	url	dimslash/api.html#url,Attachment	proc url(value: Attachment): string		678
+nim	id	dimslash/api.html#id,Message	proc id(value: Message): MessageId		679
+nim	content	dimslash/api.html#content,Message	proc content(value: Message): string		680
+nim	author	dimslash/api.html#author,Message	proc author(value: Message): Option[User]		681
+nim	id	dimslash/api.html#id,ActivityInstance	proc id(value: ActivityInstance): string		682
+nim	id	dimslash/api.html#id,Interaction	proc id(value: Interaction): InteractionId		684
+nim	applicationId	dimslash/api.html#applicationId,Interaction	proc applicationId(value: Interaction): ApplicationId		685
+nim	kind	dimslash/api.html#kind,Interaction	proc kind(value: Interaction): InteractionKind		687
+nim	guildId	dimslash/api.html#guildId,Interaction	proc guildId(value: Interaction): Option[GuildId]		688
+nim	channelId	dimslash/api.html#channelId,Interaction	proc channelId(value: Interaction): Option[ChannelId]		689
+nim	user	dimslash/api.html#user,Interaction	proc user(value: Interaction): Option[User]		690
+nim	member	dimslash/api.html#member,Interaction	proc member(value: Interaction): Option[Member]		691
+nim	message	dimslash/api.html#message,Interaction	proc message(value: Interaction): Option[Message]		692
+nim	locale	dimslash/api.html#locale,Interaction	proc locale(value: Interaction): Option[string]		693
+nim	guildLocale	dimslash/api.html#guildLocale,Interaction	proc guildLocale(value: Interaction): Option[string]		694
+nim	appPermissions	dimslash/api.html#appPermissions,Interaction	proc appPermissions(value: Interaction): Permissions		695
+nim	raw	dimslash/api.html#raw,Interaction	proc raw(value: Interaction): JsonNode		697
+nim	interaction	dimslash/api.html#interaction,InteractionContext	proc interaction(ctx: InteractionContext): Interaction		699
+nim	responseState	dimslash/api.html#responseState,InteractionContext	proc responseState(ctx: InteractionContext): ResponseState		701
+nim	commandName	dimslash/api.html#commandName,SlashCommandContext	proc commandName(ctx: SlashCommandContext): string		703
+nim	commandPath	dimslash/api.html#commandPath,SlashCommandContext	proc commandPath(ctx: SlashCommandContext): seq[string]		704
+nim	target	dimslash/api.html#target,UserCommandContext	proc target(ctx: UserCommandContext): User		706
+nim	targetMember	dimslash/api.html#targetMember,UserCommandContext	proc targetMember(ctx: UserCommandContext): Option[Member]		707
+nim	target	dimslash/api.html#target,MessageCommandContext	proc target(ctx: MessageCommandContext): Message		709
+nim	customId	dimslash/api.html#customId	proc customId(ctx: ComponentContext | ModalContext): string		710
+nim	values	dimslash/api.html#values,ComponentContext	proc values(ctx: ComponentContext): seq[string]		712
+nim	fields	dimslash/api.html#fields,ModalContext	proc fields(ctx: ModalContext): Table[string, string]		714
+nim	field	dimslash/api.html#field,ModalContext,string	proc field(ctx: ModalContext; name: string): Option[string]		716
+nim	source	dimslash/api.html#source,ModalContext	proc source(ctx: ModalContext): Option[ModalSource]		719
+nim	kind	dimslash/api.html#kind,ModalSource	proc kind(source: ModalSource): ModalSourceKind		720
+nim	message	dimslash/api.html#message,ModalSource	proc message(source: ModalSource): Option[Message]		721
+nim	focusedName	dimslash/api.html#focusedName,AutocompleteContext	proc focusedName(ctx: AutocompleteContext): string		722
+nim	focusedValue	dimslash/api.html#focusedValue,AutocompleteContext	proc focusedValue(ctx: AutocompleteContext): string		723
+nim	user	dimslash/api.html#user,InteractionContext	proc user(ctx: InteractionContext): User		725
+nim	member	dimslash/api.html#member,InteractionContext	proc member(ctx: InteractionContext): Option[Member]		731
+nim	guildId	dimslash/api.html#guildId,InteractionContext	proc guildId(ctx: InteractionContext): Option[GuildId]		734
+nim	channelId	dimslash/api.html#channelId,InteractionContext	proc channelId(ctx: InteractionContext): Option[ChannelId]		737
+nim	locale	dimslash/api.html#locale,InteractionContext	proc locale(ctx: InteractionContext): Option[string]		740
+nim	guildLocale	dimslash/api.html#guildLocale,InteractionContext	proc guildLocale(ctx: InteractionContext): Option[string]		743
+nim	appPermissions	dimslash/api.html#appPermissions,InteractionContext	proc appPermissions(ctx: InteractionContext): Permissions		746
+nim	inGuild	dimslash/api.html#inGuild,InteractionContext	proc inGuild(ctx: InteractionContext): bool		749
+nim	embed	dimslash/api.html#embed,string,string	proc embed(title = ""; description = ""; color = none(int)): Embed		752
+nim	embedMedia	dimslash/api.html#embedMedia,string	proc embedMedia(url: string): EmbedMedia		762
+nim	embedAuthor	dimslash/api.html#embedAuthor,string,string,string	proc embedAuthor(name: string; url = ""; iconUrl = ""): EmbedAuthor		766
+nim	embedFooter	dimslash/api.html#embedFooter,string,string	proc embedFooter(text: string; iconUrl = ""): EmbedFooter		772
+nim	embedField	dimslash/api.html#embedField,string,string	proc embedField(name, value: string; inline = false): EmbedField		777
+nim	add	dimslash/api.html#add,Embed,sinkEmbedField	proc add(value: var Embed; field: sink EmbedField)		783
+nim	classicMessage	dimslash/api.html#classicMessage,string	proc classicMessage(content = ""; ephemeral = false): ClassicMessage		788
+nim	componentsV2	dimslash/api.html#componentsV2,seq[V2Component]	proc componentsV2(components: seq[V2Component]; ephemeral = false): V2Message		913
+nim	messageBody	dimslash/api.html#messageBody,ClassicMessage	proc messageBody(value: ClassicMessage): MessageBody		930
+nim	messageBody	dimslash/api.html#messageBody,V2Message	proc messageBody(value: V2Message): MessageBody		955
+nim	button	dimslash/api.html#button,string,string	proc button(label, customId: string; style = Primary; disabled = false): Button		961
+nim	linkButton	dimslash/api.html#linkButton,string,string	proc linkButton(label, url: string; disabled = false): Button		974
+nim	actionRow	dimslash/api.html#actionRow,varargs[Button]	proc actionRow(buttons: varargs[Button]): ClassicActionRow		983
+nim	selectOption	dimslash/api.html#selectOption,string,string,string	proc selectOption(label, value: string; description = ""; default = false): SelectOption		990
+nim	selectMenu	dimslash/api.html#selectMenu,string,openArray[SelectOption],string,int,int	proc selectMenu(customId: string; options: openArray[SelectOption]; placeholder = "";\n           minValues = 1; maxValues = 1; disabled = false): SelectMenu		1001
+nim	userSelect	dimslash/api.html#userSelect,string,string,int,int	proc userSelect(customId: string; placeholder = ""; minValues = 1; maxValues = 1;\n           disabled = false): SelectMenu		1042
+nim	roleSelect	dimslash/api.html#roleSelect,string,string,int,int	proc roleSelect(customId: string; placeholder = ""; minValues = 1; maxValues = 1;\n           disabled = false): SelectMenu		1047
+nim	mentionableSelect	dimslash/api.html#mentionableSelect,string,string,int,int	proc mentionableSelect(customId: string; placeholder = ""; minValues = 1;\n                  maxValues = 1; disabled = false): SelectMenu		1052
+nim	channelSelect	dimslash/api.html#channelSelect,string,set[ChannelKind],string,int,int	proc channelSelect(customId: string; channelKinds: set[ChannelKind] = {};\n              placeholder = ""; minValues = 1; maxValues = 1; disabled = false): SelectMenu		1057
+nim	actionRow	dimslash/api.html#actionRow,SelectMenu	proc actionRow(menu: SelectMenu): ClassicActionRow		1064
+nim	textDisplay	dimslash/api.html#textDisplay,string	proc textDisplay(content: string): V2Component		1069
+nim	v2ActionRow	dimslash/api.html#v2ActionRow,varargs[Button]	proc v2ActionRow(buttons: varargs[Button]): V2Component		1072
+nim	v2ActionRow	dimslash/api.html#v2ActionRow,SelectMenu	proc v2ActionRow(menu: SelectMenu): V2Component		1080
+nim	mediaItem	dimslash/api.html#mediaItem,string,string	proc mediaItem(url: string; description = ""; spoiler = false): MediaItem		1085
+nim	buttonAccessory	dimslash/api.html#buttonAccessory,Button	proc buttonAccessory(button: Button): SectionAccessory		1090
+nim	thumbnailAccessory	dimslash/api.html#thumbnailAccessory,string,string	proc thumbnailAccessory(url: string; description = ""; spoiler = false): SectionAccessory		1096
+nim	section	dimslash/api.html#section,openArray[string],SectionAccessory	proc section(texts: openArray[string]; accessory: SectionAccessory): V2Component		1101
+nim	mediaGallery	dimslash/api.html#mediaGallery,openArray[MediaItem]	proc mediaGallery(items: openArray[MediaItem]): V2Component		1109
+nim	fileDisplay	dimslash/api.html#fileDisplay,string	proc fileDisplay(attachmentUrl: string; spoiler = false): V2Component		1115
+nim	separator	dimslash/api.html#separator,range[]	proc separator(divider = true; spacing: range[1 .. 2] = 1): V2Component		1123
+nim	container	dimslash/api.html#container,openArray[V2Component]	proc container(components: openArray[V2Component]; accentColor = none(int);\n          spoiler = false): V2Component		1126
+nim	userRejection	dimslash/api.html#userRejection,string	proc userRejection(message: string): ref UserRejectionError		1137
+nim	userMessage	dimslash/api.html#userMessage,ref.UserRejectionError	proc userMessage(error: ref UserRejectionError): string		1141
+nim	allow	dimslash/api.html#allow	proc allow(): CheckDecision		1145
+nim	deny	dimslash/api.html#deny,string	proc deny(message: string): CheckDecision		1147
+nim	cooldownRule	dimslash/api.html#cooldownRule,int64	proc cooldownRule(durationMs: int64; scope = UserCooldown): CooldownRule		1152
+nim	noMentions	dimslash/api.html#noMentions	proc noMentions(): AllowedMentions		1159
+nim	uploadedFile	dimslash/api.html#uploadedFile,string,string,string	proc uploadedFile(filename, content: string; description = ""): UploadedFile		1161
+nim	textInput	dimslash/api.html#textInput,string,string,string	proc textInput(customId, label: string; style = ShortText; description = "";\n          required = true; minLength = none(int); maxLength = none(int);\n          value = none(string); placeholder = none(string)): ModalInput		1169
+nim	modalDialog	dimslash/api.html#modalDialog,string,string,varargs[ModalInput]	proc modalDialog(customId, title: string; inputs: varargs[ModalInput]): Modal		1179
+nim	choice	dimslash/api.html#choice,string,string	proc choice(name, value: string): Choice		1209
+nim	choice	dimslash/api.html#choice,string,int	proc choice(name: string; value: int): Choice		1212
+nim	choice	dimslash/api.html#choice,string,float	proc choice(name: string; value: float): Choice		1215
+nim	respond	dimslash/api.html#respond,InteractionContext,MessageBody	proc respond(ctx: InteractionContext; body: MessageBody): Future[Message]		1440
+nim	respond	dimslash/api.html#respond,InteractionContext,string	proc respond(ctx: InteractionContext; content: string; ephemeral = false): Future[\n    Message]		1448
+nim	deferReply	dimslash/api.html#deferReply,InteractionContext	proc deferReply(ctx: InteractionContext; ephemeral = false): Future[void]		1453
+nim	update	dimslash/api.html#update,ComponentContext,MessageBody	proc update(ctx: ComponentContext; body: MessageBody): Future[Message]		1460
+nim	update	dimslash/api.html#update,ComponentContext,string	proc update(ctx: ComponentContext; content: string): Future[Message]		1468
+nim	deferUpdate	dimslash/api.html#deferUpdate,ComponentContext	proc deferUpdate(ctx: ComponentContext): Future[void]		1471
+nim	update	dimslash/api.html#update,ModalContext,MessageBody	proc update(ctx: ModalContext; body: MessageBody): Future[Message]		1483
+nim	update	dimslash/api.html#update,ModalContext,string	proc update(ctx: ModalContext; content: string): Future[Message]		1492
+nim	deferUpdate	dimslash/api.html#deferUpdate,ModalContext	proc deferUpdate(ctx: ModalContext): Future[void]		1495
+nim	editOriginal	dimslash/api.html#editOriginal,InteractionContext,MessageBody	proc editOriginal(ctx: InteractionContext; body: MessageBody): Future[Message]		1502
+nim	showModal	dimslash/api.html#showModal,,Modal	proc showModal(ctx: SlashCommandContext | ComponentContext; modal: Modal): Future[\n    void]		1537
+nim	launchActivity	dimslash/api.html#launchActivity	proc launchActivity(ctx: SlashCommandContext | UserCommandContext |\n    MessageCommandContext |\n    ComponentContext |\n    ModalContext): Future[ActivityInstance]		1543
+nim	complete	dimslash/api.html#complete,AutocompleteContext,openArray[Choice]	proc complete(ctx: AutocompleteContext; choices: openArray[Choice]): Future[void]		1562
+nim	editOriginal	dimslash/api.html#editOriginal,InteractionContext,string	proc editOriginal(ctx: InteractionContext; content: string): Future[Message]		1575
+nim	followup	dimslash/api.html#followup,InteractionContext,MessageBody	proc followup(ctx: InteractionContext; body: MessageBody): Future[Message]		1580
+nim	followup	dimslash/api.html#followup,InteractionContext,string	proc followup(ctx: InteractionContext; content: string; ephemeral = false): Future[\n    Message]		1586
+nim	editFollowup	dimslash/api.html#editFollowup,InteractionContext,MessageId,MessageBody	proc editFollowup(ctx: InteractionContext; messageId: MessageId; body: MessageBody): Future[\n    Message]		1591
+nim	editFollowup	dimslash/api.html#editFollowup,InteractionContext,MessageId,string	proc editFollowup(ctx: InteractionContext; messageId: MessageId; content: string): Future[\n    Message]		1601
+nim	original	dimslash/api.html#original,InteractionContext	proc original(ctx: InteractionContext): Future[Message]		1605
+nim	deleteOriginal	dimslash/api.html#deleteOriginal,InteractionContext	proc deleteOriginal(ctx: InteractionContext): Future[void]		1609
+nim	deleteFollowup	dimslash/api.html#deleteFollowup,InteractionContext,MessageId	proc deleteFollowup(ctx: InteractionContext; messageId: MessageId): Future[void]		1617
+nim	selectedUsers	dimslash/api.html#selectedUsers,ComponentContext	proc selectedUsers(ctx: ComponentContext): seq[User]		1642
+nim	selectedMembers	dimslash/api.html#selectedMembers,ComponentContext	proc selectedMembers(ctx: ComponentContext): seq[Member]		1650
+nim	selectedRoles	dimslash/api.html#selectedRoles,ComponentContext	proc selectedRoles(ctx: ComponentContext): seq[Role]		1659
+nim	selectedChannels	dimslash/api.html#selectedChannels,ComponentContext	proc selectedChannels(ctx: ComponentContext): seq[ResolvedChannel]		1667
+nim	selectedMentionables	dimslash/api.html#selectedMentionables,ComponentContext	proc selectedMentionables(ctx: ComponentContext): seq[Mentionable]		1675
+nim	requiredOption	dimslash/api.html#requiredOption,SlashCommandContext,string	proc requiredOption[T](ctx: SlashCommandContext; name: string): T		1703
+nim	optionalOption	dimslash/api.html#optionalOption,SlashCommandContext,string	proc optionalOption[T](ctx: SlashCommandContext; name: string): Option[T]		1765
+nim	capture	dimslash/api.html#capture,,string	proc capture(ctx: ComponentContext | ModalContext; name: string): string		1771
+nim	captureInt	dimslash/api.html#captureInt,,string	proc captureInt(ctx: ComponentContext | ModalContext; name: string): int		1776
+nim	requiredModalField	dimslash/api.html#requiredModalField,ModalContext,string,string	proc requiredModalField[T](ctx: ModalContext; name: string; label = ""): T		1783
+nim	optionalModalField	dimslash/api.html#optionalModalField,ModalContext,string,string	proc optionalModalField[T](ctx: ModalContext; name: string; label = ""): Option[T]		1805
+nim	invokerId	dimslash/api.html#invokerId,Interaction	proc invokerId(interaction: Interaction): Option[UserId]		1871
+nim	invokerId	dimslash/api.html#invokerId,InteractionContext	proc invokerId(ctx: InteractionContext): Option[UserId]		1877
+nim	scopedId	dimslash/api.html#scopedId,InteractionContext,string	proc scopedId(ctx: InteractionContext; tag: string): string		1880
+nim	waitForComponent	dimslash/api.html#waitForComponent,AppBinding,set[ComponentInteractionKind],openArray[string],int	proc waitForComponent(binding: AppBinding; kinds: set[ComponentInteractionKind];\n                 patterns: openArray[string]; timeoutMs = 60000;\n                 userId = none(UserId); messageId = none(MessageId)): Future[\n    Option[ComponentContext]]		1907
+nim	waitForButton	dimslash/api.html#waitForButton,AppBinding,openArray[string],int	proc waitForButton(binding: AppBinding; patterns: openArray[string];\n              timeoutMs = 60000; userId = none(UserId);\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1918
+nim	waitForButton	dimslash/api.html#waitForButton,AppBinding,string,int	proc waitForButton(binding: AppBinding; pattern: string; timeoutMs = 60000;\n              userId = none(UserId); messageId = none(MessageId)): Future[\n    Option[ComponentContext]]		1924
+nim	waitForSelect	dimslash/api.html#waitForSelect,AppBinding,openArray[string],int	proc waitForSelect(binding: AppBinding; patterns: openArray[string];\n              timeoutMs = 60000; userId = none(UserId);\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1929
+nim	waitForSelect	dimslash/api.html#waitForSelect,AppBinding,string,int	proc waitForSelect(binding: AppBinding; pattern: string; timeoutMs = 60000;\n              userId = none(UserId); messageId = none(MessageId)): Future[\n    Option[ComponentContext]]		1935
+nim	waitForComponent	dimslash/api.html#waitForComponent,InteractionContext,set[ComponentInteractionKind],openArray[string],int,Option[UserId]	proc waitForComponent(ctx: InteractionContext; kinds: set[ComponentInteractionKind];\n                 patterns: openArray[string]; timeoutMs = 60000;\n                 userId: Option[UserId] = ctx.invokerId;\n                 messageId = none(MessageId)): Future[Option[ComponentContext]]		1940
+nim	waitForButton	dimslash/api.html#waitForButton,InteractionContext,openArray[string],int,Option[UserId]	proc waitForButton(ctx: InteractionContext; patterns: openArray[string];\n              timeoutMs = 60000; userId: Option[UserId] = ctx.invokerId;\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1950
+nim	waitForButton	dimslash/api.html#waitForButton,InteractionContext,string,int,Option[UserId]	proc waitForButton(ctx: InteractionContext; pattern: string; timeoutMs = 60000;\n              userId: Option[UserId] = ctx.invokerId;\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1956
+nim	waitForSelect	dimslash/api.html#waitForSelect,InteractionContext,openArray[string],int,Option[UserId]	proc waitForSelect(ctx: InteractionContext; patterns: openArray[string];\n              timeoutMs = 60000; userId: Option[UserId] = ctx.invokerId;\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1961
+nim	waitForSelect	dimslash/api.html#waitForSelect,InteractionContext,string,int,Option[UserId]	proc waitForSelect(ctx: InteractionContext; pattern: string; timeoutMs = 60000;\n              userId: Option[UserId] = ctx.invokerId;\n              messageId = none(MessageId)): Future[Option[ComponentContext]]		1967
+nim	waitForModal	dimslash/api.html#waitForModal,AppBinding,openArray[string],int	proc waitForModal(binding: AppBinding; patterns: openArray[string];\n             timeoutMs = 300000; userId = none(UserId)): Future[\n    Option[ModalContext]]		1986
+nim	waitForModal	dimslash/api.html#waitForModal,AppBinding,string,int	proc waitForModal(binding: AppBinding; pattern: string; timeoutMs = 300000;\n             userId = none(UserId)): Future[Option[ModalContext]]		1995
+nim	waitForModal	dimslash/api.html#waitForModal,InteractionContext,openArray[string],int,Option[UserId]	proc waitForModal(ctx: InteractionContext; patterns: openArray[string];\n             timeoutMs = 300000; userId: Option[UserId] = ctx.invokerId): Future[\n    Option[ModalContext]]		2000
+nim	waitForModal	dimslash/api.html#waitForModal,InteractionContext,string,int,Option[UserId]	proc waitForModal(ctx: InteractionContext; pattern: string; timeoutMs = 300000;\n             userId: Option[UserId] = ctx.invokerId): Future[\n    Option[ModalContext]]		2008
+nim	disableAll	dimslash/api.html#disableAll,openArray[ClassicActionRow]	proc disableAll(rows: openArray[ClassicActionRow]): seq[ClassicActionRow]		2013
+nim	disableAll	dimslash/api.html#disableAll,openArray[V2Component]	proc disableAll(components: openArray[V2Component]): seq[V2Component]		2057
+nim	confirm	dimslash/api.html#confirm,InteractionContext,string,string,string,int	proc confirm(ctx: InteractionContext; prompt: string; yesLabel = "Yes";\n        noLabel = "No"; timeoutMs = 60000; ephemeral = true): Future[bool]		2080
+nim	paginate	dimslash/api.html#paginate,InteractionContext,openArray[Embed],int	proc paginate(ctx: InteractionContext; pages: openArray[Embed]; timeoutMs = 120000;\n         ephemeral = false): Future[void]		2140
+nim	slashRaw	dimslash/api.html#slashRaw,Routes,string,string,seq[CommandOption],SlashHandler	proc slashRaw(routes: var Routes; name, description: string;\n         options: seq[CommandOption]; handler: SlashHandler)		2223
+nim	button	dimslash/api.html#button,Routes,string,ComponentHandler	proc button(routes: var Routes; pattern: string; handler: ComponentHandler)		2238
+nim	select	dimslash/api.html#select,Routes,string,ComponentHandler	proc select(routes: var Routes; pattern: string; handler: ComponentHandler)		2247
+nim	userCommand	dimslash/api.html#userCommand,Routes,string,UserCommandHandler	proc userCommand(routes: var Routes; name: string; handler: UserCommandHandler)		2256
+nim	messageCommand	dimslash/api.html#messageCommand,Routes,string,MessageCommandHandler	proc messageCommand(routes: var Routes; name: string; handler: MessageCommandHandler)		2265
+nim	checkSlash	dimslash/api.html#checkSlash,Routes,string,SlashCheck	proc checkSlash(routes: var Routes; path: string; check: SlashCheck)		2274
+nim	checkUserCommand	dimslash/api.html#checkUserCommand,Routes,string,UserCommandCheck	proc checkUserCommand(routes: var Routes; name: string; check: UserCommandCheck)		2285
+nim	checkMessageCommand	dimslash/api.html#checkMessageCommand,Routes,string,MessageCommandCheck	proc checkMessageCommand(routes: var Routes; name: string; check: MessageCommandCheck)		2295
+nim	checkButton	dimslash/api.html#checkButton,Routes,string,ComponentCheck	proc checkButton(routes: var Routes; pattern: string; check: ComponentCheck)		2319
+nim	checkSelect	dimslash/api.html#checkSelect,Routes,string,ComponentCheck	proc checkSelect(routes: var Routes; pattern: string; check: ComponentCheck)		2323
+nim	checkModal	dimslash/api.html#checkModal,Routes,string,ModalCheck	proc checkModal(routes: var Routes; pattern: string; check: ModalCheck)		2327
+nim	cooldownSlash	dimslash/api.html#cooldownSlash,Routes,string,CooldownRule	proc cooldownSlash(routes: var Routes; path: string; rule: CooldownRule)		2340
+nim	cooldownUserCommand	dimslash/api.html#cooldownUserCommand,Routes,string,CooldownRule	proc cooldownUserCommand(routes: var Routes; name: string; rule: CooldownRule)		2349
+nim	cooldownMessageCommand	dimslash/api.html#cooldownMessageCommand,Routes,string,CooldownRule	proc cooldownMessageCommand(routes: var Routes; name: string; rule: CooldownRule)		2359
+nim	cooldownButton	dimslash/api.html#cooldownButton,Routes,string,CooldownRule	proc cooldownButton(routes: var Routes; pattern: string; rule: CooldownRule)		2381
+nim	cooldownSelect	dimslash/api.html#cooldownSelect,Routes,string,CooldownRule	proc cooldownSelect(routes: var Routes; pattern: string; rule: CooldownRule)		2385
+nim	cooldownModal	dimslash/api.html#cooldownModal,Routes,string,CooldownRule	proc cooldownModal(routes: var Routes; pattern: string; rule: CooldownRule)		2389
+nim	configureSlash	dimslash/api.html#configureSlash,Routes,string	proc configureSlash(routes: var Routes; name: string;\n               defaultMemberPermissions = none(uint64); nsfw = false;\n               contexts = none(set[InteractionContextKind]);\n               integrations = none(set[IntegrationKind]);\n               nameLocalizations = Table[string, string]();\n               descriptionLocalizations = Table[string, string]())		2413
+nim	configureUserCommand	dimslash/api.html#configureUserCommand,Routes,string	proc configureUserCommand(routes: var Routes; name: string;\n                     defaultMemberPermissions = none(uint64); nsfw = false;\n                     contexts = none(set[InteractionContextKind]);\n                     integrations = none(set[IntegrationKind]);\n                     nameLocalizations = Table[string, string]())		2431
+nim	configureMessageCommand	dimslash/api.html#configureMessageCommand,Routes,string	proc configureMessageCommand(routes: var Routes; name: string;\n                        defaultMemberPermissions = none(uint64); nsfw = false;\n                        contexts = none(set[InteractionContextKind]);\n                        integrations = none(set[IntegrationKind]);\n                        nameLocalizations = Table[string, string]())		2443
+nim	autocomplete	dimslash/api.html#autocomplete,Routes,string,string,AutocompleteHandler	proc autocomplete(routes: var Routes; commandPath, optionName: string;\n             handler: AutocompleteHandler)		2455
+nim	newDiscordApp	dimslash/api.html#newDiscordApp,RouteFactory,ErrorHandler	proc newDiscordApp(factory: RouteFactory; onError: ErrorHandler = nil): DiscordApp		2501
+nim	globalScope	dimslash/api.html#globalScope	proc globalScope(): CommandScope		2513
+nim	guildScope	dimslash/api.html#guildScope,GuildId	proc guildScope(guildId: GuildId): CommandScope		2515
+nim	commands	dimslash/api.html#commands,DiscordApp	proc commands(app: DiscordApp): JsonNode		2577
+nim	slash	dimslash/api.html#slash.m,Routes,staticstring,staticstring,untyped	macro slash(routes: var Routes; name, description: static string; handler: untyped): untyped		2880
+nim	subcommand	dimslash/api.html#subcommand.m,Routes,staticstring,staticstring,staticstring,staticstring,untyped	macro subcommand(routes: var Routes; commandName, commandDescription: static string;\n           name, description: static string; handler: untyped): untyped		2884
+nim	groupSubcommand	dimslash/api.html#groupSubcommand.m,Routes,staticstring,staticstring,staticstring,staticstring,staticstring,staticstring,untyped	macro groupSubcommand(routes: var Routes;\n                commandName, commandDescription: static string;\n                groupName, groupDescription: static string;\n                name, description: static string; handler: untyped): untyped		2891
+nim	modal	dimslash/api.html#modal.m,Routes,staticstring,untyped	macro modal(routes: var Routes; pattern: static string; handler: untyped): untyped		2963
+nim	decodeInteraction	dimslash/api.html#decodeInteraction,JsonNode	proc decodeInteraction(raw: JsonNode): Interaction		3010
+nim	checkCooldown	dimslash/api.html#checkCooldown,InteractionContext,string,CooldownRule	proc checkCooldown(ctx: InteractionContext; key: string; rule: CooldownRule)		3124
+nim	dispatch	dimslash/api.html#dispatch,AppBinding,JsonNode	proc dispatch(binding: AppBinding; raw: JsonNode): Future[bool]		3228
+nim	requestStop	dimslash/api.html#requestStop,AppBinding	proc requestStop(binding: AppBinding)		3397
+nim	bindGateway	dimslash/api.html#bindGateway,DiscordApp,string,set[GatewayIntent]	proc bindGateway(app: DiscordApp; token: string; managedScopes = @[globalScope()];\n            gatewayIntents: set[GatewayIntent] = {Guilds};\n            messageContentIntent = false; autoReconnect = true): AppBinding		3540
+nim	syncCommands	dimslash/api.html#syncCommands,AppBinding	proc syncCommands(binding: AppBinding): Future[seq[SyncResult]]		3567
+nim	install	dimslash/api.html#install,AppBinding	proc install(binding: AppBinding; autoSync = true)		3581
+nim	start	dimslash/api.html#start,AppBinding	proc start(binding: AppBinding; autoSync = true): Future[void]		3637
+nim	requestDetach	dimslash/api.html#requestDetach,AppBinding	proc requestDetach(binding: AppBinding)		3644
+nim	detach	dimslash/api.html#detach,AppBinding	proc detach(binding: AppBinding): Future[void]		3647
+nim	stop	dimslash/api.html#stop,AppBinding	proc stop(binding: AppBinding): Future[void]		3655
+nimgrp	editfollowup	dimslash/api.html#editFollowup-procs-all	proc		1590
+nimgrp	apppermissions	dimslash/api.html#appPermissions-procs-all	proc		695
+nimgrp	waitforcomponent	dimslash/api.html#waitForComponent-procs-all	proc		1907
+nimgrp	user	dimslash/api.html#user-procs-all	proc		669
+nimgrp	followup	dimslash/api.html#followup-procs-all	proc		1579
+nimgrp	id	dimslash/api.html#id-procs-all	proc		667
+nimgrp	locale	dimslash/api.html#locale-procs-all	proc		693
+nimgrp	respond	dimslash/api.html#respond-procs-all	proc		1439
+nimgrp	actionrow	dimslash/api.html#actionRow-procs-all	proc		983
+nimgrp	member	dimslash/api.html#member-procs-all	proc		691
+nimgrp	==	dimslash/api.html#==-procs-all	proc		650
+nimgrp	target	dimslash/api.html#target-procs-all	proc		706
+nimgrp	choice	dimslash/api.html#choice-procs-all	proc		1209
+nimgrp	messagebody	dimslash/api.html#messageBody-procs-all	proc		930
+nimgrp	hash	dimslash/api.html#hash-procs-all	proc		658
+nimgrp	guildid	dimslash/api.html#guildId-procs-all	proc		688
+nimgrp	button	dimslash/api.html#button-procs-all	proc		961
+nimgrp	message	dimslash/api.html#message-procs-all	proc		692
+nimgrp	update	dimslash/api.html#update-procs-all	proc		1459
+nimgrp	name	dimslash/api.html#name-procs-all	proc		673
+nimgrp	editoriginal	dimslash/api.html#editOriginal-procs-all	proc		1501
+nimgrp	channelid	dimslash/api.html#channelId-procs-all	proc		689
+nimgrp	v2actionrow	dimslash/api.html#v2ActionRow-procs-all	proc		1072
+nimgrp	waitforselect	dimslash/api.html#waitForSelect-procs-all	proc		1929
+nimgrp	disableall	dimslash/api.html#disableAll-procs-all	proc		2013
+nimgrp	waitformodal	dimslash/api.html#waitForModal-procs-all	proc		1986
+nimgrp	waitforbutton	dimslash/api.html#waitForButton-procs-all	proc		1918
+nimgrp	invokerid	dimslash/api.html#invokerId-procs-all	proc		1871
+nimgrp	kind	dimslash/api.html#kind-procs-all	proc		687
+nimgrp	deferupdate	dimslash/api.html#deferUpdate-procs-all	proc		1471
+nimgrp	guildlocale	dimslash/api.html#guildLocale-procs-all	proc		694
