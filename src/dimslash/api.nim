@@ -681,11 +681,14 @@ type
                            data: JsonNode): Future[void]
     previousReady: proc(shard: discord.Shard;
                         ready: discord.Ready): Future[void]
+    stopGateway: proc(): Future[void]
+    gatewaySession: Future[void]
     managedScopes: seq[CommandScope]
     applicationId: ApplicationId
     installed: bool
     commandsSynced: bool
     accepting: bool
+    gatewayStopRequested: bool
     activeRequests: int
     drained: Future[void]
     cooldowns: Table[string, int64]
@@ -713,7 +716,10 @@ type
     scope*: CommandScope ## Scope that Discord accepted.
     commandCount*: int ## Number of local commands written to that scope.
 
-const OriginalMessageId = MessageId("@original")
+const
+  OriginalMessageId = MessageId("@original")
+  ComponentsV2MessageFlag = 1 shl 15
+  DimscordDisconnectedMessage = "Shard(s) disconnected."
 
 template description*(value: static string) {.pragma.}
   ## Sets a typed handler parameter's Discord option description.
@@ -1680,7 +1686,8 @@ proc toJson(value: V2Message): JsonNode =
     components.add component.toJson
   result["components"] = components
   result["allowed_mentions"] = value.allowedMentions.toJson
-  result["flags"] = %(32768 or (if value.ephemeral: 64 else: 0))
+  result["flags"] = %(
+    ComponentsV2MessageFlag or (if value.ephemeral: 64 else: 0))
   if value.files.len > 0:
     result["attachments"] = newJArray()
     for index, file in value.files:
@@ -1721,6 +1728,12 @@ proc requireState(controller: ResponseController;
     raise newException(InvalidResponseStateError,
       operation & " is invalid while the response is " &
       $controller.state)
+
+proc requireCompatibleBody(controller: ResponseController;
+                           body: MessageBody) =
+  if controller.originalUsesV2 and body.kind != ComponentsV2Body:
+    raise newException(InvalidResponseStateError,
+      "a Components V2 message cannot be converted back to classic content")
 
 proc sendInitial(controller: ResponseController; kind: InitialResponseKind;
                  data: JsonNode; next: ResponseState;
@@ -1772,6 +1785,7 @@ proc update*(ctx: ComponentContext;
   ## explicitly clear omitted classic fields, and a V2 original cannot later
   ## be converted back to classic content.
   ctx.response.requireState({Pending}, "update")
+  ctx.response.requireCompatibleBody(body)
   await ctx.response.sendInitial(InitialUpdate, body.toEditJson, Responded,
                                  body.files)
   ctx.response.originalUsesV2 = body.kind == ComponentsV2Body
@@ -1803,6 +1817,7 @@ proc update*(ctx: ModalContext;
   ## initial response is no longer pending.
   ctx.requireComponentSource("update")
   ctx.response.requireState({Pending}, "update")
+  ctx.response.requireCompatibleBody(body)
   await ctx.response.sendInitial(InitialUpdate, body.toEditJson, Responded,
                                  body.files)
   ctx.response.originalUsesV2 = body.kind == ComponentsV2Body
@@ -1829,9 +1844,7 @@ proc editOriginal*(ctx: InteractionContext;
   ## when attempting to convert a Components V2 original back to classic.
   ctx.response.requireState({DeferredReply, DeferredUpdate, Responded},
                             "editOriginal")
-  if ctx.response.originalUsesV2 and body.kind != ComponentsV2Body:
-    raise newException(InvalidResponseStateError,
-      "a Components V2 message cannot be converted back to classic content")
+  ctx.response.requireCompatibleBody(body)
   let message = await ctx.response.sink.editMessage(
     ctx.response.applicationId, ctx.response.token, OriginalMessageId,
     body.toEditJson, body.files)
@@ -3616,9 +3629,15 @@ proc decodeModalFields(node: JsonNode; result: var Table[string, string]) =
 
 proc newController(sink: ResponseSink; interaction: Interaction):
     ResponseController =
+  let raw = interaction.rawValue
+  let originalUsesV2 =
+    raw.kind == JObject and raw.hasKey("message") and
+    raw["message"].kind == JObject and raw["message"].hasKey("flags") and
+    (raw["message"]["flags"].getInt and ComponentsV2MessageFlag) != 0
   ResponseController(sink: sink, interactionId: interaction.idValue,
     applicationId: interaction.applicationIdValue,
-    token: interaction.tokenValue, state: Pending)
+    token: interaction.tokenValue, state: Pending,
+    originalUsesV2: originalUsesV2)
 
 proc applyError(binding: AppBinding; ctx: InteractionContext;
                 error: ref CatchableError): Future[void] {.async.} =
@@ -4066,6 +4085,31 @@ proc newDiscordCommandSyncSink(
         discord.endpointGuildCommands($applicationId, $scope.guildId)
     discard await api.request("PUT", endpoint, $commands)
 
+proc disconnectShard(shard: discord.Shard): Future[void]
+    {.async.} =
+  try:
+    await shard.disconnect(should_reconnect = false)
+  except Defect:
+    raise
+  except Exception as error:
+    if not error.msg.startsWith(DimscordDisconnectedMessage):
+      raise
+  shard.cache.clear()
+
+proc stopDiscordGateway(client: discord.DiscordClient;
+                        session: Future[void]): Future[void] {.async.} =
+  # Dimscord snapshots autoreconnect in each gateway reader. A reader that was
+  # already running may reconnect once after the first close, so keep closing
+  # any reopened shard until that session future settles.
+  client.autoreconnect = false
+  for shard in client.shards.values:
+    await disconnectShard(shard)
+  while not session.isNil and not session.finished:
+    for shard in client.shards.values:
+      if not shard.stop:
+        await disconnectShard(shard)
+    await sleepAsync(50)
+
 proc validateManagedScopes(scopes: openArray[CommandScope]) =
   var seen = initHashSet[string]()
   for scope in scopes:
@@ -4187,12 +4231,21 @@ proc discordGatewayIntents(intents: set[GatewayIntent]):
 proc start*(binding: AppBinding; autoSync = true): Future[void] {.async.} =
   ## Installs the binding and runs its configured gateway session until it ends.
   ## Gateway intents, message-content access, and reconnect behavior come from
-  ## `bindGateway`. Connection, sync, callback, and handler failures propagate.
+  ## `bindGateway`. Connection, sync, callback, and handler failures propagate,
+  ## except for session termination observed after an explicit concurrent
+  ## `stop`.
   binding.install(autoSync)
-  await binding.client.startSession(
+  binding.gatewaySession = binding.client.startSession(
     autoreconnect = binding.autoReconnect,
     gateway_intents = discordGatewayIntents(binding.gatewayIntents),
     content_intent = binding.messageContentIntent)
+  try:
+    await binding.gatewaySession
+  except Defect:
+    raise
+  except Exception:
+    if not binding.gatewayStopRequested:
+      raise
 
 proc requestDetach*(binding: AppBinding) =
   ## Begins non-blocking detachment by quiescing dispatch and waking collectors.
@@ -4214,10 +4267,19 @@ proc stop*(binding: AppBinding): Future[void] {.async.} =
   ## Quiesces, drains active handlers, and closes the gateway session.
   ## Pending collectors complete with none before the drain. Use `detach`
   ## instead when the shared client must remain connected.
+  binding.gatewayStopRequested = true
   binding.requestStop()
   await binding.waitUntilDrained()
   if not binding.client.isNil:
-    await binding.client.endSession()
+    await stopDiscordGateway(binding.client, binding.gatewaySession)
+  elif not binding.stopGateway.isNil:
+    try:
+      await binding.stopGateway()
+    except Defect:
+      raise
+    except Exception as error:
+      if not error.msg.startsWith(DimscordDisconnectedMessage):
+        raise
 
 when defined(dimslashTesting):
   type
@@ -4232,6 +4294,8 @@ when defined(dimslashTesting):
       applicationId*: ApplicationId ## ID returned during command synchronization.
       rejectInitial*: bool ## Make the next initial response fail definitively.
       failInitialAmbiguously*: bool ## Simulate an unknown initial-response outcome.
+      failStopWithDisconnect*: bool
+        ## Make gateway shutdown raise Dimscord's normal-disconnect exception.
 
   proc messageFrom(data: JsonNode; id: string): Message =
     result.idValue = MessageId(id)
@@ -4306,11 +4370,15 @@ when defined(dimslashTesting):
                        managedScopes = @[globalScope()]): AppBinding =
     ## Binds `app` to an in-memory transport without a gateway client.
     ## An injected monotonic clock makes cooldown tests deterministic. Duplicate
-    ## managed scopes raise `ValueError`; gateway lifecycle operations are not
-    ## available on the returned binding.
+    ## managed scopes raise `ValueError`. Gateway start and hook installation
+    ## are unavailable; `stop` still quiesces and drains handlers.
     validateManagedScopes(managedScopes)
+    let stopGateway = proc(): Future[void] {.async.} =
+      if transport.failStopWithDisconnect:
+        raise newException(Exception, DimscordDisconnectedMessage)
     AppBinding(app: app, sink: transport.testSink,
       commandSink: transport.testCommandSink, accepting: true,
+      stopGateway: stopGateway,
       managedScopes: managedScopes,
       cooldowns: initTable[string, int64](),
       monotonicMilliseconds:

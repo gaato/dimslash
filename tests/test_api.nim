@@ -23,7 +23,7 @@ proc slashInteraction(name: string; options: JsonNode = newJArray()): JsonNode =
     "data": {"type": 1, "name": name, "options": options}
   }
 
-proc componentInteraction(customId: string): JsonNode =
+proc componentInteraction(customId: string; messageFlags = 0): JsonNode =
   %*{
     "id": "interaction-2",
     "application_id": "application-1",
@@ -34,6 +34,7 @@ proc componentInteraction(customId: string): JsonNode =
     "message": {
       "id": "message-1",
       "content": "old",
+      "flags": messageFlags,
       "author": {"id": "user-2", "username": "bot"}
     },
     "data": {"component_type": 2, "custom_id": customId}
@@ -222,6 +223,25 @@ suite "new public API":
 
     check waitFor binding.dispatch(slashInteraction("v2"))
 
+  test "component updates preserve a Components V2 source":
+    var rejectedClassic = false
+    let app = newDiscordApp(proc(routes: var Routes) =
+      routes.button("continue",
+        proc(ctx: ComponentContext) {.async.} =
+          try:
+            discard await ctx.update("classic")
+          except InvalidResponseStateError:
+            rejectedClassic = true
+          discard await ctx.update(componentsV2(@[
+            textDisplay("continued")]).messageBody))
+    )
+    let transport = newTestTransport()
+    let binding = app.bindForTesting(transport)
+
+    check waitFor binding.dispatch(componentInteraction("continue", 32768))
+    check rejectedClassic
+    check transport.calls[0].data["data"]["flags"].getInt == 32768
+
   test "message edits explicitly clear fields while converting to V2":
     let app = newDiscordApp(proc(routes: var Routes) =
       routes.slash("convert", "Converts to Components V2",
@@ -259,6 +279,14 @@ suite "new public API":
     check waitFor dispatch
     waitFor stopped
     check stopped.finished
+
+  test "stop accepts Dimscord's normal disconnect exception":
+    let app = newDiscordApp(proc(routes: var Routes) = discard routes)
+    let transport = newTestTransport()
+    transport.failStopWithDisconnect = true
+    let binding = app.bindForTesting(transport)
+
+    waitFor binding.stop()
 
   test "an error after responding becomes an explicit followup":
     let app = newDiscordApp(proc(routes: var Routes) =

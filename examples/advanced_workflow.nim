@@ -1,6 +1,7 @@
 import std/os
 
 import dimslash
+import example_support
 
 proc handleError(ctx: InteractionContext;
                  error: ref CatchableError): Future[ErrorAction] {.async.} =
@@ -27,7 +28,16 @@ let app = newDiscordApp(proc(routes: var Routes) =
 ,
   onError = handleError)
 
-let binding = app.bindGateway(getEnv("DISCORD_TOKEN"), managedScopes = @[
-  guildScope(GuildId(getEnv("DISCORD_GUILD_ID")))
+let
+  token = getEnv("DISCORD_TOKEN")
+  guildId = getEnv("DISCORD_GUILD_ID")
+if token.len == 0:
+  raise newException(ValueError, "set DISCORD_TOKEN before running this example")
+if guildId.len == 0:
+  raise newException(ValueError,
+    "set DISCORD_GUILD_ID to a disposable test guild")
+
+let binding = app.bindGateway(token, managedScopes = @[
+  guildScope(GuildId(guildId))
 ])
-waitFor binding.start()
+waitFor runUntilInterrupted(binding)

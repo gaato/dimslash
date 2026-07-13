@@ -28,7 +28,9 @@ let app = newDiscordApp(proc(routes: var Routes) =
       discard await ctx.respond((name & "! ").repeat(count)))
 )
 
-let binding = app.bindGateway("TOKEN")
+let binding = app.bindGateway("TOKEN", managedScopes = @[
+  guildScope(GuildId("TEST_GUILD_ID"))
+])
 waitFor binding.start()
 ```
 
@@ -46,9 +48,13 @@ routes.slash("work", "Does some work",
   proc(ctx: SlashCommandContext) {.async.} =
     await ctx.deferReply(ephemeral = true)
     let original = await ctx.editOriginal("done")
-    let notification = await ctx.followup("more details")
+    let notification = await ctx.followup("more details", ephemeral = true)
     echo original.id, " ", notification.id)
 ```
+
+Ephemeral visibility belongs to each message. A followup does not inherit the
+visibility selected by `deferReply`, so private followups must set
+`ephemeral = true` explicitly.
 
 Message-producing operations consistently return `Future[Message]`:
 `respond`, `update`, `editOriginal`, `editFollowup`, `followup`, and
@@ -210,8 +216,12 @@ objects are not part of the public contract.
 
 ## Development
 
+Runnable examples require `DISCORD_TOKEN` and `DISCORD_GUILD_ID`. They only
+overwrite commands in that guild.
+
 ```fish
 nimble test
+nim c -r examples/basic_interactions.nim
 nim c -d:ssl -d:release --path:src src/dimslash.nim
 ```
 

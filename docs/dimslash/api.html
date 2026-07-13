@@ -4156,7 +4156,7 @@
     <span class="Identifier">WriteIOEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
-    Installs the binding and runs its configured gateway session until it ends. Gateway intents, message-content access, and reconnect behavior come from <tt class="docutils literal"><span class="pre"><span class="Identifier">bindGateway</span></span></tt>. Connection, sync, callback, and handler failures propagate.
+    Installs the binding and runs its configured gateway session until it ends. Gateway intents, message-content access, and reconnect behavior come from <tt class="docutils literal"><span class="pre"><span class="Identifier">bindGateway</span></span></tt>. Connection, sync, callback, and handler failures propagate, except for session termination observed after an explicit concurrent <tt class="docutils literal"><span class="pre"><span class="Identifier">stop</span></span></tt>.
     
   </dd>
 </div>
@@ -4165,9 +4165,8 @@
 <div id="stop-procs-all">
   <div id="stop,AppBinding">
   <dt><pre><span class="Keyword">proc</span> <a href="#stop%2CAppBinding"><span class="Identifier">stop</span></a><span class="Other">(</span><span class="Identifier">binding</span><span class="Other">:</span> <a href="#AppBinding"><span class="Identifier">AppBinding</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">stackTrace</span><span class="Other">:</span> <span class="DecNumber">false</span><span class="Other">,</span>
-    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">,</span> <span class="Identifier">SslError</span><span class="Other">,</span> <span class="Identifier">LibraryError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span>
-    <span class="Identifier">WriteIOEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+    <span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">,</span> <span class="Identifier">ValueError</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">WriteIOEffect</span><span class="Other">,</span>
+    <span class="Identifier">ReadIOEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadDirEffect</span><span class="Other">,</span> <span class="Identifier">ReadEnvEffect</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Quiesces, drains active handlers, and closes the gateway session. Pending collectors complete with none before the drain. Use <tt class="docutils literal"><span class="pre"><span class="Identifier">detach</span></span></tt> instead when the shared client must remain connected.
@@ -4868,7 +4867,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-13 14:52:17 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2026-07-13 16:24:30 UTC</small>
       </div>
     </div>
   </div>

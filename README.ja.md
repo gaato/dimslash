@@ -22,7 +22,10 @@ let app = newDiscordApp(proc(routes: var Routes) =
       discard await ctx.respond((name & "! ").repeat(count)))
 )
 
-waitFor app.bindGateway("TOKEN").start()
+let binding = app.bindGateway("TOKEN", managedScopes = @[
+  guildScope(GuildId("TEST_GUILD_ID"))
+])
+waitFor binding.start()
 ```
 
 ハンドラの引数がコマンド登録用schemaと実行時decodeの正本です。サービスは
@@ -35,8 +38,12 @@ route factoryのclosureへ普通にcaptureできます。
 ```nim
 await ctx.deferReply(ephemeral = true)
 let original = await ctx.editOriginal("done")
-let later = await ctx.followup("more details")
+let later = await ctx.followup("more details", ephemeral = true)
 ```
+
+ephemeralの可視性はmessageごとに独立しています。`followup`は
+`deferReply`の可視性を引き継がないため、非公開のfollowupには
+`ephemeral = true`を明示します。
 
 メッセージを生成・更新・取得する`respond`、`update`、`editOriginal`、
 `editFollowup`、`followup`、`original`はすべて`Future[Message]`を返します。ACKだけを行う
@@ -176,7 +183,11 @@ ID型です。dimscordのinteraction型は公開contractへ漏らしません。
 
 ## 開発
 
+実行可能なexampleには`DISCORD_TOKEN`と`DISCORD_GUILD_ID`が必要です。
+commandを上書きするのは指定guildだけです。
+
 ```fish
 nimble test
+nim c -r examples/basic_interactions.nim
 nim c -d:ssl -d:release --path:src src/dimslash.nim
 ```

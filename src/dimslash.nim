@@ -34,7 +34,9 @@
 ##   )
 ##
 ##   let binding = app.bindGateway(getEnv("DISCORD_TOKEN"),
-##     managedScopes = @[globalScope()], gatewayIntents = {Guilds})
+##     managedScopes = @[
+##       guildScope(GuildId(getEnv("DISCORD_GUILD_ID")))
+##     ], gatewayIntents = {Guilds})
 ##   waitFor binding.start()
 ##
 ## Explicit response state
