@@ -5,9 +5,26 @@ import ../src/dimslash
 import ./helpers
 
 proc input(id, value: string): MessageComponent =
-  MessageComponent(kind: mctActionRow, components: @[
+  MessageComponent(kind: mctLabel, label: some id, component:
     MessageComponent(kind: mctTextInput, custom_id: some id,
-                     value: some value)])
+                     value: some value))
+
+suite "modal Label components":
+  test "newTextInput wraps the input in a Label instead of an Action Row":
+    let field = newTextInput("details", "Details", style = tisParagraph,
+      required = false, placeholder = "What happened?", minLen = 10,
+      maxLen = 1000)
+    check field.kind == mctLabel
+    check field.label == some "Details"
+    check not field.component.isNil
+    check field.component.kind == mctTextInput
+    check field.component.custom_id == some "details"
+    check field.component.label.isNone
+    check field.component.input_style == some tisParagraph
+    check field.component.required == some false
+    check field.component.placeholder == some "What happened?"
+    check field.component.min_length == some 10
+    check field.component.max_length == some 1000
 
 suite "modalForm declaration":
   test "fields carry labels, styles, and requiredness":

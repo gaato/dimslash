@@ -217,7 +217,7 @@ type
     ## recording backend instead.
     createResponse*: proc (interactionId, token: string;
         kind: InteractionResponseType;
-        data: InteractionCallbackDataMessage): Future[void]
+        payload: MessagePayload): Future[void]
     createAutocomplete*: proc (interactionId, token: string;
         choices: JsonNode): Future[void]
     createModal*: proc (interactionId, token: string;
@@ -252,6 +252,12 @@ type
     cooldowns*: Table[string, MonoTime]
       ## ready-again times for `cooldown = …` commands, keyed by
       ## command path + bucket
+    lifecycleInstalled*: bool
+      ## Internal lifecycle guard used by `bot.install`; exposed because
+      ## Nim module privacy does not cross dimslash's submodules.
+    readySync*: Future[void]
+      ## The shared once-per-process command sync future. A failed future is
+      ## cleared so a later READY can retry.
 
 template fail*(msg: string) =
   ## Aborts the current handler with a message shown to the invoking user

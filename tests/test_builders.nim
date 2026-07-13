@@ -120,3 +120,188 @@ suite "rows builder":
   test "non-row statements are rejected":
     check not compiles(rows do:
       button "A", "a")
+
+suite "Components V2 layout builder":
+  test "builds every supported component with nested containers and rows":
+    let heading = "# Release notes"
+    let ui = layout:
+      text heading
+      section:
+        text "Version 2 is ready."
+        text "Choose what to do next."
+        thumbnail "https://example.com/icon.png", desc = "App icon"
+      gallery:
+        media "https://example.com/one.png", description = "First image"
+        media "attachment://two.png", spoiler = true
+      file "attachment://manual.pdf", spoiler = true
+      separator divider = false, spacing = 2
+      container accent = 0x5865F2, spoiler = true:
+        text "Inside the container"
+        row:
+          button "Install", "release:install", style = bsSuccess
+          linkButton "Docs", "https://example.com/docs"
+
+    check ui.components.len == 6
+    check ui.components[0].kind == mctTextDisplay
+    check ui.components[0].content == heading
+
+    let section = ui.components[1]
+    check section.kind == mctSection
+    check section.sect_components.len == 2
+    check section.sect_components[1].content == "Choose what to do next."
+    check section.accessory.kind == mctThumbnail
+    check section.accessory.description == some "App icon"
+
+    let gallery = ui.components[2]
+    check gallery.kind == mctMediaGallery
+    check gallery.items.len == 2
+    check gallery.items[0].description == some "First image"
+    check gallery.items[1].spoiler == some true
+
+    check ui.components[3].kind == mctFile
+    check ui.components[3].file.url == "attachment://manual.pdf"
+    check ui.components[3].spoiler == some true
+    check ui.components[4].kind == mctSeparator
+    check ui.components[4].divider == some false
+    check ui.components[4].spacing == some 2
+
+    let container = ui.components[5]
+    check container.kind == mctContainer
+    check container.accent_color == some 0x5865F2
+    check container.spoiler == some true
+    check container.components.len == 2
+    check container.components[1].kind == mctActionRow
+    check container.components[1].components.len == 2
+
+  test "a bare separator uses Discord defaults":
+    let ui = layout:
+      text "above"
+      separator
+      text "below"
+    check ui.components[1].divider == some true
+    check ui.components[1].spacing == some 1
+
+  test "invalid nesting and fixed shapes are rejected at compile time":
+    check not compiles(layout do:
+      button "Loose", "button")
+    check not compiles(layout do:
+      section:
+        text "No accessory")
+    check not compiles(layout do:
+      section:
+        text "One"
+        text "Two"
+        text "Three"
+        text "Four"
+        button "Go", "go")
+    check not compiles(layout do:
+      section:
+        text "Two accessories"
+        button "Go", "go"
+        thumbnail "https://example.com/icon.png")
+    check not compiles(layout do:
+      gallery:
+        text "not media")
+    check not compiles(layout do:
+      container:
+        container:
+          text "nested")
+
+  test "Discord limits with literal values are rejected at compile time":
+    check not compiles(layout do:
+      gallery:
+        media "1"
+        media "2"
+        media "3"
+        media "4"
+        media "5"
+        media "6"
+        media "7"
+        media "8"
+        media "9"
+        media "10"
+        media "11")
+    check not compiles(layout do:
+      file "https://example.com/manual.pdf")
+    check not compiles(layout do:
+      file url = "https://example.com/manual.pdf")
+    check not compiles(layout do:
+      separator spacing = 3)
+    check not compiles(layout do:
+      separator true, 3)
+    check not compiles(layout do:
+      container accent = 0x1000000:
+        text "bad color")
+    check not compiles(layout do:
+      row:
+        button "1", "1"
+        button "2", "2"
+        button "3", "3"
+        button "4", "4"
+        button "5", "5"
+        button "6", "6")
+
+  test "the 40 component total includes nested children":
+    check not compiles(layout do:
+      text "1"
+      text "2"
+      text "3"
+      text "4"
+      text "5"
+      text "6"
+      text "7"
+      text "8"
+      text "9"
+      text "10"
+      text "11"
+      text "12"
+      text "13"
+      text "14"
+      text "15"
+      text "16"
+      text "17"
+      text "18"
+      text "19"
+      text "20"
+      text "21"
+      text "22"
+      text "23"
+      text "24"
+      text "25"
+      text "26"
+      text "27"
+      text "28"
+      text "29"
+      text "30"
+      text "31"
+      text "32"
+      text "33"
+      text "34"
+      text "35"
+      text "36"
+      text "37"
+      text "38"
+      text "39"
+      section:
+        text "40"
+        button "41 and 42", "over")
+
+  test "dynamic limit values are checked when the layout is built":
+    let badFile = "https://example.com/file.txt"
+    expect ValueError:
+      discard layout:
+        file badFile
+    let badSpacing = 3
+    expect ValueError:
+      discard layout:
+        separator spacing = badSpacing
+    let badAccent = 0x1000000
+    expect ValueError:
+      discard layout:
+        container accent = badAccent:
+          text "bad"
+    let negativeAccent = -1
+    expect ValueError:
+      discard layout:
+        container accent = negativeAccent:
+          text "also bad"

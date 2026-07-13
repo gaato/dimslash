@@ -64,6 +64,22 @@ handler.slash("embed", "Reply with an embed"):
       description: some "Made with dimslash",
       color: some 0x5865F2)])
 
+handler.slash("layout", "Show a Components V2 layout"):
+  execute:
+    let release = layout:
+      text "# Version 2.0"
+      section:
+        text "The new build is ready."
+        thumbnail "https://nim-lang.org/assets/img/logo.svg",
+          desc = "Nim logo"
+      separator spacing = 2
+      container accent = 0x5865F2:
+        text "Choose an action"
+        row:
+          button "Install", "release:install", style = bsSuccess
+          linkButton "Nim", "https://nim-lang.org/"
+    await ctx.reply(release)
+
 proc onReady(s: Shard, r: Ready) {.event(discord).} =
   discard await handler.syncCommands()
 

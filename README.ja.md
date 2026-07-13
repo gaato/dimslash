@@ -5,7 +5,7 @@
 [![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
 [![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
 
-[dimscord](https://github.com/krisppurg/dimscord) 向けの、マクロによる宣言的インタラクションハンドラです。スラッシュコマンド(オプションメタデータ完全対応)、コンテキストメニュー、ボタン、セレクト、モーダル、オートコンプリートを、コンパイル時検証つきで書けます。コマンド同期は差分検知つきです。さらに、await できるコンポーネント(`waitForButton`)、confirm / paginate フロー、チェック&クールダウン、型付きモーダルフォーム、embed / コンポーネントのビルダーブロックが載っています。
+[dimscord](https://github.com/krisppurg/dimscord) 向けの、マクロによる宣言的インタラクションハンドラです。スラッシュコマンド(オプションメタデータ完全対応)、コンテキストメニュー、ボタン、セレクト、モーダル、オートコンプリートを、コンパイル時検証つきで書けます。コマンド同期は差分検知つきです。await できるコンポーネント(`waitForButton`)、confirm / paginate フロー、チェック&クールダウン、型付きモーダルフォーム、従来コンポーネントのビルダー、Components V2 layout も使えます。
 
 > **English**: [README.md](README.md)
 
@@ -18,27 +18,20 @@ nimble install dimslash
 ## 最短セットアップ
 
 ```nim
-import dimscord, dimslash, std/random
+import dimslash, std/random
 
-let discord = newDiscordClient("TOKEN")
-let handler = newInteractionHandler(discord)
+let bot = newBot("TOKEN")
 
-handler.slash("roll", "サイコロを振る"):
+bot.slash("roll", "サイコロを振る"):
   ## 面の数
   sides {.min: 2, max: 1000.}: int = 6
   execute:
     await ctx.reply($rand(1 .. sides) & " が出ました")
 
-proc onReady(s: Shard, r: Ready) {.event(discord).} =
-  discard await handler.syncCommands()
-
-proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-  discard await handler.handleInteraction(s, i)
-
-waitFor discord.startSession(gateway_intents = {giGuilds})
+waitFor bot.start()
 ```
 
-`## doc` コメントがそのまま Discord UI のオプション説明になり、`min`/`max` は実際の入力制約として同期されます。デフォルト値をつけると Discord 上では省略可能に、Nim 側では素の `int` のまま扱えます。
+`## doc` コメントがそのまま Discord UI のオプション説明になり、`min`/`max` は実際の入力制約として同期されます。デフォルト値をつけると Discord 上では省略可能に、Nim 側では素の `int` のまま扱えます。`start` は READY / interaction event を配線し、差分つき command sync をプロセス内で一度だけ行います。gateway・cache・sharding の全オプションが必要なら、`bot.install()` の後に dimscord の `bot.discord.startSession(...)` を直接呼べます。
 
 ## slash ブロック
 
@@ -56,13 +49,36 @@ handler.slash("order", "メニューから注文する"):
     await ctx.reply($amount & "x " & item, ephemeral = true)
 ```
 
-**オプション型**: `string` / `int` / `float` / `bool` / `User` / `Member` / `Role` / `Channel` / `Mentionable` / `Attachment`。いずれも `Option[T]` かデフォルト値つき(Discord 上は省略可・Nim 上は非 Option)にできます。
+**オプション型**: `string` / `int` / `float` / `bool` / `User` / `Member` / `Role` / `Channel` / `Mentionable` / `Attachment` に加え、利用側で定義した `enum`、整数 `range`、`distinct string` / `distinct int`。いずれも `Option[T]` かデフォルト値つき(Discord 上は省略可・Nim 上は非 Option)にできます。
 
 **オプションプラグマ**: `desc`、`name`(送信名の上書き)、`min`/`max`、`minLen`/`maxLen`、`choices`、`channels`、`nameLoc`/`descLoc`。
 
 **コマンド設定**(`key = value` 行): `guild`、`permissions`、`nsfw`、`contexts`、`integrations`、`nameLocalizations`、`descriptionLocalizations`、`cooldown`。加えて `check` ガード行(後述)。
 
 名前の小文字規則、required→optional の順序、重複、choices の上限、グループの深さ、autocomplete の対象——チェックできるものはすべてコンパイル時に検証されます。実行時の 400 ではなくコンパイルエラーになります。
+
+### Nim の型からコマンドを導出
+
+```nim
+type
+  Flavor = enum
+    vanilla
+    chocolate = "ダークチョコ" # Discord 表示名。wire 値は "chocolate"
+  Servings = range[1 .. 12]
+  CustomerId = distinct string
+
+handler.slash("dessert", "デザートを作る"):
+  ## 味
+  flavor: Flavor                  # choices を自動生成
+  ## 人数
+  servings: Servings              # min_value=1, max_value=12
+  ## 顧客
+  customer: CustomerId            # handler 内でも domain 型のまま
+  execute:
+    await ctx.reply($flavor & " x " & $servings)
+```
+
+登録 JSON と decoder が同じ型から作られるため、enum / range を変更して片方だけ古いまま残ることがありません。
 
 ## サブコマンド
 
@@ -209,6 +225,38 @@ await ctx.reply(embeds = @[card], components = comps)
 
 名前付き引数は dimscord のビルダーへそのまま渡ります。エンティティセレクト(`userSelect`、`roleSelect`、`mentionableSelect`、`channelSelect`)にも対応し、Discord のレイアウト規則(セレクトは1行を占有)はコンパイル時に検証されます。
 
+### Components V2 layout
+
+`layout` は `MessageLayout` を作ります。専用の応答 overload には `content` と `embeds` がなく、`IS_COMPONENTS_V2` flag は dimslash が設定します。
+
+```nim
+let release = layout:
+  text "# Version 2.0"
+  section:
+    text "新しいビルドを公開しました。"
+    thumbnail "https://example.com/icon.png", desc = "アプリアイコン"
+  gallery:
+    media "https://example.com/screenshot.png", desc = "新しいエディタ"
+  separator spacing = 2
+  container accent = 0x5865F2:
+    text "操作を選んでください"
+    row:
+      button "インストール", "release:install", style = bsSuccess
+      linkButton "変更点", "https://example.com/releases/2.0"
+
+await ctx.reply(release, ephemeral = true)
+```
+
+マクロは Section、Gallery、Container、Action Row、添付 URL、色、spacing、1メッセージ40 components の上限を検査します。リテラルの誤りはコンパイル時に、実行時に決まる不正値は layout 構築時の `ValueError` になります。`reply`、`followup`、`edit`、`update` が `MessageLayout` を受け取ります。
+
+Discord は Components V2 の webhook followup へのファイル添付を拒否します。初回 `reply` で `Attachment` を渡すか、先に defer してから `reply` / `edit` でメッセージを編集してください。V2 用 overload は `content`、`embeds`、TTS を引数に持たず、送信 JSON にも含めません。
+
+`newTextInput` と `modalForm` は Text Input を Discord の `Label` で包みます。Discord は Text Input を含む modal Action Row を非推奨にしました。
+
+#### dimscord との互換境界
+
+dimslash が扱う Components V2 は、dimscord 1.8.0 が表現できる message component (Section から Container) と Label text modal です。Discord は Radio Group、Checkbox Group、Checkbox (type 21–23) も定義しています。dimscord 1.8.0 は interaction の parse 時に回答値を保持できないため、upstream の受信 model が対応した後に dimslash 側へ追加します。現行仕様は [Discord component reference](https://docs.discord.com/developers/components/reference) を参照してください。
+
 ## コンテキストオブジェクト
 
 すべてのハンドラは `ctx` を受け取ります。型つきアクセサ(`ctx.user`、`ctx.member`、`ctx.guildId`、`ctx.target`、`ctx.values`、`ctx.fields` など)と、応答状態を追跡するヘルパーがあります:
@@ -216,6 +264,7 @@ await ctx.reply(embeds = @[card], components = comps)
 | ヘルパー | 動作 |
 | --- | --- |
 | `reply(...)` | 初回応答 → defer 後はプレースホルダ編集 → 以降は自動で followup |
+| `reply(layout)` | 必須 flag つきの Components V2 応答 |
 | `deferReply(ephemeral)` | 「考え中…」プレースホルダ |
 | `followup(...)` / `edit(...)` / `delete()` / `original()` | followup と @original の管理 |
 | `update(...)` / `deferUpdate()` | コンポーネントが付いたメッセージ自体を編集 |
@@ -229,7 +278,7 @@ content 系ヘルパーは共通で `content`、`embeds`、`components`、`attac
 
 ## 差分検知つきコマンド同期
 
-`syncCommands()` はスコープ(グローバル+各ギルド)ごとに Discord の現状を取得して登録内容と比較し、**変更があったときだけ** PUT します。起動のたびに全上書きしません。`syncCommands(force = true)` で無条件上書きです。
+`start()` は最初の READY でこの同期を一度だけ実行します。明示的に制御したい場合は `syncCommands()` を直接呼べます。スコープ(グローバル+各ギルド)ごとに Discord の現状を取得して登録内容と比較し、変更があったときだけ PUT します。`syncCommands(force = true)` で無条件上書きです。
 
 ```nim
 proc onReady(s: Shard, r: Ready) {.event(discord).} =

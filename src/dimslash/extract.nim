@@ -4,7 +4,7 @@
 ## The `opt`/`req` getters are what the `slash` macro's generated code calls;
 ## they are exported for programmatic handlers too.
 
-import std/[options, strutils, tables]
+import std/[enumutils, options, strutils, tables, typetraits]
 import dimscord
 
 import ./types
@@ -50,6 +50,43 @@ proc opt*(ctx: SlashContext, name: string, T: typedesc[bool]): Option[bool] =
 proc opt*(ctx: SlashContext, name: string, T: typedesc[float]): Option[float] =
   if ctx.options.hasKey(name) and ctx.options[name].kind == acotNumber:
     return some float(ctx.options[name].fval)
+
+proc opt*[T: enum](ctx: SlashContext, name: string,
+                   E: typedesc[T]): Option[T] =
+  ## Caller-defined enums travel as their stable Nim symbol name. The
+  ## command DSL derives the matching Discord choices automatically; a
+  ## custom string representation remains the user-facing choice label.
+  if ctx.options.hasKey(name) and ctx.options[name].kind == acotStr:
+    let raw = ctx.options[name].str
+    for value in T:
+      if value.symbolName == raw:
+        return some value
+
+proc opt*[T: range](ctx: SlashContext, name: string,
+                    R: typedesc[T]): Option[T] =
+  ## Integer range aliases become INTEGER options with derived min/max.
+  ## Keep the runtime check as defense against malformed payloads even
+  ## though Discord also validates the bounds client-side.
+  if ctx.options.hasKey(name) and ctx.options[name].kind == acotInt:
+    let raw = ctx.options[name].ival
+    when low(T) is SomeInteger and high(T) is SomeInteger:
+      if raw >= BiggestInt(low(T)) and raw <= BiggestInt(high(T)):
+        return some T(raw)
+
+proc opt*[T: distinct](ctx: SlashContext, name: string,
+                       D: typedesc[T]): Option[T] =
+  ## Domain-specific IDs and small integer value objects can stay distinct
+  ## in handler code while using their primitive Discord wire type.
+  when distinctBase(T) is string:
+    let raw = ctx.opt(name, string)
+    if raw.isSome:
+      return some T(raw.get)
+  elif distinctBase(T) is int:
+    let raw = ctx.opt(name, int)
+    if raw.isSome:
+      return some T(raw.get)
+  else:
+    {.error: "distinct slash option types must wrap string or int".}
 
 # --- Resolved options -------------------------------------------------------
 

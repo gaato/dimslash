@@ -20,14 +20,42 @@ proc names*(rec: Recorder): seq[string] =
   for (name, _) in rec.calls:
     result.add name
 
+proc collectModalInputs(components: seq[MessageComponent];
+                        inheritedLabel: string; inputs: var JsonNode) =
+  for component in components:
+    if component.isNil:
+      continue
+    if component.kind == mctTextInput:
+      inputs.add %*{"custom_id": component.custom_id.get(""),
+                    "label": inheritedLabel,
+                    "required": component.required.get(false),
+                    "style": int component.input_style.get(tisShort)}
+    elif component.kind == mctLabel and not component.component.isNil:
+      collectModalInputs(@[component.component],
+                         component.label.get(inheritedLabel), inputs)
+    elif component.components.len > 0:
+      collectModalInputs(component.components, inheritedLabel, inputs)
+
 proc newRecordingBackend*(rec: Recorder): RestBackend =
   result = RestBackend()
   result.createResponse = proc (interactionId, token: string;
       kind: InteractionResponseType;
-      data: InteractionCallbackDataMessage): Future[void] {.async.} =
+      payload: MessagePayload): Future[void] {.async.} =
+    var data = %*{
+      "hasContent": payload.content.isSome,
+      "flags": cast[int](payload.flags),
+      "embeds": %payload.embeds,
+      "components": %payload.components,
+      "attachments": payload.attachments.len,
+      "files": payload.files.len
+    }
+    if payload.content.isSome:
+      data["content"] = %payload.content.get
+    if payload.allowedMentions.isSome:
+      data["allowed_mentions"] = %payload.allowedMentions.get
     rec.calls.add ("createResponse", %*{
       "id": interactionId, "token": token, "kind": int kind,
-      "data": %data})
+      "data": data})
   result.createAutocomplete = proc (interactionId, token: string;
       choices: JsonNode): Future[void] {.async.} =
     rec.calls.add ("createAutocomplete", %*{
@@ -35,12 +63,7 @@ proc newRecordingBackend*(rec: Recorder): RestBackend =
   result.createModal = proc (interactionId, token: string;
       data: InteractionCallbackDataModal): Future[void] {.async.} =
     var inputs = newJArray()
-    for row in data.components:
-      for c in row.components:
-        inputs.add %*{"custom_id": c.custom_id.get(""),
-                      "label": c.label.get(""),
-                      "required": c.required.get(false),
-                      "style": int c.input_style.get(tisShort)}
+    collectModalInputs(data.components, "", inputs)
     rec.calls.add ("createModal", %*{
       "id": interactionId, "token": token,
       "custom_id": data.custom_id, "title": data.title,
@@ -50,15 +73,20 @@ proc newRecordingBackend*(rec: Recorder): RestBackend =
     rec.calls.add ("createFollowup", %*{
       "appId": applicationId, "token": token,
       "content": payload.content.get(""),
+      "hasContent": payload.content.isSome,
       "flags": cast[int](payload.flags),
-      "embeds": payload.embeds.len})
+      "embeds": payload.embeds.len,
+      "components": %payload.components})
     result = Message(id: "followup-msg")
   result.editResponse = proc (applicationId, token, messageId: string;
       payload: MessagePayload): Future[Message] {.async.} =
     rec.calls.add ("editResponse", %*{
       "appId": applicationId, "token": token, "messageId": messageId,
       "content": payload.content.get(""),
-      "embeds": payload.embeds.len})
+      "hasContent": payload.content.isSome,
+      "flags": cast[int](payload.flags),
+      "embeds": payload.embeds.len,
+      "components": %payload.components})
     result = Message(id: "edited-msg")
   result.getResponse = proc (applicationId, token,
       messageId: string): Future[Message] {.async.} =

@@ -17,7 +17,7 @@
 import std/[asyncdispatch, json, monotimes, options, strutils, tables, times]
 import dimscord
 
-import ./types, ./extract
+import ./types, ./extract, ./builders
 
 # --- Accessors ---------------------------------------------------------------
 
@@ -172,19 +172,24 @@ const mentionDefault = AllowedMentions(parse: @["users", "roles", "everyone"])
 proc callbackData(content: string; embeds: seq[Embed];
                   components: seq[MessageComponent];
                   attachments: seq[Attachment];
+                  files: seq[DiscordFile];
                   allowedMentions: Option[AllowedMentions];
-                  ephemeral, tts: bool): InteractionCallbackDataMessage =
+                  ephemeral, tts: bool;
+                  componentsV2 = false): MessagePayload =
   var flags: set[MessageFlags]
   if ephemeral:
     flags.incl mfEphemeral
-  InteractionCallbackDataMessage(
-    content: content,
-    embeds: embeds,
+  if componentsV2:
+    flags.incl mfIsComponentsV2
+  MessagePayload(
+    content: (if componentsV2: none string else: some content),
+    embeds: (if componentsV2: @[] else: embeds),
     components: components,
     attachments: attachments,
+    files: files,
     flags: flags,
-    tts: if tts: some(true) else: none(bool),
-    allowed_mentions: allowedMentions.get(mentionDefault))
+    tts: tts,
+    allowedMentions: some(allowedMentions.get(mentionDefault)))
 
 proc messagePayload(content: string; embeds: seq[Embed];
                     components: seq[MessageComponent];
@@ -204,6 +209,23 @@ proc messagePayload(content: string; embeds: seq[Embed];
     allowedMentions: allowedMentions,
     flags: flags,
     tts: tts)
+
+proc layoutPayload(layout: MessageLayout;
+                   attachments: seq[Attachment]; files: seq[DiscordFile];
+                   allowedMentions: Option[AllowedMentions];
+                   ephemeral: bool): MessagePayload =
+  var flags = {mfIsComponentsV2}
+  if ephemeral:
+    flags.incl mfEphemeral
+  MessagePayload(
+    content: none string,
+    embeds: @[],
+    components: layout.components,
+    attachments: attachments,
+    files: files,
+    allowedMentions: allowedMentions,
+    flags: flags,
+    tts: false)
 
 proc followup*(ctx: InteractionContext; content = "";
                embeds: seq[Embed] = @[];
@@ -251,7 +273,7 @@ proc reply*(ctx: InteractionContext; content = "";
     await ctx.handler.rest.createResponse(
       ctx.interaction.id, ctx.interaction.token,
       irtChannelMessageWithSource,
-      callbackData(content, embeds, components, attachments,
+      callbackData(content, embeds, components, attachments, files,
                    allowedMentions, ephemeral, tts))
     ctx.state = rsResponded
   of rsDeferred:
@@ -261,6 +283,55 @@ proc reply*(ctx: InteractionContext; content = "";
   of rsResponded:
     discard await ctx.followup(content, embeds, components, attachments,
                                files, allowedMentions, ephemeral, tts)
+
+proc followup*(ctx: InteractionContext; layout: MessageLayout;
+               allowedMentions = none AllowedMentions;
+               ephemeral = false): Future[Message] {.async.} =
+  ## Sends a Components V2 followup. The `MessageLayout` overload has no
+  ## `content`, `embeds`, TTS, or upload parameters because Discord rejects
+  ## those fields on V2 webhook creates.
+  result = await ctx.handler.rest.createFollowup(
+    ctx.interaction.application_id, ctx.interaction.token,
+    layoutPayload(layout, @[], @[], allowedMentions, ephemeral))
+  ctx.state = rsResponded
+
+proc edit*(ctx: InteractionContext; layout: MessageLayout;
+           attachments: seq[Attachment] = @[];
+           files: seq[DiscordFile] = @[];
+           allowedMentions = none AllowedMentions;
+           messageId = "@original"): Future[Message] {.async.} =
+  ## Replaces a response with a Components V2 layout. V2 cannot be
+  ## combined with legacy content or embeds and cannot be reverted later.
+  result = await ctx.handler.rest.editResponse(
+    ctx.interaction.application_id, ctx.interaction.token, messageId,
+    layoutPayload(layout, attachments, files, allowedMentions,
+                  ephemeral = false))
+
+proc reply*(ctx: InteractionContext; layout: MessageLayout;
+            attachments: seq[Attachment] = @[];
+            files: seq[DiscordFile] = @[];
+            allowedMentions = none AllowedMentions;
+            ephemeral = false) {.async.} =
+  ## Replies with a Components V2 layout. Like the legacy overload this is
+  ## state-aware. `DiscordFile` uploads require a deferred response so the
+  ## placeholder can be edited; use `edit` for uploads after responding.
+  case ctx.state
+  of rsNone:
+    await ctx.handler.rest.createResponse(
+      ctx.interaction.id, ctx.interaction.token,
+      irtChannelMessageWithSource,
+      callbackData("", @[], layout.components, attachments, files,
+                   allowedMentions, ephemeral, tts = false,
+                   componentsV2 = true))
+    ctx.state = rsResponded
+  of rsDeferred:
+    discard await ctx.edit(layout, attachments, files, allowedMentions)
+    ctx.state = rsResponded
+  of rsResponded:
+    if attachments.len > 0 or files.len > 0:
+      raise newException(DimslashError,
+        "Discord does not accept file uploads in Components V2 followups")
+    discard await ctx.followup(layout, allowedMentions, ephemeral)
 
 proc deferReply*(ctx: InteractionContext; ephemeral = false) {.async.} =
   ## Acknowledges the interaction with a loading placeholder; follow with
@@ -273,8 +344,8 @@ proc deferReply*(ctx: InteractionContext; ephemeral = false) {.async.} =
   await ctx.handler.rest.createResponse(
     ctx.interaction.id, ctx.interaction.token,
     irtDeferredChannelMessageWithSource,
-    InteractionCallbackDataMessage(flags: flags,
-                                   allowed_mentions: mentionDefault))
+    MessagePayload(flags: flags,
+                   allowedMentions: some mentionDefault))
   ctx.state = rsDeferred
 
 proc original*(ctx: InteractionContext): Future[Message] =
@@ -290,13 +361,12 @@ proc delete*(ctx: InteractionContext; messageId = "@original"): Future[void] =
 proc newTextInput*(customId, label: string; style = tisShort;
                    required = true; placeholder = ""; value = "";
                    minLen = 0; maxLen = 0): MessageComponent =
-  ## A modal text input, already wrapped in the action row Discord
-  ## requires (dimscord has builders for buttons/selects but not these).
+  ## A modal text input, already wrapped in the Label component Discord
+  ## now requires (modal action rows containing text inputs are deprecated).
   ## Pass the results straight to `showModal`.
   var input = MessageComponent(
     kind: mctTextInput,
     custom_id: some customId,
-    label: some label,
     input_style: some style,
     required: some required)
   if placeholder.len > 0:
@@ -307,7 +377,7 @@ proc newTextInput*(customId, label: string; style = tisShort;
     input.min_length = some minLen
   if maxLen > 0:
     input.max_length = some maxLen
-  MessageComponent(kind: mctActionRow, components: @[input])
+  MessageComponent(kind: mctLabel, label: some label, component: input)
 
 proc showModal*(ctx: InteractionContext; customId, title: string;
                 components: seq[MessageComponent]) {.async.} =
@@ -347,11 +417,32 @@ proc update*(ctx: ComponentContext | ModalContext; content = "";
     await ctx.handler.rest.createResponse(
       ctx.interaction.id, ctx.interaction.token,
       irtUpdateMessage,
-      callbackData(content, embeds, components, attachments,
+      callbackData(content, embeds, components, attachments, @[],
                    allowedMentions, ephemeral = false, tts = false))
     ctx.state = rsResponded
   of rsDeferred:
     discard await ctx.edit(content, embeds, components, attachments,
+                           allowedMentions = allowedMentions)
+    ctx.state = rsResponded
+  of rsResponded:
+    raise newException(DimslashError, "interaction was already responded to")
+
+proc update*(ctx: ComponentContext | ModalContext; layout: MessageLayout;
+             attachments: seq[Attachment] = @[];
+             allowedMentions = none AllowedMentions) {.async.} =
+  ## Updates the source message with a Components V2 layout. Its type keeps
+  ## Discord-incompatible `content` and `embeds` out of the call entirely.
+  case ctx.state
+  of rsNone:
+    await ctx.handler.rest.createResponse(
+      ctx.interaction.id, ctx.interaction.token,
+      irtUpdateMessage,
+      callbackData("", @[], layout.components, attachments, @[],
+                   allowedMentions, ephemeral = false, tts = false,
+                   componentsV2 = true))
+    ctx.state = rsResponded
+  of rsDeferred:
+    discard await ctx.edit(layout, attachments,
                            allowedMentions = allowedMentions)
     ctx.state = rsResponded
   of rsResponded:
@@ -365,7 +456,7 @@ proc deferUpdate*(ctx: ComponentContext | ModalContext) {.async.} =
   await ctx.handler.rest.createResponse(
     ctx.interaction.id, ctx.interaction.token,
     irtDeferredUpdateMessage,
-    InteractionCallbackDataMessage(allowed_mentions: mentionDefault))
+    MessagePayload(allowedMentions: some mentionDefault))
   ctx.state = rsDeferred
 
 # --- Autocomplete responses --------------------------------------------------

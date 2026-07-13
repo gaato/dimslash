@@ -11,7 +11,7 @@ full option metadata), context-menu commands, buttons, selects, modals,
 and autocomplete — validated at compile time, synced with change
 detection. On top of that: awaitable components (`waitForButton`),
 ready-made confirm/paginate flows, checks & cooldowns, typed modal
-forms, and embed/component builder blocks.
+forms, classic component builders, and Components V2 layouts.
 
 > **日本語版**: [README.ja.md](README.ja.md)
 
@@ -24,29 +24,25 @@ nimble install dimslash
 ## Quick start
 
 ```nim
-import dimscord, dimslash, std/random
+import dimslash, std/random
 
-let discord = newDiscordClient("TOKEN")
-let handler = newInteractionHandler(discord)
+let bot = newBot("TOKEN")
 
-handler.slash("roll", "Roll a die"):
+bot.slash("roll", "Roll a die"):
   ## number of sides
   sides {.min: 2, max: 1000.}: int = 6
   execute:
     await ctx.reply("You rolled a " & $rand(1 .. sides))
 
-proc onReady(s: Shard, r: Ready) {.event(discord).} =
-  discard await handler.syncCommands()
-
-proc interactionCreate(s: Shard, i: Interaction) {.event(discord).} =
-  discard await handler.handleInteraction(s, i)
-
-waitFor discord.startSession(gateway_intents = {giGuilds})
+waitFor bot.start()
 ```
 
 The `## doc` comment becomes the option description in the Discord UI,
 `min`/`max` become real constraints, and the default makes the option
-optional on Discord while `sides` stays a plain `int` in your code.
+optional on Discord while `sides` stays a plain `int` in your code. `start`
+wires READY/interaction events and performs one diff-aware command sync. Use
+`bot.install()` followed by dimscord's `bot.discord.startSession(...)` when
+you need its full gateway, cache, or sharding options.
 
 ## The slash block
 
@@ -65,8 +61,10 @@ handler.slash("order", "Order from the menu"):
 ```
 
 **Option types**: `string`, `int`, `float`, `bool`, `User`, `Member`,
-`Role`, `Channel`, `Mentionable`, `Attachment` — plus `Option[T]` of any
-of them, or a default value (optional on Discord, non-`Option` in Nim).
+`Role`, `Channel`, `Mentionable`, `Attachment`, plus caller-defined Nim
+`enum`, integer `range`, and `distinct string` / `distinct int` types. Any
+can be wrapped in `Option[T]` or have a default value (optional on Discord,
+non-`Option` in Nim).
 
 **Option pragmas**: `desc`, `name` (wire-name override), `min`/`max`,
 `minLen`/`maxLen`, `choices`, `channels`, `nameLoc`/`descLoc`.
@@ -80,6 +78,30 @@ Everything is validated at compile time: Discord's name rules, option
 ordering (required before optional), duplicate names, choice limits,
 group depth, autocomplete targets. A typo'd pragma or a misordered
 option is a compile error, not a 400 at runtime.
+
+### Derive commands from Nim types
+
+```nim
+type
+  Flavor = enum
+    vanilla
+    chocolate = "Dark chocolate" # Discord label; wire value is "chocolate"
+  Servings = range[1 .. 12]
+  CustomerId = distinct string
+
+handler.slash("dessert", "Build a dessert"):
+  ## flavor
+  flavor: Flavor                  # choices are generated automatically
+  ## number of servings
+  servings: Servings              # min_value=1, max_value=12
+  ## customer
+  customer: CustomerId            # handler keeps the domain type
+  execute:
+    await ctx.reply($flavor & " for " & $servings)
+```
+
+The command schema and decoder come from the same type, so an enum/range
+change cannot leave registration JSON and handler parsing out of sync.
 
 ## Subcommands
 
@@ -255,6 +277,52 @@ selects (`userSelect`, `roleSelect`, `mentionableSelect`,
 `channelSelect`) are included, and Discord's layout rules (a select
 menu owns its row) are enforced at compile time.
 
+### Components V2 layouts
+
+`layout` builds a `MessageLayout`. Its response overload accepts no
+`content` or `embeds`, and sets `IS_COMPONENTS_V2` for you.
+
+```nim
+let release = layout:
+  text "# Version 2.0"
+  section:
+    text "The new build is ready."
+    thumbnail "https://example.com/icon.png", desc = "App icon"
+  gallery:
+    media "https://example.com/screenshot.png", desc = "New editor"
+  separator spacing = 2
+  container accent = 0x5865F2:
+    text "Choose an action"
+    row:
+      button "Install", "release:install", style = bsSuccess
+      linkButton "Notes", "https://example.com/releases/2.0"
+
+await ctx.reply(release, ephemeral = true)
+```
+
+The macro checks Section, Gallery, Container, Action Row, attachment URL,
+color, spacing, and the 40-component message limit. Literal mistakes stop
+compilation; values computed at runtime raise `ValueError` while building
+the layout. `reply`, `followup`, `edit`, and `update` accept a
+`MessageLayout`.
+
+Discord rejects file uploads on Components V2 webhook followups. Upload an
+`Attachment` with the initial `reply`, or defer first and use `reply`/`edit`
+so dimslash sends a message edit. V2 overloads also leave `content`, `embeds`,
+and TTS out of the request by construction.
+
+`newTextInput` and `modalForm` wrap text inputs in Discord's `Label`
+component. Discord deprecated modal Action Rows that contain Text Inputs.
+
+#### dimscord compatibility
+
+dimslash supports the Components V2 message types represented by dimscord
+1.8.0 (Section through Container) and Label-based text modals. Discord also
+documents Radio Group, Checkbox Group, and Checkbox as component types 21–23,
+but dimscord 1.8.0 cannot preserve those values while parsing an interaction.
+dimslash will expose them after the upstream inbound model can carry them.
+See the current [Discord component reference](https://docs.discord.com/developers/components/reference).
+
 ## The context object
 
 Every handler receives `ctx` with typed accessors (`ctx.user`,
@@ -264,6 +332,7 @@ Every handler receives `ctx` with typed accessors (`ctx.user`,
 | Helper | What it does |
 | --- | --- |
 | `reply(...)` | initial response → placeholder edit → followup, automatically |
+| `reply(layout)` | Components V2 response with the required flag |
 | `deferReply(ephemeral)` | "thinking…" placeholder |
 | `followup(...)` / `edit(...)` / `delete()` / `original()` | followup & @original management |
 | `update(...)` / `deferUpdate()` | edit the message a component sits on |
@@ -280,9 +349,10 @@ error reply; set to `nil` to re-raise), unregistered interactions to
 
 ## Command sync with diffing
 
-`syncCommands()` fetches what Discord has per scope (global and each
+`start()` runs this sync once when the first READY event arrives.
+`syncCommands()` remains available when you want explicit control. It fetches what Discord has per scope (global and each
 guild), compares it against your registered commands, and only PUTs when
-something changed — no more full overwrite on every boot. Use
+something changed. Use
 `syncCommands(force = true)` to overwrite unconditionally.
 
 ```nim

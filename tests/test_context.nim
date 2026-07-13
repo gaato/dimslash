@@ -1,7 +1,7 @@
 import std/[asyncdispatch, json, options, tables, unittest]
 import dimscord
 
-import ../src/dimslash/[types, context]
+import ../src/dimslash/[types, context, builders]
 import ./helpers
 
 proc mkSlashCtx(rec: Recorder): SlashContext =
@@ -95,6 +95,7 @@ suite "followup / edit / original / delete":
     waitFor ctx.delete()
     discard waitFor ctx.original()
     check rec.names == @["editResponse", "deleteResponse", "getResponse"]
+    check rec.calls[0].args["hasContent"].getBool
     for (_, args) in rec.calls:
       check args["messageId"].getStr == "@original"
 
@@ -120,6 +121,98 @@ suite "component responses":
     waitFor ctx.update("once")
     expect DimslashError:
       waitFor ctx.update("twice")
+
+suite "Components V2 responses":
+  test "reply sets the V2 flag and sends only layout components":
+    let rec = newRecorder()
+    let ctx = mkSlashCtx(rec)
+    let ui = layout:
+      text "# Hello"
+      row:
+        button "Continue", "continue"
+    waitFor ctx.reply(ui, ephemeral = true)
+    let data = rec.calls[0].args["data"]
+    check data["flags"].getInt ==
+      cast[int]({mfEphemeral, mfIsComponentsV2})
+    check not data["hasContent"].getBool
+    check not data.hasKey("content")
+    check data["embeds"].len == 0
+    check data["components"].len == 2
+    check data["components"][0]["type"].getInt == int mctTextDisplay
+    check data["components"][1]["type"].getInt == int mctActionRow
+
+  test "reply keeps its state-aware edit and followup behavior":
+    let ui = layout:
+      text "Done"
+
+    let deferredRec = newRecorder()
+    let deferred = mkSlashCtx(deferredRec)
+    waitFor deferred.deferReply()
+    waitFor deferred.reply(ui)
+    check deferredRec.names == @["createResponse", "editResponse"]
+    check deferredRec.calls[1].args["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+    check not deferredRec.calls[1].args["hasContent"].getBool
+
+    let followupRec = newRecorder()
+    let responded = mkSlashCtx(followupRec)
+    waitFor responded.reply(ui)
+    waitFor responded.reply(ui)
+    check followupRec.names == @["createResponse", "createFollowup"]
+    check followupRec.calls[1].args["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+    check not followupRec.calls[1].args["hasContent"].getBool
+
+  test "followup and edit return messages and preserve V2 flags":
+    let rec = newRecorder()
+    let ctx = mkSlashCtx(rec)
+    let ui = layout:
+      container accent = 0x123456:
+        text "Card"
+    let sent = waitFor ctx.followup(ui)
+    let edited = waitFor ctx.edit(ui, messageId = "message-id")
+    check sent.id == "followup-msg"
+    check edited.id == "edited-msg"
+    check rec.calls[0].args["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+    check rec.calls[1].args["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+    check not rec.calls[0].args["hasContent"].getBool
+    check not rec.calls[1].args["hasContent"].getBool
+    check rec.calls[1].args["messageId"].getStr == "message-id"
+
+  test "component update supports immediate and deferred V2 layouts":
+    let ui = layout:
+      text "Updated"
+
+    let immediateRec = newRecorder()
+    let immediate = mkComponentCtx(immediateRec)
+    waitFor immediate.update(ui)
+    check immediateRec.calls[0].args["kind"].getInt == int irtUpdateMessage
+    check immediateRec.calls[0].args["data"]["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+
+    let deferredRec = newRecorder()
+    let deferred = mkComponentCtx(deferredRec)
+    waitFor deferred.deferUpdate()
+    waitFor deferred.update(ui)
+    check deferredRec.names == @["createResponse", "editResponse"]
+    check deferredRec.calls[1].args["flags"].getInt ==
+      cast[int]({mfIsComponentsV2})
+
+  test "V2 overloads structurally exclude legacy content and embeds":
+    let ctx = mkSlashCtx(newRecorder())
+    let componentCtx = mkComponentCtx(newRecorder())
+    let ui = layout:
+      text "Only components"
+    check not compiles(ctx.reply(ui, content = "not allowed"))
+    check not compiles(ctx.reply(ui, tts = true))
+    check not compiles(ctx.followup(ui, embeds = @[Embed()]))
+    check not compiles(ctx.followup(ui,
+      files = @[DiscordFile(name: "report.txt", body: "body")]))
+    check not compiles(ctx.followup(ui, tts = true))
+    check not compiles(ctx.edit(ui, content = "not allowed"))
+    check not compiles(componentCtx.update(ui, embeds = @[Embed()]))
 
 suite "modal open":
   test "showModal responds with the modal":

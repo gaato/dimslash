@@ -9,6 +9,13 @@ let token = getEnv("DISCORD_TOKEN")
 let discord = newDiscordClient(token)
 let handler = newInteractionHandler(discord)
 
+type
+  MenuItem = enum
+    coffee = "Coffee"
+    tea = "Tea"
+    cake = "Cake"
+  Quantity = range[1 .. 10]
+
 handler.slash("sum", "Adds two numbers"):
   ## first number
   a: int
@@ -19,9 +26,9 @@ handler.slash("sum", "Adds two numbers"):
 
 handler.slash("order", "Order something from the menu"):
   ## what to order
-  item {.choices: {"Coffee": "coffee", "Tea": "tea", "Cake": "cake"}.}: string
+  item: MenuItem
   ## how many (1-10)
-  amount {.min: 1, max: 10.}: int = 1
+  amount: Quantity = 1
   ## note for the kitchen
   note {.maxLen: 100.}: Option[string]
   execute:

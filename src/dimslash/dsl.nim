@@ -64,13 +64,14 @@ export types, registry, extract, context, dispatch
 type
   OptClass = enum
     ocString, ocInt, ocFloat, ocBool, ocUser, ocMember, ocRole, ocChannel,
-    ocMentionable, ocAttachment
+    ocMentionable, ocAttachment, ocDerived
 
   OptIR = ref object
     node: NimNode              # declaration site, for error positions
     nimName: NimNode           # ident bound in the execute body
     wireName: string
     class: OptClass
+    typeExpr: NimNode           # original caller type; needed for derived types
     optional: bool             # Option[T]
     default: NimNode           # nil if absent
     description: string
@@ -130,9 +131,10 @@ proc classOf(t: NimNode): OptClass =
     of "Mentionable": return ocMentionable
     of "Attachment": return ocAttachment
     else: discard
-  error("unsupported option type: " & t.repr &
-    " (supported: string, int, float, bool, User, Member, Role, Channel, " &
-    "Mentionable, Attachment, and Option[T] of those)", t)
+  # Caller-defined types cannot be inspected reliably from this untyped
+  # macro phase. Keep the AST and let derivedOptionSpec inspect it after
+  # semantic analysis, when aliases have been expanded.
+  ocDerived
 
 proc acotOf(class: OptClass): NimNode =
   case class
@@ -145,6 +147,9 @@ proc acotOf(class: OptClass): NimNode =
   of ocChannel: bindSym"acotChannel"
   of ocMentionable: bindSym"acotMentionable"
   of ocAttachment: bindSym"acotAttachment"
+  of ocDerived:
+    error("internal error: derived option kind requested too early")
+    nil
 
 proc extractTypeOf(class: OptClass): NimNode =
   # open idents on purpose: a bindSym'd type symbol fails to match the
@@ -160,6 +165,96 @@ proc extractTypeOf(class: OptClass): NimNode =
   of ocChannel: ident"ResolvedChannel"
   of ocMentionable: ident"Mentionable"
   of ocAttachment: ident"Attachment"
+  of ocDerived:
+    error("internal error: derived option type requested without its AST")
+    nil
+
+proc extractTypeOf(o: OptIR): NimNode =
+  if o.class == ocDerived:
+    o.typeExpr
+  else:
+    extractTypeOf(o.class)
+
+macro derivedOptionSpec(T: typedesc; name, description: static string;
+                        required, autocomplete: static bool): OptionSpec =
+  ## Derives Discord wire metadata from a caller-defined Nim enum or
+  ## integer range. This typed second phase is necessary because the public
+  ## `slash` macro receives caller types as unresolved identifiers.
+  let impl = T.getType[1]
+  let nameE = newLit name
+  let descE = newLit description
+  let requiredE = newLit required
+  let autocompleteE = newLit autocomplete
+
+  case impl.kind
+  of nnkEnumTy:
+    if impl.len <= 1:
+      error("slash option enums must contain at least one value", T)
+    if impl.len - 1 > 25:
+      error("slash option enum has " & $(impl.len - 1) &
+        " values; Discord choices allow at most 25", T)
+    var values = newNimNode(nnkBracket)
+    for field in impl[1 .. ^1]:
+      field.expectKind nnkSym
+      let wire = field.strVal
+      let fieldImpl = field.getImpl
+      let label = if fieldImpl.kind in {nnkStrLit, nnkRStrLit,
+                                        nnkTripleStrLit}:
+                    fieldImpl.strVal
+                  else:
+                    wire
+      if label.len notin 1 .. 100:
+        error("enum choice label must be 1..100 characters: " & label, field)
+      if wire.len > 100:
+        error("enum choice wire value must be at most 100 characters: " & wire,
+              field)
+      values.add newCall(bindSym"choice", newLit label, newLit wire)
+    let choicesE = newCall(bindSym"@", values)
+    result = quote do:
+      OptionSpec(name: `nameE`, description: `descE`, kind: acotStr,
+                 required: `requiredE`, autocomplete: `autocompleteE`,
+                 choices: `choicesE`)
+  of nnkBracketExpr:
+    const integerLiterals = {nnkIntLit, nnkInt8Lit, nnkInt16Lit,
+      nnkInt32Lit, nnkInt64Lit, nnkUIntLit, nnkUInt8Lit, nnkUInt16Lit,
+      nnkUInt32Lit, nnkUInt64Lit}
+    if impl.len != 3 or $impl[0] != "range" or
+        impl[1].kind notin integerLiterals or
+        impl[2].kind notin integerLiterals:
+      error("unsupported slash option type " & T.repr &
+        "; derived ranges must have integer bounds", T)
+    let lowValue = impl[1].intVal
+    let highValue = impl[2].intVal
+    const discordMin = -(1'i64 shl 53) + 1
+    const discordMax = (1'i64 shl 53) - 1
+    if lowValue < discordMin or highValue > discordMax:
+      error("range exceeds Discord's safe INTEGER bounds", T)
+    let lowE = newLit float(lowValue)
+    let highE = newLit float(highValue)
+    result = quote do:
+      OptionSpec(name: `nameE`, description: `descE`, kind: acotInt,
+                 required: `requiredE`, autocomplete: `autocompleteE`,
+                 minValue: some(`lowE`), maxValue: some(`highE`))
+  of nnkSym:
+    let decl = impl.getImpl
+    if decl.kind != nnkTypeDef or decl[2].kind != nnkDistinctTy:
+      error("unsupported slash option type " & T.repr &
+        "; supported caller-defined types are enum, integer range, " &
+        "distinct string, and distinct int", T)
+    let base = decl[2][0]
+    let kindE =
+      if base.eqIdent("string"): bindSym"acotStr"
+      elif base.eqIdent("int"): bindSym"acotInt"
+      else:
+        error("distinct slash option types must wrap string or int", T)
+        nil
+    result = quote do:
+      OptionSpec(name: `nameE`, description: `descE`, kind: `kindE`,
+                 required: `requiredE`, autocomplete: `autocompleteE`)
+  else:
+    error("unsupported slash option type " & T.repr &
+      "; supported caller-defined types are enum, integer range, " &
+      "distinct string, and distinct int", T)
 
 proc parseOptionPragmas(o: OptIR, pragma: NimNode) =
   for entry in pragma:
@@ -235,6 +330,7 @@ proc parseOptionDecl(stmt: NimNode, pendingDoc: string): OptIR =
         "use a plain type with a default instead", stmt)
     result.optional = true
     typeExpr = typeExpr[1]
+  result.typeExpr = typeExpr
   result.class = classOf(typeExpr)
 
   if pragma != nil:
@@ -425,7 +521,7 @@ proc validateNode(ir: NodeIR) =
 proc genChoices(o: OptIR): NimNode =
   ## `{"label": value, ...}` → `@[choice("label", string(value)), ...]`
   ## (the conversion pins the value type to the option type).
-  let conv = extractTypeOf(o.class)
+  let conv = extractTypeOf(o)
   var bracket = newNimNode(nnkBracket)
   for entry in o.choices:
     entry.expectKind nnkExprColonExpr
@@ -436,14 +532,19 @@ proc genChoices(o: OptIR): NimNode =
 proc genOptionSpec(o: OptIR): tuple[stmts, specVar: NimNode] =
   let spec = genSym(nskVar, "spec")
   let (wire, desc) = (newLit o.wireName, newLit o.description)
-  let kindE = acotOf(o.class)
   let required = newLit(not o.optional and o.default == nil)
   let ac = newLit o.autocomplete
   var stmts = newStmtList()
-  stmts.add quote do:
-    var `spec` = OptionSpec(name: `wire`, description: `desc`,
-                            kind: `kindE`, required: `required`,
-                            autocomplete: `ac`)
+  if o.class == ocDerived:
+    let typeE = o.typeExpr
+    stmts.add quote do:
+      var `spec` = derivedOptionSpec(`typeE`, `wire`, `desc`, `required`, `ac`)
+  else:
+    let kindE = acotOf(o.class)
+    stmts.add quote do:
+      var `spec` = OptionSpec(name: `wire`, description: `desc`,
+                              kind: `kindE`, required: `required`,
+                              autocomplete: `ac`)
   if o.minV != nil:
     let v = o.minV
     stmts.add quote do:
@@ -500,7 +601,7 @@ proc genRun(ir: NodeIR, checks: seq[NimNode], cooldown: NimNode,
   var body = newStmtList()
   for o in ir.options:
     let (nimName, wire, typeE) = (o.nimName, newLit o.wireName,
-                                  extractTypeOf(o.class))
+                                  extractTypeOf(o))
     if o.default != nil:
       let default = o.default
       body.add quote do:
