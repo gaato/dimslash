@@ -1,1 +1,5 @@
-nimTitle	dimslash	dimslash.html	module src/dimslash		0
+nimTitle	dimslash	dimslash.html	module dimslash		0
+heading	Defining and starting an app	dimslash.html#defining-and-starting-an-app	 Defining and starting an app		0
+heading	Explicit response state	dimslash.html#explicit-response-state	 Explicit response state		0
+heading	Components, modals, and short-lived flows	dimslash.html#components-modals-and-shortminuslived-flows	 Components, modals, and short-lived flows		0
+heading	Errors and shutdown	dimslash.html#errors-and-shutdown	 Errors and shutdown		0

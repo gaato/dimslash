@@ -419,7 +419,7 @@ img {
 
   h1.title {
     page-break-before: avoid; }
-
+	
   .nine.columns h1:first-of-type {
     page-break-before: avoid;
   }
