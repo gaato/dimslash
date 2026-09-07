@@ -3,6 +3,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/gaato/dimslash/ci.yml?branch=main&label=CI)](https://github.com/gaato/dimslash/actions/workflows/ci.yml)
 [![Nim](https://img.shields.io/badge/Nim-%3E%3D2.0.6-FFC200?logo=nim)](https://nim-lang.org/)
 [![License](https://img.shields.io/github/license/gaato/dimslash)](LICENSE.md)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gaato/dimslash)
 
 A typed Discord interaction framework for Nim, backed by
 [dimscord](https://github.com/krisppurg/dimscord).

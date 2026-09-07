@@ -1,5 +1,7 @@
 # dimslash
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gaato/dimslash)
+
 Nim向けの型付きDiscordインタラクションフレームワークです。通信層には
 [dimscord](https://github.com/krisppurg/dimscord)を使います。
 
