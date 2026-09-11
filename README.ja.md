@@ -5,6 +5,9 @@
 Nim向けの型付きDiscordインタラクションフレームワークです。通信層には
 [dimscord](https://github.com/krisppurg/dimscord)を使います。
 
+> **開発状況:** DimSlashは1.0未満です。設計が安定するまでは、
+> マイナーリリースでも公開APIを破壊的に変更する可能性があります。
+
 新APIでは責務を三つに分けています。
 
 - `DiscordApp`: 一度だけ構築される変更不能なルート定義

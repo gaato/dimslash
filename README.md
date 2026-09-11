@@ -8,6 +8,9 @@
 A typed Discord interaction framework for Nim, backed by
 [dimscord](https://github.com/krisppurg/dimscord).
 
+> **Development status:** DimSlash is pre-1.0. Its public API may change
+> incompatibly between minor releases while the design stabilizes.
+
 The current API deliberately separates three things:
 
 - `DiscordApp`: an immutable route definition

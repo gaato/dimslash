@@ -1,5 +1,8 @@
 ## Typed Discord application commands and interaction flows for Nim.
 ##
+## DimSlash is pre-1.0. Its public API may change incompatibly between minor
+## releases while the design stabilizes.
+##
 ## DimSlash separates immutable application definition from live runtime state:
 ##
 ## * `DiscordApp` owns the route table and error policy. Its factory closure is
